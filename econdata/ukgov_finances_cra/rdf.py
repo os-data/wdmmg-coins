@@ -8,14 +8,16 @@ from rdflib.Graph import Graph as Graph
 from rdflib import BNode, URIRef, Literal
 from rdflib import Namespace, RDF, RDFS
 
+SITE_ROOT = "http://ckan.net/"
+
 XSD = Namespace("http://www.w3.org/2001/XMLSchema#")
 DC = Namespace("http://purl.org/dc/terms/")
 SCV = Namespace("http://purl.org/NET/scovo#")
-CRA_SCHEMA_URI = "http://ckan.net/schema/ukgov-finances-cra"
+CRA_SCHEMA_URI = SITE_ROOT + "schema/ukgov-finances-cra"
 CRA = Namespace(CRA_SCHEMA_URI + "#")
-CRA_DATA_URI = "http://ckan.net/data/ukgov-finances-cra"
-CRA_DATA = Namespace("http://ckan.net/data/ukgov-finances-cra/")
-cra = URIRef('http://ckan.net/package/ukgov-finances-cra')
+CRA_DATA_URI = SITE_ROOT + "data/ukgov-finances-cra"
+CRA_DATA = Namespace(SITE_ROOT + "data/ukgov-finances-cra/")
+cra = URIRef(SITE_ROOT + "package/ukgov-finances-cra")
 
 _qns = {
 	'dc' : DC,
@@ -84,10 +86,7 @@ def make_area(a):
 	if a.notes:
 		g.add((area, DC["description"], Literal(a.notes)))
 
-	deptcode = slugify(a.deptcode)
-
 	g.add((area, CRA["department"], CRA_DATA["departments/" + slugify(a.department)]))
-
 	g.add((area, DC["spatial"], Literal(a.region)))
 
 	func = "functions/" + slugify(a.function)
