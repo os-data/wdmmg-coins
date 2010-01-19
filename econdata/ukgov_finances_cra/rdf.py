@@ -74,7 +74,7 @@ def schema():
 	return g
 
 def make_area(a):
-	slug = "areas/" + slugify(a.department) + "/" + slugify(a.function) + "/" + slugify(a.subfunction)
+	slug = "areas/" + slugify(a.region) + "/" + slugify(a.department) + "/" + slugify(a.function) + "/" + slugify(a.subfunction)
 	g = Graph(identifier=CRA_DATA_URI + "/" + slug)
 	area = CRA_DATA[slug]
 	g.add((area, RDF.type, CRA["Area"]))
