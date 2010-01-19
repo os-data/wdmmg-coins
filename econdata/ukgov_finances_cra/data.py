@@ -6,7 +6,7 @@ cache = swiss.Cache('cache')
 url = 'http://www.hm-treasury.gov.uk/d/cra_2009_db.csv'
 url_xls = 'http://www.hm-treasury.gov.uk/d/cra_2009_db.xls'
 
-DEFAULT_DBURI = 'sqlite:///%s' % cache.cache_path('ukgov_finances_cra.db')
+dburi = 'sqlite:///%s' % cache.cache_path('ukgov_finances_cra.db')
 # Dept Code,Dept Name,Function,Sub-function,Programme Object Group,Programme Object Group Alias,
 # ID or Non-ID,CAP or CUR,CG or LA,NUTS 1 region
 # 2003-04,2004-05,2005-06,2006-07,2007-08,2008-09,2009-10,2010-11
@@ -20,7 +20,6 @@ class Loader(object):
         fp = cache.retrieve(url)
 
     def demo(self):
-        '''Print first 10 lines of spreadsheet'''
         fp = cache.retrieve(url)
         for count,row in enumerate(csv.reader(open(fp))):
             print row
@@ -62,9 +61,8 @@ class Loader(object):
         for k,v in nonunique.items():
             print k, v
     
-    def load(self, dburi=DEFAULT_DBURI):
-        '''Load data into a database.
-
+    def load(self):
+        '''
         Looks like LA is very limited and is always associated with a given
         "department" -- so this is really a classifier for the account
 
@@ -108,18 +106,29 @@ class Loader(object):
         reader.next()
         _clean = lambda _str: unicode(_str.strip())
         for count,row in enumerate(reader):
+	    deptcode = _clean(row[0])
             dept = _clean(row[1])
             # have some blank rows at end
             if not dept:
                 continue
+            function = _clean(row[2])
             subfunction = _clean(row[3])
-            pog = _clean(row[5]) # take verbose one
+            pog = _clean(row[4])
+            poga = _clean(row[5]) # take verbose one
             # pog = row['Programme Object Group']
             caporcur = _clean(row[7])
             region = _clean(row[9])
             exps = row[10:]
-            area = db.Area(title=pog, department=dept, cap_or_cur=caporcur,
-                    region=region)
+            area = db.Area(
+			title=poga,
+			deptcode = deptcode,
+			department=dept,
+			function=function,
+			subfunction=subfunction,
+			pog=pog,
+			cap_or_cur=caporcur,
+			region=region
+	    )
             for ii,exp in enumerate(exps):
                 amount = swiss.floatify(exp)
                 if amount: # do not bother with null or zero amounts

@@ -6,7 +6,7 @@ from sqlalchemy.ext.declarative import declarative_base
 metadata = MetaData()
 
 Session = scoped_session(sessionmaker(
-    autoflush=True, transactional=True
+    autoflush=True, autocommit=False
     ))
 Base = declarative_base(mapper=Session.mapper)
 
@@ -48,8 +48,11 @@ class Area(Base):
     __tablename__ = 'area'
     id = Column(UnicodeText, primary_key=True, default=make_uuid)
     title = Column(UnicodeText)
+    deptcode = Column(UnicodeText)
     department = Column(UnicodeText)
+    function = Column(UnicodeText)
     subfunction = Column(UnicodeText)
+    pog = Column(UnicodeText)
     region = Column(UnicodeText)
     cap_or_cur = Column(UnicodeText)
     notes = Column(UnicodeText)
