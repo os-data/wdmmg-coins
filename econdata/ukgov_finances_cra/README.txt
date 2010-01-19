@@ -1,27 +1,13 @@
-Accounting
-++++++++++
+Extract, clean and analyse UK Gov Country and Regional Analyses (CRA).
 
-Ledger = Posting
-Transaction(s) = Journal
-Account
+This is being distributed as a python package. To get going::
 
-http://homepages.tcp.co.uk/~m-wigley/gc_wp_ded.html
-  * good
-  * covers representation in sql db
-  * journal, posting, account, asset type (£,$,share X ...)
-
-http://www.accountingunplugged.com/2008/09/23/accounting-structure-quick-reference/
-  * good
-  * uses terminology of ledger, transaction and accounts
-
-http://c2.com/cgi/wiki?AccountingModeling
-http://c2.com/cgi/wiki?DoubleEntryBookkeeping
-  * also good though rather unorganized
-
-Software
-========
-
-http://furius.ca/beancount/
-  * python
-  * text-based
+    # make sure you are in this directory
+    cd ....
+    # set up a virtualenv for any dependencies
+    virtualenv pyenv
+    # install using pip
+    pip -E pyenv install -e .
+    # now try it out
+    python data.py -h
 
