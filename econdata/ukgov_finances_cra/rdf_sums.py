@@ -76,5 +76,6 @@ def by_function():
 			g.add((exp, CRA["function"], function))
 		cursor.add_model(g)
 
-by_department()
-by_function()
+if __name__ == '__main__':
+	by_department()
+	by_function()

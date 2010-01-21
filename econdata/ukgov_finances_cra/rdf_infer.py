@@ -77,10 +77,11 @@ def add_areas():
 		cursor.add_model(g)
 	print "Filled in Areas"
 
-add_type("departments")
-add_type("functions")
-add_type("subfunctions", "SubFunction")
-add_functions()
-add_subfunctions()
-add_regions()
+if __name__ == '__main__':
+	add_type("departments")
+	add_type("functions")
+	add_type("subfunctions", "SubFunction")
+	add_functions()
+	add_subfunctions()
+	add_regions()
 add_areas()
