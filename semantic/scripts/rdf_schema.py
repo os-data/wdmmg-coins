@@ -1,4 +1,4 @@
-from py4s import FourStore, sparqlr
+from py4s import FourStore
 from rdflib.graph import Graph
 from rdflib.term import URIRef
 

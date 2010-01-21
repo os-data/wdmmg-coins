@@ -40,7 +40,7 @@ def by_department():
 			exp = URIRef("%s#%s" % (dept, year))
 			g.add((exp, RDF.type, CRA["Expenditure"]))
 			g.add((exp, DC["date"], Literal(year)))
-			g.add((exp, RDF.value, Literal(amount, datatype=XSD["float"])))
+			g.add((exp, RDF.value, Literal(amounts[year], datatype=XSD["float"])))
 			g.add((exp, RDFS.label, Literal("%s Expenditure %s" % (name, year))))
 			g.add((exp, CRA["department"], dept))
 		cursor.add_model(g)
