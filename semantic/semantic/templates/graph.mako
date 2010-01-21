@@ -1,6 +1,6 @@
-<html>
-
-<body>
+<%inherit file="/base.mako" />
+<%def name="title()">Comprehensive Knowledge Archive Network</%def>
+<%def name="body()">
 <% 
 	from semantic.utils import render_html
 %> 
@@ -13,5 +13,4 @@
 </tr>
 % endfor
 </table>
-</body>
-</html>
+</%def>
