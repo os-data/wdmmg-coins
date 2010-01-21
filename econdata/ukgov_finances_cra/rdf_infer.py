@@ -37,6 +37,7 @@ def add_functions():
 		""" % d.n3()
 		for f, in cursor.execute(q, initNs=initNs, soft_limit=-1):
 			g.add((d, CRA["hasFunction"], f))
+			cursor.add((f, CRA["hasDepartment"], d), model_uri=str(f))
 		cursor.add_model(g)
 	print "Filled in Functions"
 
