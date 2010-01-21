@@ -5,7 +5,6 @@ import cgi
 
 def render_html(u):
 	cursor = config["cursor"]
-	print u
 	if not isinstance(u, URIRef):
 		return cgi.escape("%s" % u)
 	r = cursor.execute("SELECT DISTINCT ?l WHERE { %s %s ?l }" % (u.n3(), RDFS.label.n3()))

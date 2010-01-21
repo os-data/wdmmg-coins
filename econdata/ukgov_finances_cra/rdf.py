@@ -41,7 +41,7 @@ def schema():
 	g = Graph(identifier=CRA_SCHEMA_URI)
 
 	g.add((CRA["Area"], RDFS.subClassOf, SCV["Dimension"]))
-	g.add((CRA["Area"], RDFS.label, Literal("Expenditure")))
+	g.add((CRA["Area"], RDFS.label, Literal("Area")))
 	g.add((CRA["area"], RDF.type, RDF.Property))
 	g.add((CRA["area"], RDFS.label, Literal("belongs to area")))
 	g.add((CRA["area"], RDFS.domain, CRA["Expenditure"]))
@@ -56,6 +56,9 @@ def schema():
 	g.add((CRA["department"], RDFS.label, Literal("belongs to department")))
 	g.add((CRA["department"], RDFS.domain, CRA["Area"]))
 	g.add((CRA["department"], RDFS.range, CRA["Department"]))
+	g.add((CRA["hasDepartment"], RDF.type, RDF.Property))
+	g.add((CRA["hasDepartment"], RDFS.label, Literal("has department")))
+	g.add((CRA["hasDepartment"], RDFS.range, CRA["Department"]))
 
 	g.add((CRA["Function"], RDFS.subClassOf, SCV["Dimension"]))
 	g.add((CRA["Function"], RDFS.label, Literal("Function")))
