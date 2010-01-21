@@ -1,6 +1,7 @@
 from py4s import FourStore
-from rdflib import Namespace, RDF, RDFS, URIRef
-from rdflib.Graph import Graph
+from rdflib.namespace import Namespace, RDF, RDFS
+from rdflib.term import URIRef, Literal
+from rdflib.graph import Graph
 
 cra = URIRef("http://ckan.net/package/ukgov-finances-cra")
 
@@ -19,6 +20,7 @@ def add_type(t, klass=None):
 		g.add((x, RDF.type, CRA[klass]))
 	cursor.add_model(g)
 	cursor.add((cra, RDFS.seeAlso, URIRef(g.identifier)), model_uri="http://semantic.ckan.net/data/ukgov-finances-cra")
+	cursor.add((URIRef(g.identifier), RDFS.label, Literal("%ss" % klass)))
 	print "Added", klass
 
 ## what function exists for each department?
@@ -76,7 +78,7 @@ def add_areas():
 
 add_type("departments")
 add_type("functions")
-add_type("subfunctions")
+add_type("subfunctions", "SubFunction")
 add_functions()
 add_subfunctions()
 add_regions()

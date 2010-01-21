@@ -4,9 +4,9 @@ import logging
 from datetime import datetime
 from urllib2 import HTTPError
 
-from rdflib.Graph import Graph as Graph
-from rdflib import BNode, URIRef, Literal
-from rdflib import Namespace, RDF, RDFS
+from rdflib.graph import Graph
+from rdflib.term import BNode, URIRef, Literal
+from rdflib.namespace import Namespace, RDF, RDFS
 
 SITE_ROOT = "http://semantic.ckan.net/"
 
@@ -89,9 +89,8 @@ def make_area(a):
 	area = CRA_DATA[slug]
 	g.add((area, RDF.type, CRA["Area"]))
 	g.add((area, SCV["dataset"], cra))
-	g.add((area, RDFS.label, Literal(a.title)))
+	g.add((area, RDFS.label, Literal("%s (%s)" % (a.title, a.region))))
 	g.add((area, DC["title"], Literal(a.title)))
-	g.add((area, DC["identifier"], Literal(a.id)))
 	g.add((area, DC["identifier"], Literal(a.pog)))
 	if a.notes:
 		g.add((area, DC["description"], Literal(a.notes)))
@@ -107,6 +106,7 @@ def make_area(a):
 	for e in a.expenditures:
 		exp = URIRef("%s#%s" % (area, e.year))
 		g.add((exp, RDF.type, CRA["Expenditure"]))
+		g.add((exp, RDFS.label, Literal("%s (%s) Expenditure %s" % (a.title, a.region, e.year))))
 		g.add((exp, RDF.value, Literal(e.amount, datatype=XSD["float"])))
 		g.add((exp, DC["date"], Literal(e.year)))
 		g.add((exp, SCV["dataset"], cra))
