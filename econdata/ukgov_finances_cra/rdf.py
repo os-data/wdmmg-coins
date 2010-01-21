@@ -8,7 +8,7 @@ from rdflib.Graph import Graph as Graph
 from rdflib import BNode, URIRef, Literal
 from rdflib import Namespace, RDF, RDFS
 
-SITE_ROOT = "http://ckan.net/"
+SITE_ROOT = "http://semantic.ckan.net/"
 
 XSD = Namespace("http://www.w3.org/2001/XMLSchema#")
 DC = Namespace("http://purl.org/dc/terms/")
@@ -17,7 +17,7 @@ CRA_SCHEMA_URI = SITE_ROOT + "schema/ukgov-finances-cra"
 CRA = Namespace(CRA_SCHEMA_URI + "#")
 CRA_DATA_URI = SITE_ROOT + "data/ukgov-finances-cra"
 CRA_DATA = Namespace(SITE_ROOT + "data/ukgov-finances-cra/")
-cra = URIRef(SITE_ROOT + "package/ukgov-finances-cra")
+cra = URIRef("http://ckan.net/package/ukgov-finances-cra")
 
 _qns = {
 	'dc' : DC,
@@ -46,6 +46,9 @@ def schema():
 	g.add((CRA["area"], RDFS.label, Literal("belongs to area")))
 	g.add((CRA["area"], RDFS.domain, CRA["Expenditure"]))
 	g.add((CRA["area"], RDFS.range, CRA["Area"]))
+	g.add((CRA["hasArea"], RDF.type, RDF.Property))
+	g.add((CRA["hasArea"], RDFS.label, Literal("has area")))
+	g.add((CRA["hasArea"], RDFS.range, CRA["Area"]))
 
 	g.add((CRA["Department"], RDFS.subClassOf, SCV["Dimension"]))
 	g.add((CRA["Department"], RDFS.label, Literal("Department")))
@@ -60,6 +63,9 @@ def schema():
 	g.add((CRA["function"], RDFS.label, Literal("belongs to function")))
 	g.add((CRA["function"], RDFS.domain, CRA["SubFunction"]))
 	g.add((CRA["function"], RDFS.range, CRA["Function"]))
+	g.add((CRA["hasFunction"], RDF.type, RDF.Property))
+	g.add((CRA["hasFunction"], RDFS.label, Literal("has function")))
+	g.add((CRA["hasFunction"], RDFS.range, CRA["Function"]))
 
 	g.add((CRA["SubFunction"], RDFS.subClassOf, SCV["Dimension"]))
 	g.add((CRA["SubFunction"], RDFS.label, Literal("SubFunction")))
@@ -67,6 +73,10 @@ def schema():
 	g.add((CRA["subfunction"], RDFS.label, Literal("belongs to subfunction")))
 	g.add((CRA["subfunction"], RDFS.domain, CRA["Area"]))
 	g.add((CRA["subfunction"], RDFS.range, CRA["SubFunction"]))
+	g.add((CRA["hasSubFunction"], RDF.type, RDF.Property))
+	g.add((CRA["hasSubFunction"], RDFS.label, Literal("has subfunction")))
+	g.add((CRA["hasSubFunction"], RDFS.range, CRA["SubFunction"]))
+
 
 	g.add((CRA["Expenditure"], RDFS.subClassOf, SCV["Item"]))
 	g.add((CRA["Expenditure"], RDFS.label, Literal("Expenditure")))
@@ -74,7 +84,7 @@ def schema():
 	return g
 
 def make_area(a):
-	slug = "areas/" + slugify(a.department) + "/" + slugify(a.function) + "/" + slugify(a.subfunction)
+	slug = "areas/" + slugify(a.region) + "/" + slugify(a.department) + "/" + slugify(a.pog) + "/" + slugify(a.function) + "/" + slugify(a.subfunction)
 	g = Graph(identifier=CRA_DATA_URI + "/" + slug)
 	area = CRA_DATA[slug]
 	g.add((area, RDF.type, CRA["Area"]))
@@ -146,7 +156,7 @@ if __name__ == '__main__':
 	log = logging.getLogger("cra[rdf]")
 
 	from py4s import FourStore
-	store = FourStore("wdmmg")
+	store = FourStore("ckan")
 	store.connect()
         cursor = store.cursor()
 
