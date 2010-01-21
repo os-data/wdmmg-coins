@@ -15,12 +15,13 @@ def make_map():
 
     # The ErrorController route (handles 404/500 error pages); it should
     # likely stay at the top, ensuring it can always be resolved
-    #map.connect('/error/{action}', controller='error')
-    #map.connect('/error/{action}/{id}', controller='error')
+    map.connect('/error/{action}', controller='error')
+    map.connect('/error/{action}/{id}', controller='error')
 
     # CUSTOM ROUTES HERE
 
-    #map.connect('/data/ukgov-finances-cra/departments', controller='cra', action='departments')
-    map.connect('*path', controller='graph', action='index')
+    map.connect('/sparql', controller='sparql', action='index')
+    map.connect('/data/*path', controller='graph', action='index')
+    map.connect('/schema/*path', controller='graph', action='index')
 
     return map
