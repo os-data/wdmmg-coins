@@ -21,7 +21,9 @@ def make_map():
     # CUSTOM ROUTES HERE
 
     map.connect('/sparql', controller='sparql', action='index')
-    map.connect('/data/*path', controller='graph', action='index')
-    map.connect('/schema/*path', controller='graph', action='index')
+    map.connect('/*path', controller='graph', action='index')
+##    map.connect('/schema*path', controller='graph', action='index')
+#    map.connect('/packages*path', controller='graph', action='index')
+#    map.connect('/tags*path', controller='graph', action='index')
 
     return map
