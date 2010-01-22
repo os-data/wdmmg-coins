@@ -8,17 +8,32 @@
   <h1><a href="http://ckan.net/">
     <img src="http://ckan.net/images/ckan_logo_fullname_long.png" alt="CKAN Logo">
   </a></h1>
+  <h2><a href="/"><em>Experimental Triplestore</em></a></h2>
 </div>
 <div id="content">
-<h2><em>Experimental</em></h2>
 <ul>
   <li><a href="/sparql">SPARQL Endpoint</a></li>
   <li><a href="/data/ukgov-finances-cra">UK Government Finances CRA</a></li>
 </ul>
 <blockquote>
-There is a known bug with the triplestore software that is sometimes causing<br/>
-this site to return blank pages. We are working on it. In the meantime hitting<br/>
+<p>
+The pages served by this host support autonegotiation of content-types. If you
+look at them with a web browser, it will request them as <em>text/html</em> and web
+pages will be returned. However if you look at them with an RDF browser or request
+them from a computer program, the <em>Accept</em> header should be set to 
+<em>application/rdf+xml</em>
+in which case the RDF serialisation will be returned.
+</p>
+<p>
+The SPARQL endpoint does not yet support autonegotiation but this is planned for the
+near future.
+</p>
+<hr />
+<p>
+There is a known bug with the triplestore software that is sometimes causing
+this site to return blank pages. We are working on it. In the meantime hitting
 refresh should clear it up.
+</p>
 </blockquote>
 </div>
 <div id="footer">

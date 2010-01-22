@@ -50,4 +50,6 @@ class SparqlController(BaseController):
 				c.results = []
 		else:
 			c.query = DEFAULT_QUERY
-		return render("sparql.mako")
+		result = render("sparql.mako")
+		cursor.query_state.flush()
+		return result

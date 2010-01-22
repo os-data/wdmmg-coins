@@ -8,6 +8,7 @@
   <h1><a href="http://ckan.net/">
     <img src="http://ckan.net/images/ckan_logo_fullname_long.png" alt="CKAN Logo">
   </a></h1>
+  <h2><a href="/"><em>Experimental Triplestore</em></a></h2>
 </div>
 <div id="content">
 ${self.body()}
