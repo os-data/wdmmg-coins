@@ -6,17 +6,18 @@
 <% 
 	from semantic.utils import render_html
 %>
-  <form method="POST">
+  <form method="post" action=""><div>
   <textarea name="query" cols="80" rows="15">
 ${c.query}
   </textarea><br />
   <input type="submit" value="Run Query" />
-  </form>
+  </div></form>
 
 % if c.error:
   <pre>${c.error}</pre>
 % endif
 
+% if c.bindings:
   <table width="100%" border="1">
     <tr>
 % for b in c.bindings:
@@ -31,4 +32,5 @@ ${c.query}
     </tr>
 % endfor
   </table>
+% endif
 </%def>
