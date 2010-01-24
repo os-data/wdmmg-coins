@@ -4,6 +4,15 @@
 <% 
 	from semantic.utils import render_html
 %> 
+% if c.warnings:
+<div id="warnings">
+  <ul>
+% for warning in c.warnings:
+    <li>${warning}</li>
+% endfor
+  </ul>
+</div>
+% endif
 <table width="100%" border="1">
 % for s,p,o in c.triples:
 <tr>

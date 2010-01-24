@@ -14,12 +14,13 @@ ${c.query}
   </div></form>
 
 % if c.warnings:
-  <h3>Warnings</h3>
+<div id="warnings">
   <ul>
 % for warning in c.warnings:
     <li>${warning}</li>
 % endfor
   </ul>
+</div>
 % endif
 
 % if c.bindings:

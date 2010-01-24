@@ -9,6 +9,13 @@
    <link rel="stylesheet" href="http://ckan.net/css/ckan.master.css" type="text/css" media="screen, print" />
  </head>
 <body>
+<style>
+  #warnings {
+	color: red;
+	margin-left: 100px;
+  }
+</style>
+</style>
 <div id="top">
   <h1><a href="http://ckan.net/">
     <img src="http://ckan.net/images/ckan_logo_fullname_long.png" alt="CKAN Logo" />

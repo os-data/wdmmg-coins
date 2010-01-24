@@ -21,8 +21,7 @@ class GraphController(BaseController):
 	else:
 		cursor = config["cursor"]
 
-	q = "SELECT ?s ?p ?o WHERE { graph <%s> { ?s ?p ?o } } ORDER BY ?s ?p" % (config["rdf_root"] + request.path,)
-	log.info("QUERY: %s" % q)
+	q = "SELECT ?s ?p ?o WHERE { graph <%s> { ?s ?p ?o } } ORDER BY ?s ?p ?o" % (config["rdf_root"] + request.path,)
 	accept = request.accept.best_match(["application/rdf+xml", "text/html"])
 	if accept == "application/rdf+xml":
         	g = Graph()
@@ -32,6 +31,7 @@ class GraphController(BaseController):
 	else:
 		c.cursor = cursor
 		c.triples = list(cursor.execute(q))
+		c.warnings = cursor.warnings
 		data = render("graph.mako")
 	cursor.flush()
 	return data

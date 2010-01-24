@@ -51,8 +51,13 @@ class SparqlController(BaseController):
 			else:
 				try:
 					results = cursor.execute(c.query)
-					c.bindings = results.bindings
-					c.results = list(results)
+					g = results.construct()
+					if g:
+						c.bindings = [0,1,2]
+						c.results = g.triples((None,None,None))
+					else:
+						c.bindings = results.bindings
+						c.results = list(results)
 				except FourStoreError:
 					c.bindings = []
 					c.results = []
