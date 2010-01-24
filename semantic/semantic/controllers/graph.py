@@ -26,12 +26,12 @@ class GraphController(BaseController):
 	accept = request.accept.best_match(["application/rdf+xml", "text/html"])
 	if accept == "application/rdf+xml":
         	g = Graph()
-		for r in store.query(q):
+		for r in cursor.execute(q):
 			g.add(r)
 		data = g.serialize()
 	else:
 		c.cursor = cursor
-		c.triples = list(store.query(q))
+		c.triples = list(cursor.execute(q))
 		data = render("graph.mako")
-	cursor.query_state.flush()
+	cursor.flush()
 	return data

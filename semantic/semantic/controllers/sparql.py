@@ -10,7 +10,7 @@ from py4s import FourStoreError
 
 log = logging.getLogger(__name__)
 
-DEFAULT_QUERY = """
+DEFAULT_QUERY = """\
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX dc: <http://purl.org/dc/terms/>
@@ -27,6 +27,9 @@ WHERE {
 ORDER BY ?dept ?year
 """
 
+import re
+forbidden = re.compile(".*(INSERT|DELETE).*", re.IGNORECASE|re.MULTILINE)
+
 class SparqlController(BaseController):
 
 	def index(self):
@@ -41,15 +44,21 @@ class SparqlController(BaseController):
 		
 		c.query = request.POST.get("query", None)
 		if c.query:
-			try:
-				c.results = cursor.execute(c.query)
-				c.bindings = c.results.bindings
-			except FourStoreError:
-				c.error = "Error Executing Query (should give a better message)"
-				c.bindings = []
+			if forbidden.match(c.query.replace("\n", " ")):
 				c.results = []
+				c.bindings = []
+				c.warnings = ["Operation Not Allowed"]
+			else:
+				try:
+					results = cursor.execute(c.query)
+					c.bindings = results.bindings
+					c.results = list(results)
+				except FourStoreError:
+					c.bindings = []
+					c.results = []
+				c.warnings = cursor.warnings
 		else:
 			c.query = DEFAULT_QUERY
 		result = render("sparql.mako")
-		cursor.query_state.flush()
+		cursor.flush()
 		return result

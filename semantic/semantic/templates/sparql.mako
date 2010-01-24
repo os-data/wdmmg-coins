@@ -13,8 +13,13 @@ ${c.query}
   <input type="submit" value="Run Query" />
   </div></form>
 
-% if c.error:
-  <pre>${c.error}</pre>
+% if c.warnings:
+  <h3>Warnings</h3>
+  <ul>
+% for warning in c.warnings:
+    <li>${warning}</li>
+% endfor
+  </ul>
 % endif
 
 % if c.bindings:
