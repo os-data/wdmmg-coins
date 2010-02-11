@@ -1,0 +1,6 @@
+syntax: glob
+# generic
+*.pyc
+sandbox/*
+tmp/*
+build/*
