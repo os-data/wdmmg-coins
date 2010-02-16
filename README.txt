@@ -15,6 +15,7 @@ Rough Guide to the Repository
 /econdata/: material related to external data including code for scraping,
   cleaning and normalizing that data.
 
+/wdmmg/: the main WDMMG web application (Pylons-based) which provides the store.
 
 License
 =======
