@@ -1,0 +1,3 @@
+include wdmmg/config/deployment.ini_tmpl
+recursive-include wdmmg/public *
+recursive-include wdmmg/templates *
