@@ -11,3 +11,5 @@ This is being distributed as a python package. To get going::
     # now try it out
     python data.py -h
 
+NB: the database stuff (db.py) requires SQLAlchemy.
+
