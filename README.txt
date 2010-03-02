@@ -4,8 +4,28 @@ This is the main development repository for `Where Does My Money Go`_
 
 It is a mercurial repository and can be found online at:
 
-http://knowledgeforge.net/okfn/wdmmg
+https://knowledgeforge.net/okfn/wdmmg
 
+Crib sheet
+----------
+
+You can get started with the following sequence of commands:
+
+  mkdir wdmmg
+  cd wdmmg
+  hg init
+  hg pull https://knowledgeforge.net/okfn/wdmmg
+  hg update
+
+(Or you can use hg clone). To check-in your changes:
+
+  hg ci
+  hg push https://knowledgeforge.net/okfn/wdmmg
+
+To get other people's changes:
+
+  hg pull https://knowledgeforge.net/okfn/wdmmg
+  hg up
 
 Rough Guide to the Repository
 =============================
