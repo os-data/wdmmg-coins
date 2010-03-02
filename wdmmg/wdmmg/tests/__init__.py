@@ -21,6 +21,9 @@ __all__ = ['environ', 'url', 'TestController']
 
 # Invoke websetup with the current config file
 SetupCommand('setup-app').run([config['__file__']])
+# Does not work at the moment! (metadata not bound it seems)
+# import wdmmg.model as model
+# model.repo.rebuild_db()
 
 environ = {}
 
