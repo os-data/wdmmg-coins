@@ -4,3 +4,4 @@ syntax: glob
 sandbox/*
 tmp/*
 build/*
+*.egg-info
