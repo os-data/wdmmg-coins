@@ -9,7 +9,7 @@ https://knowledgeforge.net/okfn/wdmmg
 Crib sheet
 ----------
 
-You can get started with the following sequence of commands:
+You can get started with the following command:
 
   hg clone https://knowledgeforge.net/okfn/wdmmg
 
