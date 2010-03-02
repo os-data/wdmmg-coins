@@ -11,21 +11,24 @@ Crib sheet
 
 You can get started with the following sequence of commands:
 
-  mkdir wdmmg
-  cd wdmmg
-  hg init
-  hg pull https://knowledgeforge.net/okfn/wdmmg
-  hg update
+  hg clone https://knowledgeforge.net/okfn/wdmmg
 
-(Or you can use hg clone). To check-in your changes:
+This will download a copy of the repository, and put it inside a newly-created wdmmg directory.
+
+To check-in your changes:
 
   hg ci
-  hg push https://knowledgeforge.net/okfn/wdmmg
+  hg push
 
 To get other people's changes:
 
-  hg pull https://knowledgeforge.net/okfn/wdmmg
+  hg pull
   hg up
+
+To avoid typing in your password every time you push, edit the file wdmmg/.hg/hgrc . You should see a line giving the URL from which you cloned the repository. Add your username and password to the line as follows:
+
+  [paths]
+  default = https://username:password@knowledgeforge.net/okfn/wdmmg
 
 Rough Guide to the Repository
 =============================
