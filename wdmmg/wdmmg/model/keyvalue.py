@@ -22,7 +22,7 @@ def add_keyvalues(domain_object, proxy_name='keyvalues',
     `domain_object`.
 
     E.g.::
-        keyvaluable(Account, 'myproxyname', 'myproperty')
+        add_keyvalues(Account, 'myproxyname', 'myproperty')
         # now ...
         acc = Account()
         acc.myproxyname[Key] = u'value'
