@@ -106,7 +106,7 @@ class Loader(object):
         reader.next()
         _clean = lambda _str: unicode(_str.strip())
         for count,row in enumerate(reader):
-	    deptcode = _clean(row[0])
+        deptcode = _clean(row[0])
             dept = _clean(row[1])
             # have some blank rows at end
             if not dept:
@@ -120,15 +120,15 @@ class Loader(object):
             region = _clean(row[9])
             exps = row[10:]
             area = db.Area(
-			title=poga,
-			deptcode = deptcode,
-			department=dept,
-			function=function,
-			subfunction=subfunction,
-			pog=pog,
-			cap_or_cur=caporcur,
-			region=region
-	    )
+            title=poga,
+            deptcode = deptcode,
+            department=dept,
+            function=function,
+            subfunction=subfunction,
+            pog=pog,
+            cap_or_cur=caporcur,
+            region=region
+        )
             for ii,exp in enumerate(exps):
                 amount = swiss.floatify(exp)
                 if amount: # do not bother with null or zero amounts
