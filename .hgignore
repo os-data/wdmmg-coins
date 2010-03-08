@@ -1,7 +1,10 @@
 syntax: glob
-# generic
+
+# Generic
 *.pyc
 sandbox/*
 tmp/*
 build/*
+cache/*
 *.egg-info
+
