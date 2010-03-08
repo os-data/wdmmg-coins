@@ -29,21 +29,34 @@ class TestAccountBasics(object):
         assert len(txn.postings) == 2, txn
         assert self.accname in [ posting.account.name for posting in txn.postings ]
 
-    def _test_02(self):
-        region = model.Key(name='region', description='Area for which money was spent')
-        northwest = model.Value(name='Northwest')
+    def test_02(self):
+        acc_src = model.Session.query(model.Account).filter_by(name=self.accname).one()
+        region = model.Key(name=u'region', description=u'Area for which money was spent')
+        pog = model.Key(name=u'pog', description=u'Programme Object Group')
+        randomkey = model.Key(name=u'randomkey')
 
-        acc_src.set(region, northwest)
-        # behind the scenes
-        KeyValue(ns='Account', object_id=acc_src.id, key='region',
-            value='scotland')
-        # we'd like both key and value to be foreign keys
+        northwest = model.EnumerationValue(name=u'Northwest', key=region)
+        pog1 = model.EnumerationValue(name=u'surestart', key=pog)
+        pog2 = model.EnumerationValue(name=u'anotherstart', key=pog)
 
-        # enumerated list ...
-        acc.pog_code = 'xxx'
+        kv = model.KeyValue(acc_src, region, northwest.name)
 
-        # ....
-        acc.my_fancy_name = 'jones'
+        # acc_src.keyvalues[region] = northwest
+        # acc_src.keyvalues[pog] = pog1
+        # acc_src.keyvalues[randomkey]= u'annakarenina'
+        model.Session.add_all([region,pog,randomkey,kv])
+        model.Session.commit()
+        model.Session.remove()
+
+        pogkey = model.Session.query(model.Key).filter_by(name=u'pog').one()
+        assert pogkey.description.startswith(u'Programme')
+        assert len(pogkey.enumeration_values) == 2, pogkey
+        regionkey = model.Session.query(model.Key).filter_by(name=u'region').one()
+        assert regionkey, regionkey
+        regionkey_kvs = model.Session.query(model.KeyValue).filter_by(key=regionkey).all()
+        assert len(regionkey_kvs) == 1, regionkey_kvs
+#        acc_kvs = model.Session.query(model.KeyValue).filter_by(account=acc)
+
 
 
 class CRALoader(object):

@@ -5,6 +5,7 @@ from sqlalchemy import orm
 from wdmmg.model import meta
 from meta import Session
 from atp import Account, Transaction, Posting
+from keyvalue import Key, EnumerationValue, KeyValue
 
 def init_model(engine):
     '''Call me before using any of the tables or classes in the model'''
@@ -27,7 +28,8 @@ class Repository(object):
         self.create_db()
     
     def delete_all(self):
-        for obj in [ Posting, Transaction, Account ]:
+        for obj in [ Posting, Transaction, Account, Key, EnumerationValue,
+                KeyValue ]:
             Session.query(obj).delete()
         Session.commit()
         Session.remove()

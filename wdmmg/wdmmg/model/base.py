@@ -22,9 +22,6 @@ class DomainObject(object):
     def __str__(self):
         return self.__unicode__().encode('utf8')
 
-    def __repr__(self):
-        return str(self)
-
 
 class JsonType(types.TypeDecorator):
     '''Store data as JSON serializing on save and unserializing on use.
