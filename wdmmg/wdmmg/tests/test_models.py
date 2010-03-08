@@ -75,8 +75,13 @@ class TestAccountBasics(object):
         acc_dest = model.Session.query(model.Account).filter_by(name=self.accdest).one()
         assert acc_dest
         
+        northeast = model.Session.query(model.EnumerationValue).filter_by(key=region).filter_by(name=u'Northeast').one()
+        assert northeast.key == region, northest.key
+        assert northeast.name == u'Northeast', northeast.name
+        
         acc_src_region_kv = model.Session.query(model.KeyValue).filter_by(account=acc_src).filter_by(key=region).one()
         assert acc_src_region_kv.value == u'Northeast'
+        assert acc_src_region_kv.enumeration_value == northeast, acc_src_region_kv.enumeration_value
         assert acc_src._keyvalues[region] == acc_src_region_kv
         assert acc_src.keyvalues[region] == u'Northeast'
         assert acc_src.keyvalues[randomkey] == u'annakarenina'
