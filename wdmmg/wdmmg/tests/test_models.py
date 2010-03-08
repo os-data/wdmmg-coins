@@ -42,17 +42,19 @@ class TestAccountBasics(object):
         pog1 = model.EnumerationValue(name=u'surestart', key=pog)
         pog2 = model.EnumerationValue(name=u'anotherstart', key=pog)
 
-        kv = model.KeyValue(ns=u'account', account=acc_src, key=region,
+        kv1 = model.KeyValue(ns=u'account', account=acc_src, key=region,
                 value=northwest.name)
-        
         acc_src.keyvalues[region] = northeast.name # This should overwrite the KeyValue explicitly constructed above.
-        acc_src.keyvalues[randomkey]= u'annakarenina'
-        acc_dest.keyvalues[region] = northwest.name
+        acc_src.keyvalues[randomkey]= u'annakarenina' # This should create a new KeyValue.
 
-        model.Session.add_all([region,pog,randomkey,kv])
+        kv2 = model.KeyValue(ns=u'account', account=acc_dest, key=randomkey,
+                value=u'orangesarenottheonlyfruit') # This one should not get overwritten.
+        acc_dest.keyvalues[region] = northwest.name # This should create a new KeyValue.
+
+        model.Session.add_all([region, pog, randomkey, kv1, kv2])
         model.Session.commit()
         model.Session.remove()
-        del acc_src, acc_dest, region, pog, randomkey, kv
+        del acc_src, acc_dest, region, pog, randomkey, kv1, kv2
         
         # Read it all back again.
 
@@ -61,10 +63,13 @@ class TestAccountBasics(object):
         assert len(pog.enumeration_values) == 2, pog
 
         region = model.Session.query(model.Key).filter_by(name=u'region').one()
-        assert region, region
+        assert region
         region_kvs = model.Session.query(model.KeyValue).filter_by(key=region).all()
         assert len(region_kvs) == 2, region_kvs
         
+        randomkey = model.Session.query(model.Key).filter_by(name=u'randomkey').one()
+        assert randomkey
+
         acc_src = model.Session.query(model.Account).filter_by(name=self.accsrc).one()
         assert acc_src
         acc_dest = model.Session.query(model.Account).filter_by(name=self.accdest).one()
@@ -74,8 +79,10 @@ class TestAccountBasics(object):
         assert acc_src_region_kv.value == u'Northeast'
         assert acc_src._keyvalues[region] == acc_src_region_kv
         assert acc_src.keyvalues[region] == u'Northeast'
+        assert acc_src.keyvalues[randomkey] == u'annakarenina'
         
         assert acc_dest.keyvalues[region] == u'Northwest'
+        assert acc_dest.keyvalues[randomkey] == u'orangesarenottheonlyfruit'
 
 
 
