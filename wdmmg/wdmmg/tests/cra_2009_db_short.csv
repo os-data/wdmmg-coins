@@ -1,0 +1,19 @@
+Dept Code,Dept Name,Function,Sub-function,Programme Object Group,Programme Object Group Alias,ID or Non-ID,CAP or CUR,CG or LA,NUTS 1 region,2003-04,2004-05,2005-06,2006-07,2007-08,2008-09,2009-10,2010-11
+Dept032,Department for Work and Pensions,of which: employment policies,"4.1 General economic, commercial and labour affairs",P37 S121211,P37 S121211 ADMIN COSTS OF MEASURES TO HELP UNEMPL PEOPLE MOVE FROM WELFARE T...,ID,CUR,CG,SCOTLAND,0.0,0.0,0.0,0.0,0.0,12.1,12.1,12.1
+Dept032,Department for Work and Pensions,10. Social protection,of which: personal social services (sickness and disability),P37 S120812,P37 S120812 Independent Living Fund,ID,CUR,CG,ENGLAND_West Midlands,0.0,0.0,0.0,0.0,27.5,30.4,31.1,31.8
+Dept032,Department for Work and Pensions,of which: employment policies,"4.1 General economic, commercial and labour affairs",P37 S121216,P37 S121216 ES Administration,ID,CUR,CG,ENGLAND_Yorkshire and The Humber,-0.1,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+Dept033,Department of Health,7. Health,Central and other health services,P04 S110401,P04 S110401 Departmental administration,ID,CAP,CG,ENGLAND_South West,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+Dept063,"Department for Innovation, Universities and Skills",of which: science and technology,4.8 R&D economic affairs,P63 S040278,P63 S040278 Non ring fenced Enterprise Growth / Business Investment,ID,CAP,CG,ENGLAND_London,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+Dept004,Department for Transport,of which: transport,of which: railway,P07 S500003,P07 S500003 RPROJ-Channel Tunnel Rail Link (CTRL),ID,CUR,CG,ENGLAND_London,,,2.1,1.6,2.9,1.3,0.8,0.5
+Dept004,Department for Transport,of which: transport,of which: railway,P07 500207,P07 S500207 Government Owned Rolling Stock,ID,CAP,CG,ENGLAND_Yorkshire and The Humber,,,,,,,22.4,-22.4
+Dept047,Ministry of Justice,3. Public order and safety,3.3 Law courts,P13 S091105,P13 S091105 CICA,ID,CAP,CG,ENGLAND_South West,0.1,0.0,0.0,0.0,0.1,0.1,0.1,0.1
+Dept022,"Department for Children, Schools and Families",10. Social protection,of which: personal social services (family and children),P01 S100417,P01 S100417 Children and Family - Misc Programmes,ID,CUR,CG,ENGLAND_South West,0.0,1.5,6.9,0.1,0.3,0.1,15.8,46.0
+Dept022,"Department for Children, Schools and Families",10. Social protection,of which: personal social services (family and children),P01 S100417,P01 S100417 Children and Family - Misc Programmes,ID,CUR,CG,OUTSIDE UK,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+999,ENG_HRA,6. Housing and community amenities,LA data sub_function,999999,LA Dummy sprog 6. Housing and community amenities,ID,CAP,CG,ENGLAND_South West,-167.7,-118.3,-94.7,-84.1,-51.1,-20.6,-25.0,-47.4
+,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,
+,,,,,,,
+,,,,,,,
+,,,,,,,
+,,,,,,,
