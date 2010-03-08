@@ -60,12 +60,13 @@ make_uuid = lambda: unicode(uuid.uuid4())
 table_key = Table('key', meta.metadata,
     Column('id', UnicodeText(), primary_key=True, default=make_uuid),
     Column('name', UnicodeText()),
-    Column('description', UnicodeText()),
+    Column('notes', UnicodeText()),
     )
 
 table_enumeration_value = Table('enumeration_value', meta.metadata,
     Column('key_id', UnicodeText(), ForeignKey('key.id'), primary_key=True),
     Column('name', UnicodeText(), primary_key=True),
+    Column('notes', UnicodeText()),
     )
 
 table_key_value = Table('key_value', meta.metadata,

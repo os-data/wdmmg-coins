@@ -15,8 +15,8 @@ class Transaction(DomainObject):
     @classmethod
     def create_with_postings(cls, timestamp, amount, src, dest):
         txn = cls(timestamp=timestamp)
-        srcposting = Posting(amount=amount, account=src, transaction=txn)
-        destposting = Posting(amount=-amount, account=dest, transaction=txn)
+        srcposting = Posting(timestamp=timestamp, amount=amount, account=src, transaction=txn)
+        destposting = Posting(timestamp=timestamp, amount=-amount, account=dest, transaction=txn)
         return txn
 
 class Posting(DomainObject):
@@ -27,18 +27,21 @@ make_uuid = lambda: unicode(uuid.uuid4())
 table_account = Table('account', meta.metadata,
     Column('id', UnicodeText(), primary_key=True, default=make_uuid),
     Column('name', UnicodeText()),
+    Column('notes', UnicodeText()),
     )
 
 table_transaction = Table('transaction', meta.metadata,
     Column('id', UnicodeText(), primary_key=True, default=make_uuid),
     Column('timestamp', DateTime()),
+    Column('notes', UnicodeText()),
     )
 
 table_posting = Table('posting', meta.metadata,
     Column('id', UnicodeText(), primary_key=True, default=make_uuid),
     Column('timestamp', DateTime()),
-    Column('transaction_id', UnicodeText(), ForeignKey('transaction.id')),
+    Column('amount', Float()),
     Column('account_id', UnicodeText(), ForeignKey('account.id')),
+    Column('transaction_id', UnicodeText(), ForeignKey('transaction.id')),
     )
 
 

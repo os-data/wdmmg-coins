@@ -33,8 +33,8 @@ class TestAccountBasics(object):
     def test_02(self):
         acc_src = model.Session.query(model.Account).filter_by(name=self.accsrc).one()
         acc_dest = model.Session.query(model.Account).filter_by(name=self.accdest).one()
-        region = model.Key(name=u'region', description=u'Area for which money was spent')
-        pog = model.Key(name=u'pog', description=u'Programme Object Group')
+        region = model.Key(name=u'region', notes=u'Area for which money was spent')
+        pog = model.Key(name=u'pog', notes=u'Programme Object Group')
         randomkey = model.Key(name=u'randomkey')
 
         northwest = model.EnumerationValue(name=u'Northwest', key=region)
@@ -59,7 +59,7 @@ class TestAccountBasics(object):
         # Read it all back again.
 
         pog = model.Session.query(model.Key).filter_by(name=u'pog').one()
-        assert pog.description.startswith(u'Programme')
+        assert pog.notes.startswith(u'Programme')
         assert len(pog.enumeration_values) == 2, pog
 
         region = model.Session.query(model.Key).filter_by(name=u'region').one()
@@ -88,38 +88,4 @@ class TestAccountBasics(object):
         
         assert acc_dest.keyvalues[region] == u'Northwest'
         assert acc_dest.keyvalues[randomkey] == u'orangesarenottheonlyfruit'
-
-
-
-class CRALoader(object):
-    '''Load CRA'''
-
-    def create_region(self, name, index={}):
-        if name not in index:
-            index[name] = Value(name=name)
-        return index[name]
-
-    def load(self, fileobj):
-        slice = Slice('cra')
-        acc_govt  = Account(u'Government (Dummy)')
-        region_obj = Key(name='region', description='Area for which money was spent')
-        header = reader.next()
-        year_col_start = 11
-        years = header[year_col_start:]
-        for row in reader():
-            expenditures = [ float(x) for x in row[year_col_start:] ]
-            # expenditures all zero
-            if not [ x for x in expenditures if x ]:
-                continue
-            dest = Account() 
-            dest.set(region, create_region(row[10]))
-            dest.set(pog, create_pog(row[7]))
-            # dest.set(...)
-            for year, exp in zip(years, expenditures):
-                txn = Transaction.create_with_postings(year, exp, src=acc_govt,
-                    dest=dest)
-
-def _test_load_cra():
-    fileobj = open('path_to_cra_data')
-    out = CRALoader.load(fileobj)
 
