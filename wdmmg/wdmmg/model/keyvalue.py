@@ -1,9 +1,8 @@
-
 import uuid
 
-from sqlalchemy import Table, Column, ForeignKey
+from sqlalchemy import Table, Column, ForeignKey, and_
 from sqlalchemy.types import *
-from sqlalchemy.orm import mapper, relation, backref
+from sqlalchemy.orm import mapper, relation, backref, class_mapper
 
 import meta
 from base import DomainObject
@@ -15,11 +14,46 @@ class EnumerationValue(DomainObject):
     pass
 
 class KeyValue(DomainObject):
-    def __init__(self, domain_object, key, value):
-        self.domain_object = domain_object
-        self.key = key
-        assert isinstance(value, basestring)
-        self.value = value
+    pass
+
+def add_keyvalues(domain_object, proxy_name='keyvalues',
+        sqlalchemy_property_name='_keyvalues'):
+    '''Add an attribute `proxy_name` and `sqlalchemy_property_name` to 
+    `domain_object`.
+
+    E.g.::
+        keyvaluable(Account, 'myproxyname', 'myproperty')
+        # now ...
+        acc = Account()
+        acc.myproxyname[Key] = u'value'
+        acc.myproperty[Key] = KeyValue(...)
+        # also on KeyValue
+        kv = KeyValue(account=...)
+        kv.account 
+    '''
+    mapper = class_mapper(domain_object)
+    table = mapper.local_table
+    table_name = unicode(table.name)
+    primaryjoin = and_(
+        table_key_value.c.ns == table_name,
+        table_key_value.c.object_id== list(table.primary_key)[0]
+        )
+    foreign_keys = [table_key_value.c.object_id]
+    from sqlalchemy.orm.collections import attribute_mapped_collection
+    mapper.add_property(sqlalchemy_property_name, relation(
+        KeyValue,
+        primaryjoin=primaryjoin,
+        foreign_keys=foreign_keys,
+        collection_class=attribute_mapped_collection('key'),
+        backref=domain_object.__name__.lower()
+        )
+    )
+    from sqlalchemy.ext.associationproxy import association_proxy
+    def _create_keyvalue(key, value):
+        return KeyValue(ns=table_name, key=key, value=value)
+    setattr(domain_object, proxy_name,
+            association_proxy(sqlalchemy_property_name, 'value', creator=_create_keyvalue)
+            )
 
 
 make_uuid = lambda: unicode(uuid.uuid4())

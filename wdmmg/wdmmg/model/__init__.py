@@ -5,7 +5,10 @@ from sqlalchemy import orm
 from wdmmg.model import meta
 from meta import Session
 from atp import Account, Transaction, Posting
-from keyvalue import Key, EnumerationValue, KeyValue
+from keyvalue import Key, EnumerationValue, KeyValue, add_keyvalues
+add_keyvalues(Account)
+add_keyvalues(Transaction)
+add_keyvalues(Posting)
 
 def init_model(engine):
     '''Call me before using any of the tables or classes in the model'''
