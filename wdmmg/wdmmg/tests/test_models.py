@@ -7,11 +7,12 @@ class TestAccountBasics(object):
     def setup_class(self):
         self.accsrc = u'acc1'
         self.accdest = u'acc2'
+        self.timestamp = datetime.now()
         acc_src = model.Account(name=self.accsrc)
         acc_dest = model.Account(name=self.accdest)
         # transaction has the date?
         txn = model.Transaction.create_with_postings(
-            timestamp=datetime.now(),
+            timestamp=self.timestamp,
             amount=1000,
             src=acc_src,
             dest=acc_dest)
@@ -25,7 +26,7 @@ class TestAccountBasics(object):
         model.repo.delete_all()
 
     def test_01(self):
-        txn = model.Session.query(model.Transaction).first()
+        txn = model.Session.query(model.Transaction).filter_by(timestamp=self.timestamp).one()
         assert txn
         assert len(txn.postings) == 2, txn
         assert self.accsrc in [ posting.account.name for posting in txn.postings ]
