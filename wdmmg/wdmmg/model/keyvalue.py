@@ -5,7 +5,7 @@ from sqlalchemy.types import *
 from sqlalchemy.orm import mapper, relation, backref, class_mapper
 
 import meta
-from base import DomainObject
+from base import DomainObject, JsonType
 
 class Key(DomainObject):
     pass
@@ -65,7 +65,7 @@ table_key = Table('key', meta.metadata,
 
 table_enumeration_value = Table('enumeration_value', meta.metadata,
     Column('key_id', UnicodeText(), ForeignKey('key.id'), primary_key=True),
-    Column('name', UnicodeText(), primary_key=True),
+    Column('name', JsonType(), primary_key=True),
     Column('notes', UnicodeText()),
     )
 
@@ -74,7 +74,7 @@ table_key_value = Table('key_value', meta.metadata,
     Column('ns', UnicodeText()),
     Column('object_id', UnicodeText()),
     Column('key_id', UnicodeText(), ForeignKey('key.id')),
-    Column('value', UnicodeText()),
+    Column('value', JsonType()),
     )
 
 
