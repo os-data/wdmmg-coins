@@ -4,7 +4,7 @@ from sqlalchemy import orm
 
 from wdmmg.model import meta
 from meta import Session
-from atp import Account, Transaction, Posting
+from atp import Slice, Account, Transaction, Posting
 from keyvalue import Key, EnumerationValue, KeyValue, add_keyvalues
 add_keyvalues(Account)
 add_keyvalues(Transaction)

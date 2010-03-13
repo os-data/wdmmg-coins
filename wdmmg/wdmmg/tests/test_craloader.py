@@ -6,11 +6,14 @@ import wdmmg.model as model
 
 class CRALoader(object):
     '''Load CRA'''
-
+    
+    slice_ = u'cra'
+    
     @classmethod
-    def get_or_create_account(self, disambiguators, name, index={}):
+    def get_or_create_account(self, slice_, disambiguators, name, index={}):
         if disambiguators not in index:
-            index[disambiguators] = model.Account(name=name, notes=u'')
+            index[disambiguators] = model.Account(
+                slice_=slice_, name=name, notes=u'')
         return index[disambiguators]
     
     @classmethod
@@ -21,19 +24,27 @@ class CRALoader(object):
 
     @classmethod
     def load(self, fileobj):
-        # TODO: slice = Slice('cra')
+        slice_ = model.Slice(name=CRALoader.slice_)
         # The central account from which all the money comes.
-        acc_govt  = model.Account(name=u'Government (Dummy)')
+        acc_govt  = model.Account(
+            slice_=slice_, name=u'Government (Dummy)')
         # The keys used to classify spending.
-        key_dept = model.Key(name=u'dept', notes=u'Department that spent the money')
-        key_function = model.Key(name=u'function', notes=u'COFOG function (purpose of spending)')
-        key_subfunction = model.Key(name=u'subfunction', notes=u'COFOG sub-function (purpose of spending)')
-        key_pog = model.Key(name=u'pog', notes=u'Programme Object Group')
-        key_cap_or_cur = model.Key(name=u'cap_or_cur', notes=u'Capital or Current')
-        key_region = model.Key(name=u'region', notes=u'Geographical (NUTS) area for which money was spent')
+        def mk(name, notes):
+            return model.Key(
+#                slice_=slice_,
+                name=name, notes=notes)
+        key_dept = mk(u'dept', u'Department that spent the money')
+        key_function = mk(u'function', u'COFOG function (purpose of spending)')
+        key_subfunction = mk(u'subfunction', u'COFOG sub-function (purpose of spending)')
+        key_pog = mk(u'pog', u'Programme Object Group')
+        key_cap_or_cur = mk(u'cap_or_cur', u'Capital or Current')
+        key_region = mk(u'region', u'Geographical (NUTS) area for which money was spent')
         model.Session.add_all([key_dept, key_function, key_subfunction,
             key_pog, key_cap_or_cur, key_region])
         model.Session.add(acc_govt)
+
+        # If there is an error above, crash now.
+        model.Session.commit()
 
         # For each line of the file...
         reader = csv.reader(fileobj)
@@ -70,7 +81,7 @@ class CRALoader(object):
             CRALoader.get_or_create_value(key_region, region)
 
             # Make the Account object if necessary.
-            dest = CRALoader.get_or_create_account(
+            dest = CRALoader.get_or_create_account(slice_,
                 (deptcode, function, subfunction, pog, cap_or_cur, region),
                 u'{Dept="%s", function="%s", region="%s"}' % (dept, function, region)
             )
@@ -84,8 +95,8 @@ class CRALoader(object):
             # Make a Transaction for each non-zero expenditure.
             for year, exp in zip(years, expenditures):
                 if exp:
-                    txn = model.Transaction.create_with_postings(year, exp,
-                        src=acc_govt, dest=dest)
+                    txn = model.Transaction.create_with_postings(
+                        slice_, year, exp, src=acc_govt, dest=dest)
                     print txn
                     model.Session.add(txn)
         model.Session.commit()

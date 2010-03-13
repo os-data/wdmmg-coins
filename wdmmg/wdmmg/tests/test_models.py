@@ -5,19 +5,22 @@ import wdmmg.model as model
 class TestAccountBasics(object):
     @classmethod
     def setup_class(self):
+        self.slice_ = u'test'
         self.accsrc = u'acc1'
         self.accdest = u'acc2'
         self.timestamp = datetime.now()
-        acc_src = model.Account(name=self.accsrc)
-        acc_dest = model.Account(name=self.accdest)
+        slice_ = model.Slice(name=self.slice_)
+        acc_src = model.Account(slice_=slice_, name=self.accsrc)
+        acc_dest = model.Account(slice_=slice_, name=self.accdest)
         # transaction has the date?
         txn = model.Transaction.create_with_postings(
+            slice_=slice_,
             timestamp=self.timestamp,
             amount=1000,
             src=acc_src,
             dest=acc_dest)
         assert txn.postings
-        model.Session.add_all([acc_src,acc_dest,txn])
+        model.Session.add_all([slice_, acc_src,acc_dest,txn])
         model.Session.commit()
         model.Session.remove()
 
@@ -26,14 +29,22 @@ class TestAccountBasics(object):
         model.repo.delete_all()
 
     def test_01(self):
-        txn = model.Session.query(model.Transaction).filter_by(timestamp=self.timestamp).one()
+        slice_ = model.Session.query(model.Slice).filter_by(name=self.slice_).one()
+        txn = (model.Session.query(model.Transaction)
+            .filter_by(slice_=slice_)
+            .filter_by(timestamp=self.timestamp)).one()
         assert txn
         assert len(txn.postings) == 2, txn
         assert self.accsrc in [ posting.account.name for posting in txn.postings ]
 
     def test_02(self):
-        acc_src = model.Session.query(model.Account).filter_by(name=self.accsrc).one()
-        acc_dest = model.Session.query(model.Account).filter_by(name=self.accdest).one()
+        slice_ = model.Session.query(model.Slice).filter_by(name=self.slice_).one()
+        acc_src = (model.Session.query(model.Account)
+            .filter_by(slice_=slice_)
+            .filter_by(name=self.accsrc)).one()
+        acc_dest = (model.Session.query(model.Account)
+            .filter_by(slice_=slice_)
+            .filter_by(name=self.accdest)).one()
         region = model.Key(name=u'region', notes=u'Area for which money was spent')
         pog = model.Key(name=u'pog', notes=u'Programme Object Group')
         randomkey = model.Key(name=u'randomkey')
