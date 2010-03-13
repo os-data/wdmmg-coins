@@ -31,8 +31,8 @@ class Repository(object):
         self.create_db()
     
     def delete_all(self):
-        for obj in [ Posting, Transaction, Account, Key, EnumerationValue,
-                KeyValue ]:
+        for obj in [ Posting, Transaction, Account, Slice, KeyValue, Key, 
+            EnumerationValue]:
             Session.query(obj).delete()
         Session.commit()
         Session.remove()
