@@ -6,8 +6,8 @@ import wdmmg.model as model
 
 def aggregate(
     slice_,
-    spender_key,
-    spender_values=set([None]),
+    spender_key, # TODO: Slice-dependent default.
+    spender_values=set([None]), # TODO: Slice-dependent default.
     breakdown_keys=[],
     start_date=datetime(1000, 1, 1), # Early enough?
     end_date=datetime.now(),
@@ -89,7 +89,10 @@ def aggregate(
             buckets[vs] += p.amount
     
     # Sort and return.
-    return [(amount,) + values for values, amount in sorted(buckets.items())]
+    return {
+        'metadata': {'axes': [k.name for k in breakdown_keys]},
+        'results': [(amount, values) for values, amount in sorted(buckets.items())]
+    }
 
 # For debugging
 '''
@@ -107,6 +110,6 @@ region = model.Session.query(model.Key).filter_by(name=u'region').one()
 import wdmmg.lib.aggregator as ag
 
 # Edit this and watch:
-for row in ag.aggregate(slice_, pog, spender_values=set([None]), breakdown_keys=[dept, pgo, cofog, region]): print row
+print ag.aggregate(slice_, pog, spender_values=set([None]), breakdown_keys=[dept, pog, cofog, region])
 '''
 
