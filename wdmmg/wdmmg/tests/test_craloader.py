@@ -1,110 +1,37 @@
-from datetime import date
-import os, sys, csv
 import pkg_resources
 
 import wdmmg.model as model
+from wdmmg.getdata.cra import CRALoader
 
-class CRALoader(object):
-    '''Load CRA'''
-    
-    slice_ = u'cra'
-    
+
+class TestCRALoader(object):
     @classmethod
-    def get_or_create_account(self, slice_, disambiguators, name, index={}):
-        if disambiguators not in index:
-            index[disambiguators] = model.Account(
-                slice_=slice_, name=name, notes=u'')
-        return index[disambiguators]
-    
-    @classmethod
-    def get_or_create_value(self, key, name, notes=None, index={}):
-        if name not in index:
-            index[name] = model.EnumerationValue(key=key, name=name, notes=notes)
-        return index[name]
-
-    @classmethod
-    def load(self, fileobj):
-        slice_ = model.Slice(name=CRALoader.slice_)
-        # The central account from which all the money comes.
-        acc_govt  = model.Account(
-            slice_=slice_, name=u'Government (Dummy)')
-        # The keys used to classify spending.
-        def mk(name, notes):
-            return model.Key(
-#                slice_=slice_,
-                name=name, notes=notes)
-        key_dept = mk(u'dept', u'Department that spent the money')
-        key_function = mk(u'function', u'COFOG function (purpose of spending)')
-        key_subfunction = mk(u'subfunction', u'COFOG sub-function (purpose of spending)')
-        key_pog = mk(u'pog', u'Programme Object Group')
-        key_cap_or_cur = mk(u'cap_or_cur', u'Capital or Current')
-        key_region = mk(u'region', u'Geographical (NUTS) area for which money was spent')
-        model.Session.add_all([key_dept, key_function, key_subfunction,
-            key_pog, key_cap_or_cur, key_region])
-        model.Session.add(acc_govt)
-
-        # If there is an error above, crash now.
-        model.Session.commit()
-
-        # For each line of the file...
-        reader = csv.reader(fileobj)
-        header = reader.next()
-        year_col_start = 10
-        years = [date(int(x[:4]), 4, 5) # TBC: Periods start on 5th April
-          for x in header[year_col_start:]]
-        for row_index, row in enumerate(reader):
-            if not row[0]:
-                # Skip blank row.
-                continue
-            row = [unicode(x.strip()) for x in row]
-            deptcode = row[0]
-            dept = row[1] # Verbose form of `deptcode`
-            function = row[2]
-            subfunction = (function, row[3])
-            pog = row[4]
-            pog_alias = row[5] # Verbose form of `pog`.
-            cap_or_cur = row[7]
-            region = row[9]
-            expenditures = [x and float(x) or 0. for x in row[year_col_start:]]
-            if not [ x for x in expenditures if x ]:
-                # Skip row whose expenditures are all zero.
-                continue
-
-            # Ensure all the necessary EnumerationValue objects exist.
-            CRALoader.get_or_create_value(key_dept, deptcode, dept)
-            # TODO: Use William Waites' coding of functions and subfunctions.
-            CRALoader.get_or_create_value(key_function, function)
-            CRALoader.get_or_create_value(key_subfunction, subfunction)
-            # TODO: Use a KeyValue to relate subfunctions to functions.
-            CRALoader.get_or_create_value(key_pog, pog, pog_alias)
-            CRALoader.get_or_create_value(key_cap_or_cur, cap_or_cur)
-            CRALoader.get_or_create_value(key_region, region)
-
-            # Make the Account object if necessary.
-            dest = CRALoader.get_or_create_account(slice_,
-                (deptcode, function, subfunction, pog, cap_or_cur, region),
-                u'{Dept="%s", function="%s", region="%s"}' % (dept, function, region)
-            )
-            dest.keyvalues[key_dept] = deptcode
-            dest.keyvalues[key_function] = function
-            dest.keyvalues[key_subfunction] = subfunction
-            dest.keyvalues[key_pog] = pog
-            dest.keyvalues[key_cap_or_cur] = cap_or_cur
-            dest.keyvalues[key_region] = region
-            
-            # Make a Transaction for each non-zero expenditure.
-            for year, exp in zip(years, expenditures):
-                if exp:
-                    txn = model.Transaction.create_with_postings(
-                        slice_, year, exp, src=acc_govt, dest=dest)
-                    print txn
-                    model.Session.add(txn)
+    def setup_class(self):
+        model.repo.delete_all()
+        fileobj = pkg_resources.resource_stream('wdmmg', 'tests/cra_2009_db_short.csv')
+        CRALoader.load(fileobj)
         model.Session.commit()
         model.Session.remove()
 
-def test_load_cra():
-    # Test data is located in same directory as this script.
-    fileobj = pkg_resources.resource_stream('wdmmg', 'tests/cra_2009_db_short.csv')
-    out = CRALoader.load(fileobj)
-    model.repo.delete_all()
+    @classmethod
+    def teardown_class(self):
+        model.repo.delete_all()
+        model.Session.commit()
+        model.Session.remove()
+
+    def test_load(self):
+        print 'test_load'
+        out = (model.Session.query(model.Slice)
+            .filter_by(name=CRALoader.slice_name)
+            ).one()
+        assert out, out
+        out = (model.Session.query(model.Account)
+            .filter_by(name=CRALoader.govt_account_name)
+            ).one()
+        assert out, out
+        out = model.Session.query(model.Account).count()
+        assert out > 5, out
+        for key_name in u'dept', u'pog', u'function', u'region':
+            out = model.Session.query(model.Key).filter_by(name=key_name).one()
+            assert out, key_name
 

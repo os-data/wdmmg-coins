@@ -9,6 +9,7 @@ setup-app`) and provides the base testing objects.
 """
 from unittest import TestCase
 
+import pkg_resources
 from paste.deploy import loadapp
 from paste.script.appinstall import SetupCommand
 from pylons import config, url
@@ -17,7 +18,10 @@ from webtest import TestApp
 
 import pylons.test
 
-__all__ = ['environ', 'url', 'TestController']
+import wdmmg.model as model
+from wdmmg.getdata.cra import CRALoader
+
+__all__ = ['environ', 'url', 'TestController', 'Fixtures']
 
 # Invoke websetup with the current config file
 SetupCommand('setup-app').run([config['__file__']])
@@ -37,3 +41,25 @@ class TestController(TestCase):
         self.app = TestApp(wsgiapp)
         url._push_object(URLGenerator(config['routes.map'], environ))
         TestCase.__init__(self, *args, **kwargs)
+
+class Fixtures(object):
+    @classmethod
+    def setup(self):
+        model.repo.delete_all()
+        fileobj = pkg_resources.resource_stream('wdmmg', 'tests/cra_2009_db_short.csv')
+        out = CRALoader.load(fileobj)
+        self.slice_ = (model.Session.query(model.Slice)
+            .filter_by(name=CRALoader.slice_name)
+            ).one()
+        self.govt_account = (model.Session.query(model.Account)
+            .filter_by(name=CRALoader.govt_account_name)
+            ).one()
+        self.dept = model.Session.query(model.Key).filter_by(name=u'dept').one()
+        self.pog = model.Session.query(model.Key).filter_by(name=u'pog').one()
+        self.cofog = model.Session.query(model.Key).filter_by(name=u'function').one()
+        self.region = model.Session.query(model.Key).filter_by(name=u'region').one()
+    
+    @classmethod
+    def teardown(self):
+        model.repo.delete_all()
+
