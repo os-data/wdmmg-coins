@@ -31,6 +31,6 @@ class TestAggregator(object):
             (-120.80000000000001, (u'Dept032', u'10. Social protection')),
             (-36.200000000000003, (u'Dept032', u'of which: employment policies')),
             (-0.5, (u'Dept047', u'3. Public order and safety')),
-        ]
+        ], ans
         return ans
 
