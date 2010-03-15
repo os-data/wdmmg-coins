@@ -46,8 +46,11 @@ class Fixtures(object):
     @classmethod
     def setup(self):
         model.repo.delete_all()
+        model.Session.remove()
         fileobj = pkg_resources.resource_stream('wdmmg', 'tests/cra_2009_db_short.csv')
-        out = CRALoader.load(fileobj)
+        CRALoader.load(fileobj)
+        model.Session.commit()
+        model.Session.remove()
         self.slice_ = (model.Session.query(model.Slice)
             .filter_by(name=CRALoader.slice_name)
             ).one()
@@ -62,4 +65,5 @@ class Fixtures(object):
     @classmethod
     def teardown(self):
         model.repo.delete_all()
+        model.Session.remove()
 
