@@ -54,7 +54,7 @@ class CRALoader(object):
             deptcode = row[0]
             dept = row[1] # Verbose form of `deptcode`
             function = row[2]
-            subfunction = (function, row[3])
+            subfunction = row[3]
             pog = row[4]
             pog_alias = row[5] # Verbose form of `pog`.
             cap_or_cur = row[7]
