@@ -10,7 +10,7 @@ def aggregate(
     spender_values=set([None]), # TODO: Slice-dependent default.
     breakdown_keys=[],
     start_date=datetime(1000, 1, 1), # Early enough?
-    end_date=datetime.now(),
+    end_date=datetime(3000, 1, 1), # Late enough?
 ):
     '''
     Returns the dataset `slice_`, converted to a pivot table. The conversion
