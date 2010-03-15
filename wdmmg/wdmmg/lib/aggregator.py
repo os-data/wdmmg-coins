@@ -7,10 +7,10 @@ import wdmmg.model as model
 def aggregate(
     slice_,
     spender_key,
+    spender_values=set([None]),
+    breakdown_keys=[],
     start_date=datetime(1000, 1, 1), # Early enough?
     end_date=datetime.now(),
-    spender_values=set([None]),
-    breakdown_keys=[]
 ):
     '''
     Returns the dataset `slice_`, converted to a pivot table. The conversion
@@ -30,18 +30,18 @@ def aggregate(
     spender_key - a Key object representing the criterion used to distinguish 
         Accounts "inside" the spending body from those "outside" it.
     
-    start_date - a DateTime object. Transactions before this date are ignored.
-        Default: 01/01/1000.
-    
-    end_date - a DateTime object. Transactions on or after this date are 
-        ignored. Default: now.
-    
     spender_values - a set of the `spender_key` values representing Accounts 
         "inside" the spending body. `None` may be used to select Accounts with
         no value defined for `spender_key`.
     
     breakdown_keys - a list of Key objects representing the desired axes of 
         the pivot table.
+    
+    start_date - a DateTime object. Transactions before this date are ignored.
+        Default: 01/01/1000.
+    
+    end_date - a DateTime object. Transactions on or after this date are 
+        ignored. Default: now.
     
     Note that the timestamp that matters is the one on the Transaction object; 
     the timestamps of the individual Postings are ignored.
@@ -72,20 +72,41 @@ def aggregate(
     # Postings.
     all_postings = (model.Session.query(model.Posting)
         .join(model.Transaction)
-        .filter(transaction_filter)
+        .filter(transaction_filter) 
         ).all()
     
-    # Uncomment following line for testing.
-    return (all_accounts, all_transactions, all_postings, all_key_values)
+    # Uncomment following line for deugging.
+    # return (all_accounts, all_transactions, all_postings, all_key_values)
+    
+    # Loop through all Postings, examine Account, add to relevant bucket.
+    buckets = {} # tuple of values -> float
+    for p in all_postings:
+        a = p.account
+        if a.keyvalues.get(spender_key) not in spender_values:
+            vs = tuple([a.keyvalues.get(k) for k in breakdown_keys])
+            if vs not in buckets:
+                buckets[vs] = 0.0
+            buckets[vs] += p.amount
+    
+    # Sort and return.
+    return [(amount,) + values for values, amount in sorted(buckets.items())]
 
 # For debugging
 '''
+# Cut and paste this into a shell:
 model.repo.delete_all()
 model.Session.commit()
 import wdmmg.tests.test_craloader as cra
 cra.CRALoader.load(cra.pkg_resources.resource_stream('wdmmg', 'tests/cra_2009_db_short.csv'))
 model.Session.commit()
 slice_ = model.Session.query(model.Slice).filter_by(name=u'cra').one()
-key = model.Session.query(model.Key).filter_by(name=u'pog').one()
+dept = model.Session.query(model.Key).filter_by(name=u'dept').one()
+pog = model.Session.query(model.Key).filter_by(name=u'pog').one()
+cofog = model.Session.query(model.Key).filter_by(name=u'function').one()
+region = model.Session.query(model.Key).filter_by(name=u'region').one()
+import wdmmg.lib.aggregator as ag
+
+# Edit this and watch:
+for row in ag.aggregate(slice_, pog, spender_values=set([None]), breakdown_keys=[dept, pgo, cofog, region]): print row
 '''
 
