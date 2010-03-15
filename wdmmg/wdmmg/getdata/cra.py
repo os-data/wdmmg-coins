@@ -10,19 +10,6 @@ class CRALoader(object):
     govt_account_name = u'Government (Dummy)'
     
     @classmethod
-    def get_or_create_account(self, slice_, disambiguators, name, index={}):
-        if disambiguators not in index:
-            index[disambiguators] = model.Account(
-                slice_=slice_, name=name, notes=u'')
-        return index[disambiguators]
-    
-    @classmethod
-    def get_or_create_value(self, key, name, notes=None, index={}):
-        if name not in index:
-            index[name] = model.EnumerationValue(key=key, name=name, notes=notes)
-        return index[name]
-
-    @classmethod
     def load(self, fileobj):
         slice_ = model.Slice(name=CRALoader.slice_name)
         # The central account from which all the money comes.
@@ -42,7 +29,17 @@ class CRALoader(object):
         model.Session.add_all([key_dept, key_function, key_subfunction,
             key_pog, key_cap_or_cur, key_region])
         model.Session.add(acc_govt)
-
+        # Utility function for creating Accounts.
+        def get_or_create_account(disambiguators, name, index={}):
+            if disambiguators not in index:
+                index[disambiguators] = model.Account(
+                    slice_=slice_, name=name, notes=u'')
+            return index[disambiguators]
+        # Utility function for creating EnumerationValues.
+        def get_or_create_value(key, name, notes=None, index={}):
+            if name not in index:
+                index[name] = model.EnumerationValue(key=key, name=name, notes=notes)
+            return index[name]
         # For each line of the file...
         reader = csv.reader(fileobj)
         header = reader.next()
@@ -68,17 +65,17 @@ class CRALoader(object):
                 continue
 
             # Ensure all the necessary EnumerationValue objects exist.
-            CRALoader.get_or_create_value(key_dept, deptcode, dept)
+            get_or_create_value(key_dept, deptcode, dept)
             # TODO: Use William Waites' coding of functions and subfunctions.
-            CRALoader.get_or_create_value(key_function, function)
-            CRALoader.get_or_create_value(key_subfunction, subfunction)
+            get_or_create_value(key_function, function)
+            get_or_create_value(key_subfunction, subfunction)
             # TODO: Use a KeyValue to relate subfunctions to functions.
-            CRALoader.get_or_create_value(key_pog, pog, pog_alias)
-            CRALoader.get_or_create_value(key_cap_or_cur, cap_or_cur)
-            CRALoader.get_or_create_value(key_region, region)
+            get_or_create_value(key_pog, pog, pog_alias)
+            get_or_create_value(key_cap_or_cur, cap_or_cur)
+            get_or_create_value(key_region, region)
 
             # Make the Account object if necessary.
-            dest = CRALoader.get_or_create_account(slice_,
+            dest = get_or_create_account(
                 (deptcode, function, subfunction, pog, cap_or_cur, region),
                 u'{Dept="%s", function="%s", region="%s"}' % (dept, function, region)
             )
