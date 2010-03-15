@@ -6,7 +6,7 @@ from sqlalchemy.orm import mapper, relation, backref
 
 import meta
 from base import DomainObject
-
+from keyvalue import add_keyvalues
 
 class Slice(DomainObject):
     pass
@@ -81,4 +81,8 @@ mapper(Posting, table_posting, properties={
         },
     order_by=table_posting.c.id
     )
+
+add_keyvalues(Account)
+add_keyvalues(Transaction)
+add_keyvalues(Posting)
 
