@@ -1,7 +1,9 @@
 import logging
+from datetime import datetime
 
 from pylons import request, response, session, tmpl_context as c, url
 from pylons.controllers.util import abort, redirect
+from pylons.decorators import jsonify
 
 from wdmmg.lib.base import BaseController, render
 
@@ -32,6 +34,7 @@ class ApiController(BaseController):
                 description))
         return ans
     
+    @jsonify
     def aggregate(self):
         if 'slice' not in request.params:
             response.content_type = 'text/plain'
@@ -82,8 +85,10 @@ Parameters:
                 .filter_by(name=bd_key_name)
                 ).one() # FIXME: Nicer error message needed.
             breakdown_values.append(bd_key)
-        start_date = ApiController.to_datetime(request.params.get('start_date'))
-        end_date = ApiController.to_datetime(request.params.get('end_date'))
+        start_date = ApiController.to_datetime(
+            request.params.get('start_date', '1000-01-01'))
+        end_date = ApiController.to_datetime(
+            request.params.get('end_date', '3000-01-01'))
         return aggregator.aggregate(
             slice_,
             spender_key=spender_key,
