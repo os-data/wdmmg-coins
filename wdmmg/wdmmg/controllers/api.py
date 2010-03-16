@@ -23,13 +23,14 @@ class ApiController(BaseController):
 
     def index(self):
         response.content_type = 'text/plain'
-        yield '''This controller responds to the following URLs:\n\n'''
+        ans = ['''This controller responds to the following URLs:\n\n''']
         for action, description in [
             ('aggregate', '''Retrieves a slice, specifying axes of interest.''')
         ]:
-            yield '%s - %s' % (
+            ans.append('%s - %s' % (
                 url(controller='api', action=action),
-                description)
+                description))
+        return ans
     
     def aggregate(self):
         if 'slice' not in request.params:
