@@ -10,24 +10,37 @@ class CRALoader(object):
     govt_account_name = u'Government (Dummy)'
     
     @classmethod
-    def load(self, fileobj):
+    def load(self, fileobj, commit_every=None):
+        '''
+        Loads a file from `fileobj` into a slice with name 'cra'.
+        The file should be CSV formatted, with the same structure as the 
+        Country Regional Analysis data.
+        
+        fileobj - an open, readable file-like object.
+        
+        commit_every - if not None, call session.model.commit() at the 
+            specified frequency.
+        '''
+        # Make a new slice. This also prevents the data being loaded twice.
         slice_ = model.Slice(name=CRALoader.slice_name)
-        # The central account from which all the money comes.
-        acc_govt  = model.Account(
-            slice_=slice_, name=CRALoader.govt_account_name)
         # The keys used to classify spending.
         def mk(name, notes):
             return model.Key(
 #                slice_=slice_,
                 name=name, notes=notes)
+        key_spender = mk(u'spender', u'"yes" for the central government account')
         key_dept = mk(u'dept', u'Department that spent the money')
         key_function = mk(u'function', u'COFOG function (purpose of spending)')
         key_subfunction = mk(u'subfunction', u'COFOG sub-function (purpose of spending)')
         key_pog = mk(u'pog', u'Programme Object Group')
         key_cap_or_cur = mk(u'cap_or_cur', u'Capital or Current')
         key_region = mk(u'region', u'Geographical (NUTS) area for which money was spent')
-        model.Session.add_all([key_dept, key_function, key_subfunction,
-            key_pog, key_cap_or_cur, key_region])
+        model.Session.add_all([key_spender, key_dept, key_function,
+            key_subfunction, key_pog, key_cap_or_cur, key_region])
+        # The central account from which all the money comes.
+        acc_govt  = model.Account(
+            slice_=slice_, name=CRALoader.govt_account_name)
+        acc_govt.keyvalues[key_spender] = u'yes'
         model.Session.add(acc_govt)
         # Utility function for creating Accounts.
         def get_or_create_account(disambiguators, name, index={}):
@@ -40,6 +53,10 @@ class CRALoader(object):
             if name not in index:
                 index[name] = model.EnumerationValue(key=key, name=name, notes=notes)
             return index[name]
+        # Utility function for parsing numbers.
+        def to_float(s):
+            if not s: return 0.0
+            return float(s.replace(',', ''))
         # For each line of the file...
         reader = csv.reader(fileobj)
         header = reader.next()
@@ -47,6 +64,11 @@ class CRALoader(object):
         years = [date(int(x[:4]), 4, 5) # TBC: Periods start on 5th April
           for x in header[year_col_start:]]
         for row_index, row in enumerate(reader):
+            # Progress output.
+            if commit_every and row_index%commit_every == 0:
+                print "Committing before processing row %d" % row_index
+                model.Session.commit()
+            # Parse row.
             if not row[0]:
                 # Skip blank row.
                 continue
@@ -59,7 +81,7 @@ class CRALoader(object):
             pog_alias = row[5] # Verbose form of `pog`.
             cap_or_cur = row[7]
             region = row[9]
-            expenditures = [x and float(x) or 0. for x in row[year_col_start:]]
+            expenditures = [to_float(x) for x in row[year_col_start:]]
             if not [ x for x in expenditures if x ]:
                 # Skip row whose expenditures are all zero.
                 continue
@@ -92,4 +114,28 @@ class CRALoader(object):
                     txn = model.Transaction.create_with_postings(
                         slice_, year, exp, src=acc_govt, dest=dest)
                     model.Session.add(txn)
+        if commit_every:
+            model.Session.commit()
+
+def drop():
+    '''
+    Drops from the database all records associated with slice 'cra'.
+    '''
+    # FIXME: Do this properly.
+    model.repo.delete_all()
+    model.Session.commit()
+    model.Session.remove()
+
+def load():
+    '''
+    Downloads the CRA, and loads it into the database with slice name 'cra'.
+    '''
+    import swiss
+    cache = swiss.Cache(path='/tmp/')
+    filename = cache.retrieve('http://www.hm-treasury.gov.uk/d/cra_2009_db.csv')
+    fileobj = open(filename)
+    CRALoader.load(fileobj, commit_every=100)
+    model.Session.commit()
+    model.Session.remove()
+
 
