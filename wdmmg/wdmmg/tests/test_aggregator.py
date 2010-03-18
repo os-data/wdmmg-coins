@@ -66,9 +66,8 @@ AND a.id NOT IN (SELECT object_id FROM key_value
 AND t.id = p.transaction_id
 AND t.timestamp >= :start_date
 AND t.timestamp < :end_date
-GROUP BY bd_0, bd_1, NULL
-ORDER BY bd_0, bd_1, NULL
-''', query
+GROUP BY bd_0, bd_1
+ORDER BY bd_0, bd_1''', query
 
 # TODO: Test filtering on slice.
 # TODO: Test filtering on timestamp.

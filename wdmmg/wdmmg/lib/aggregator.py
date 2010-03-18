@@ -96,63 +96,56 @@ def _make_aggregate_query(
     query, params = StringIO(), {}
     # SELECT
     query.write('''\
-SELECT
-''')
+SELECT''')
     for bd in bds:
-        query.write('''\
+        query.write('''
     (SELECT value FROM key_value WHERE object_id = a.id
         AND key_id = :%(param)s) AS %(name)s,
 ''' % bd)
         params[bd['param']] = bd['id']
-    query.write('''\
-    SUM(p.amount) as amount
-''')
+    query.write('''
+    SUM(p.amount) as amount''')
     # FROM
     # TODO: Join on transaction.
-    query.write('''\
-FROM account a, posting p, "transaction" t
-''')
+    query.write('''
+FROM account a, posting p, "transaction" t''')
     # TODO: Filter on slice.id.
     # TODO: Filter on transaction.timestamp.
     # WHERE
-    query.write('''\
-WHERE a.slice_id = :slice_id
-''')
+    query.write('''
+WHERE a.slice_id = :slice_id''')
     params['slice_id'] = slice_.id
-    query.write('''\
+    query.write('''
 AND a.id = p.account_id
 AND a.id NOT IN (SELECT object_id FROM key_value
-    WHERE key_id = :spender_key_id
-''')
+    WHERE key_id = :spender_key_id''')
     params['spender_key_id'] = spender_key.id
-    query.write('''\
+    query.write('''
     AND value IN (''')
     for sv in svs:
         query.write(':%(param)s, ' % sv)
         params[sv['param']] = sv['value']
-    query.write('''NULL))
-''') # Absorbs final comma; copes with len(svs)==0.
-    query.write('''\
+    query.write('''NULL))''') # Absorbs final comma; copes with len(svs)==0.
+    query.write('''
 AND t.id = p.transaction_id
 AND t.timestamp >= :start_date
-AND t.timestamp < :end_date
-''')
+AND t.timestamp < :end_date''')
     params['start_date'] = start_date
     params['end_date'] = end_date
     # GROUP BY
-    query.write('''\
-GROUP BY ''')
+    separator = '''
+GROUP BY '''
     for bd in bds:
-        query.write('%(name)s, ' % bd)
-    query.write('''NULL
-''') # Absorbs final comma; copes with len(bds)==0.
+        query.write(separator)
+        query.write('%(name)s' % bd)
+        separator = ', '
     # ORDER BY
-    query.write('''\
-ORDER BY ''')
+    separator = '''
+ORDER BY '''
     for bd in bds:
-        query.write('%(name)s, ' % bd)
-    query.write('''NULL
-''') # Absorbs final comma; copes with len(bds)==0.
+        query.write(separator)
+        query.write('%(name)s' % bd)
+        separator = ', '
 
     return (query.getvalue(), params)
     
