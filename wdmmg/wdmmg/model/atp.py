@@ -52,8 +52,8 @@ table_posting = Table('posting', meta.metadata,
     Column('id', UnicodeText(), primary_key=True, default=make_uuid),
     Column('timestamp', DateTime()),
     Column('amount', Float()),
-    Column('account_id', UnicodeText(), ForeignKey('account.id')),
-    Column('transaction_id', UnicodeText(), ForeignKey('transaction.id')),
+    Column('account_id', UnicodeText(), ForeignKey('account.id'), index=True),
+    Column('transaction_id', UnicodeText(), ForeignKey('transaction.id'), index=True),
     # Constraint: account.slice_ == transaction.slice_
     )
 

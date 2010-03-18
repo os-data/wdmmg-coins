@@ -72,8 +72,8 @@ table_enumeration_value = Table('enumeration_value', meta.metadata,
 table_key_value = Table('key_value', meta.metadata,
     Column('id', UnicodeText(), primary_key=True, default=make_uuid),
     Column('ns', UnicodeText()),
-    Column('object_id', UnicodeText()),
-    Column('key_id', UnicodeText(), ForeignKey('key.id')),
+    Column('object_id', UnicodeText(), index=True),
+    Column('key_id', UnicodeText(), ForeignKey('key.id'), index=True),
     Column('value', UnicodeText()),
     )
 
