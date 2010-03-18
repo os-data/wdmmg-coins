@@ -100,8 +100,7 @@ SELECT''')
     for bd in bds:
         query.write('''
     (SELECT value FROM key_value WHERE object_id = a.id
-        AND key_id = :%(param)s) AS %(name)s,
-''' % bd)
+        AND key_id = :%(param)s) AS %(name)s,''' % bd)
         params[bd['param']] = bd['id']
     query.write('''
     SUM(p.amount) as amount''')
