@@ -109,7 +109,38 @@ def fast_aggregate(
     '''
     A faster reimplementation of `aggregate()`
     '''
+    query, params = _make_aggregate_query(
+        slice_,
+        spender_key,
+        spender_values,
+        breakdown_keys,
+        start_date,
+        end_date
+    )
+    results = model.Session.execute(query, params)
+    return {
+        'metadata': {'axes': [key.name for key in breakdown_keys]},
+        'results': [
+            (row['amount'], tuple([row[i] for i, _ in enumerate(breakdown_keys)]))
+            for row in results
+        ]
+    }
 
+def _make_aggregate_query(
+    slice_,
+    spender_key, # TODO: Slice-dependent default.
+    spender_values,
+    breakdown_keys,
+    start_date,
+    end_date
+):
+    '''
+    Uses string manipulation to construct the SQL query needed by
+    `fast_aggregate()`.
+    
+    Parameters: same as `fast_aggregate()`.
+    Returns: (string, dict) representing the query and its params.
+    '''
     # Compute some useful strings for each breakdown key.
     bds = [{
         'id': key.id, # The database 'id' of the Key.
@@ -142,6 +173,7 @@ SELECT
     query.write('''\
 FROM account a, posting p
 ''')
+    # TODO: Filter on slice.id.
     # TODO: Filter on transaction.timestamp.
     # WHERE
     query.write('''\
@@ -172,20 +204,8 @@ ORDER BY ''')
     query.write('''NULL
 ''') # Absorbs final comma; copes with len(bds)==0.
 
-    # Execute query, and mangle results into desired form.
-    print query.getvalue()
-    print params
-    results = model.Session.execute(query.getvalue(), params)
-    return {
-        'metadata': {'axes': [key.name for key in breakdown_keys]},
-        'results': [
-            (row['amount'], tuple([row[bd['name']] for bd in bds]))
-            for row in results
-        ]
-    }
-
-
-
+    return (query.getvalue(), params)
+    
 
 # Following attempt to alchemise the raw SQL fails.
 # Problem is that the sub-query `dept_sq` has a free variable

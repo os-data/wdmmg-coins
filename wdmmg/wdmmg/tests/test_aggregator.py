@@ -38,6 +38,34 @@ class TestAggregator(object):
             # Tolerate rounding errors.
             assert abs(index[coords] - amount) < 0.01, (coords, amount)
     
+    def test_make_aggregate_query(self):
+        query, params = aggregator._make_aggregate_query(
+            Fixtures.slice_,
+            Fixtures.pog, spender_values=set(['yes']),
+            breakdown_keys=[
+                Fixtures.dept, Fixtures.cofog,
+                # Omit Fixtures.pog, Fixtures.region,
+            ],
+            start_date=date(1000, 1, 1),
+            end_date=date(3000, 1, 1))
+        print query
+        print params
+        assert query == '''\
+SELECT
+    (SELECT value FROM key_value WHERE object_id = a.id
+        AND key_id = :bd_0_id) AS bd_0,
+    (SELECT value FROM key_value WHERE object_id = a.id
+        AND key_id = :bd_1_id) AS bd_1,
+    SUM(p.amount) as amount
+FROM account a, posting p
+WHERE a.id = p.account_id
+AND a.id NOT IN (SELECT object_id FROM key_value
+    WHERE key_id = :spender_key_id
+    AND value IN (:sv_0, NULL))
+GROUP BY bd_0, bd_1, NULL
+ORDER BY bd_0, bd_1, NULL
+''', query
+    
     def test_fast_aggregate(self):
         ans = aggregator.fast_aggregate(
             Fixtures.slice_,
