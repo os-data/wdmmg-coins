@@ -57,11 +57,15 @@ SELECT
     (SELECT value FROM key_value WHERE object_id = a.id
         AND key_id = :bd_1_id) AS bd_1,
     SUM(p.amount) as amount
-FROM account a, posting p
-WHERE a.id = p.account_id
+FROM account a, posting p, "transaction" t
+WHERE a.slice_id = :slice_id
+AND a.id = p.account_id
 AND a.id NOT IN (SELECT object_id FROM key_value
     WHERE key_id = :spender_key_id
     AND value IN (:sv_0, NULL))
+AND t.id = p.transaction_id
+AND t.timestamp >= :start_date
+AND t.timestamp < :end_date
 GROUP BY bd_0, bd_1, NULL
 ORDER BY bd_0, bd_1, NULL
 ''', query

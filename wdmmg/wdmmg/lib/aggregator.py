@@ -171,13 +171,17 @@ SELECT
     # FROM
     # TODO: Join on transaction.
     query.write('''\
-FROM account a, posting p
+FROM account a, posting p, "transaction" t
 ''')
     # TODO: Filter on slice.id.
     # TODO: Filter on transaction.timestamp.
     # WHERE
     query.write('''\
-WHERE a.id = p.account_id
+WHERE a.slice_id = :slice_id
+''')
+    params['slice_id'] = slice_.id
+    query.write('''\
+AND a.id = p.account_id
 AND a.id NOT IN (SELECT object_id FROM key_value
     WHERE key_id = :spender_key_id
 ''')
@@ -189,6 +193,13 @@ AND a.id NOT IN (SELECT object_id FROM key_value
         params[sv['param']] = sv['value']
     query.write('''NULL))
 ''') # Absorbs final comma; copes with len(svs)==0.
+    query.write('''\
+AND t.id = p.transaction_id
+AND t.timestamp >= :start_date
+AND t.timestamp < :end_date
+''')
+    params['start_date'] = start_date
+    params['end_date'] = end_date
     # GROUP BY
     query.write('''\
 GROUP BY ''')
