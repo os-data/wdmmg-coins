@@ -84,7 +84,7 @@ Parameters:
             bd_key = (model.Session.query(model.Key)
                 .filter_by(name=bd_key_name)
                 ).one() # FIXME: Nicer error message needed.
-            breakdown_values.append(bd_key)
+            breakdown_keys.append(bd_key)
         start_date = ApiController.to_datetime(
             request.params.get('start_date', '1000-01-01'))
         end_date = ApiController.to_datetime(

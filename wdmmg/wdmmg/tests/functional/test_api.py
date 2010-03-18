@@ -27,3 +27,10 @@ class TestApiController(TestController):
         assert '"metadata": {"axes": []}' in response
         assert '"results": [[' in response
 
+    def test_aggregate_with_breakdown(self):
+        response = self.app.get(url(controller='api', action='aggregate',
+            slice='cra', breakdown_key1='region'))
+        assert '"metadata": {"axes": ["region"]}' in response, response
+        assert '"results": [[' in response, response
+        assert '"ENGLAND_London"' in response, response
+
