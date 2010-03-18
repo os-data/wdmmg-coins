@@ -93,3 +93,7 @@ ORDER BY bd_0, bd_1, NULL
             # Tolerate rounding errors.
             assert abs(index[coords] - amount) < 0.01, (coords, amount)
 
+# TODO: Test filtering on slice.
+# TODO: Test filtering on timestamp.
+# TODO: Test with some breakdown KeyValues missing.
+
