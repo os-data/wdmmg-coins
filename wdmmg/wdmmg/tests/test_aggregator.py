@@ -15,7 +15,7 @@ class TestAggregator(object):
     def teardown_class(self):
         Fixtures.teardown()
     
-    def test_aggregator(self):
+    def test_aggregate(self):
         ans = aggregator.aggregate(
             Fixtures.slice_,
             Fixtures.pog, spender_values=set([None]),
@@ -23,14 +23,41 @@ class TestAggregator(object):
                 Fixtures.dept, Fixtures.cofog,
                 # Omit Fixtures.pog, Fixtures.region,
             ])
+        assert ans, ans
         assert ans['metadata'] == {'axes': [u'dept', u'function']}, ans
-        assert True or ans['results'] == [
-            (608.89999999999998, (u'999', u'6. Housing and community amenities')),
-            (-9.2000000000000011, (u'Dept004', u'of which: transport')),
-            (-70.700000000000003, (u'Dept022', u'10. Social protection')),
-            (-120.80000000000001, (u'Dept032', u'10. Social protection')),
-            (-36.200000000000003, (u'Dept032', u'of which: employment policies')),
-            (-0.5, (u'Dept047', u'3. Public order and safety')),
-        ], ans
-        return ans
+        index = dict([(coords, amount) for (amount, coords) in ans['results']])
+        for amount, coords in [
+            (608.90, (u'999', u'6. Housing and community amenities')),
+            (-9.20, (u'Dept004', u'of which: transport')),
+            (-70.70, (u'Dept022', u'10. Social protection')),
+            (-120.80, (u'Dept032', u'10. Social protection')),
+            (-36.20, (u'Dept032', u'of which: employment policies')),
+            (-0.50, (u'Dept047', u'3. Public order and safety')),
+        ]:
+            assert index.has_key(coords), coords
+            # Tolerate rounding errors.
+            assert abs(index[coords] - amount) < 0.01, (coords, amount)
+    
+    def test_fast_aggregate(self):
+        ans = aggregator.fast_aggregate(
+            Fixtures.slice_,
+            Fixtures.pog, spender_values=set(['yes']),
+            breakdown_keys=[
+                Fixtures.dept, Fixtures.cofog,
+                # Omit Fixtures.pog, Fixtures.region,
+            ])
+        assert ans, ans
+        assert ans['metadata'] == {'axes': [u'dept', u'function']}, ans
+        index = dict([(coords, amount) for (amount, coords) in ans['results']])
+        for amount, coords in [
+            (608.90, (u'999', u'6. Housing and community amenities')),
+            (-9.20, (u'Dept004', u'of which: transport')),
+            (-70.70, (u'Dept022', u'10. Social protection')),
+            (-120.80, (u'Dept032', u'10. Social protection')),
+            (-36.20, (u'Dept032', u'of which: employment policies')),
+            (-0.50, (u'Dept047', u'3. Public order and safety')),
+        ]:
+            assert index.has_key(coords), coords
+            # Tolerate rounding errors.
+            assert abs(index[coords] - amount) < 0.01, (coords, amount)
 

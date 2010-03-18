@@ -1,4 +1,6 @@
 from datetime import datetime
+from StringIO import StringIO
+
 from sqlalchemy.orm import eagerload
 from sqlalchemy.sql.expression import and_
 
@@ -7,7 +9,7 @@ import wdmmg.model as model
 def aggregate(
     slice_,
     spender_key, # TODO: Slice-dependent default.
-    spender_values=set([None]), # TODO: Slice-dependent default.
+    spender_values=set(['yes']),
     breakdown_keys=[],
     start_date=datetime(1000, 1, 1), # Early enough?
     end_date=datetime(3000, 1, 1), # Late enough?
@@ -94,22 +96,121 @@ def aggregate(
         'results': [(amount, values) for values, amount in sorted(buckets.items())]
     }
 
-# For debugging
-'''
-# Cut and paste this into a shell:
-model.repo.delete_all()
-model.Session.commit()
-import wdmmg.tests.test_craloader as cra
-cra.CRALoader.load(cra.pkg_resources.resource_stream('wdmmg', 'tests/cra_2009_db_short.csv'))
-model.Session.commit()
-slice_ = model.Session.query(model.Slice).filter_by(name=u'cra').one()
-dept = model.Session.query(model.Key).filter_by(name=u'dept').one()
-pog = model.Session.query(model.Key).filter_by(name=u'pog').one()
-cofog = model.Session.query(model.Key).filter_by(name=u'function').one()
-region = model.Session.query(model.Key).filter_by(name=u'region').one()
-import wdmmg.lib.aggregator as ag
 
-# Edit this and watch:
-print ag.aggregate(slice_, pog, spender_values=set([None]), breakdown_keys=[dept, pog, cofog, region])
+
+def fast_aggregate(
+    slice_,
+    spender_key, # TODO: Slice-dependent default.
+    spender_values=set(['yes']),
+    breakdown_keys=[],
+    start_date=datetime(1000, 1, 1), # Early enough?
+    end_date=datetime(3000, 1, 1), # Late enough?
+):
+    '''
+    A faster reimplementation of `aggregate()`
+    '''
+
+    # Compute some useful strings for each breakdown key.
+    bds = [{
+        'id': key.id, # The database 'id' of the Key.
+        'param': 'bd_%d_id' % i, # The SQL bind parameter whose value is `id`.
+        'name': 'bd_%d' % i, # The SQL alias used for this coordinate.
+    } for i, key in enumerate(breakdown_keys)]
+    # Compute some useful strings for each spender value.
+    svs = [{
+        'param': 'sv_%d' % i, # The SQL bind parameter whose value is `value`.
+        'value': value, # The SQL literal value.
+    } for i, value in enumerate(spender_values)]
+
+    # Compile an SQL query and its bind parameters at the same time.
+    query, params = StringIO(), {}
+    # SELECT
+    query.write('''\
+SELECT
+''')
+    for bd in bds:
+        query.write('''\
+    (SELECT value FROM key_value WHERE object_id = a.id
+        AND key_id = :%(param)s) AS %(name)s,
+''' % bd)
+        params[bd['param']] = bd['id']
+    query.write('''\
+    SUM(p.amount) as amount
+''')
+    # FROM
+    # TODO: Join on transaction.
+    query.write('''\
+FROM account a, posting p
+''')
+    # TODO: Filter on transaction.timestamp.
+    # WHERE
+    query.write('''\
+WHERE a.id = p.account_id
+AND a.id NOT IN (SELECT object_id FROM key_value
+    WHERE key_id = :spender_key_id
+''')
+    params['spender_key_id'] = spender_key.id
+    query.write('''\
+    AND value IN (''')
+    for sv in svs:
+        query.write(':%(param)s, ' % sv)
+        params[sv['param']] = sv['value']
+    query.write('''NULL))
+''') # Absorbs final comma; copes with len(svs)==0.
+    # GROUP BY
+    query.write('''\
+GROUP BY ''')
+    for bd in bds:
+        query.write('%(name)s, ' % bd)
+    query.write('''NULL
+''') # Absorbs final comma; copes with len(bds)==0.
+    # ORDER BY
+    query.write('''\
+ORDER BY ''')
+    for bd in bds:
+        query.write('%(name)s, ' % bd)
+    query.write('''NULL
+''') # Absorbs final comma; copes with len(bds)==0.
+
+    # Execute query, and mangle results into desired form.
+    print query.getvalue()
+    print params
+    results = model.Session.execute(query.getvalue(), params)
+    return {
+        'metadata': {'axes': [key.name for key in breakdown_keys]},
+        'results': [
+            (row['amount'], tuple([row[bd['name']] for bd in bds]))
+            for row in results
+        ]
+    }
+
+
+
+
+# Following attempt to alchemise the raw SQL fails.
+# Problem is that the sub-query `dept_sq` has a free variable
+# (`model.Account.id`). This variable is meant to be bound by the enclosing
+# query. SQLAlchemy is not happy to leave it free in the sub-query, and
+# magically introduces an unwanted join in order to bind it.
+'''
+spender_key = model.Session.query(model.Key).filter_by(name=u'spender').one()
+dept_key = model.Session.query(model.Key).filter_by(name=u'dept').one()
+
+spender_sq = (model.Session.query(model.KeyValue.object_id)
+    .filter_by(key=spender_key)
+    .filter_by(value=u'yes')
+    ).subquery()
+dept_sq = (model.Session.query(model.KeyValue.value)
+    .filter_by(key=dept_key)
+    .filter(model.KeyValue.object_id == model.Account.id) # FIXME: Wrong Account.
+    ).subquery()
+
+query = (model.Session.query(
+        func.sum(model.Posting.amount),
+        dept_sq.alias('dept'))
+    .join(model.Account)
+    .filter(~model.Account.id.in_(spender_sq))
+    .group_by('dept')
+    )
 '''
 
