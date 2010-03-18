@@ -25,26 +25,18 @@ class ApiController(BaseController):
 
     def index(self):
         response.content_type = 'text/plain'
-        ans = ['''This controller responds to the following URLs:\n\n''']
-        for action, description in [
-            ('aggregate', '''Retrieves a slice, specifying axes of interest.''')
-        ]:
-            ans.append('%s - %s' % (
-                url(controller='api', action=action),
-                description))
-        return ans
-    
-    @jsonify
-    def aggregate(self):
-        if 'slice' not in request.params:
-            response.content_type = 'text/plain'
-            return '''\
+        return '''\
+This controller responds to the following requests:
+
+aggregate
+=========
+
 Retrieves a slice, specifying axes of interest. The data will be aggregated 
 over all other axes.
 
 Example:
 
-    %s?slice=cra&spender_key=govt&spender_value=yes&breakdown_key1=dept&breakdown_key2=region&start_date=2004-01-01&end_date=2005-01-01
+    %(aggregate)s?slice=cra&spender_key=spender&spender_value=yes&breakdown_key1=dept&breakdown_key2=region&start_date=2004-01-01&end_date=2005-01-01
 
 Parameters:
 
@@ -66,7 +58,12 @@ Parameters:
     
     end_date (optional, default='3000-01-01') - Transactions on or after this 
         date are ignored.
-''' % url('api', 'aggregate')
+''' % {
+        'aggregate': url(controller='api', action='aggregate')
+    }
+
+    @jsonify
+    def aggregate(self):
         slice_ = (model.Session.query(model.Slice)
             .filter_by(name=request.params.get('slice'))
             ).one() # FIXME: Nicer error message needed.

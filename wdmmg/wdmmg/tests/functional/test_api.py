@@ -1,5 +1,7 @@
 from wdmmg.tests import *
 
+import re
+
 class TestApiController(TestController):
     @classmethod
     def setup_class(self):
@@ -10,16 +12,15 @@ class TestApiController(TestController):
         Fixtures.teardown()
 
     def test_index(self):
-        response = self.app.get(url(controller='api', action='index'))
-        assert '''the following URLs:''' in response
-    
-    def test_aggregate_help(self):
-        response = self.app.get(url(controller='api', action='aggregate'))
-        for p in [
-            'slice', 'spender_key', 'spender_value', 'breakdown_key',
-            'start_date', 'end_date'
-        ]:
-            assert p in response
+        response = unicode(self.app.get(url(controller='api', action='index')))
+        assert '''the following requests:''' in response, response
+        print type(response)
+        assert re.search(r'api/aggregate\?.*slice=', response), response
+        assert re.search(r'api/aggregate\?.*spender_key=', response), response
+        assert re.search(r'api/aggregate\?.*spender_value=', response), response
+        assert re.search(r'api/aggregate\?.*breakdown_key1=', response), response
+        assert re.search(r'api/aggregate\?.*start_date=', response), response
+        assert re.search(r'api/aggregate\?.*end_date=', response), response
 
     def test_aggregate(self):
         response = self.app.get(url(controller='api', action='aggregate',
