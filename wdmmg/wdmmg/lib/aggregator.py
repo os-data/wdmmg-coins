@@ -48,67 +48,6 @@ def aggregate(
     Note that the timestamp that matters is the one on the Transaction object; 
     the timestamps of the individual Postings are ignored.
     '''
-    # Populate Session with the relevant data in a small number of queries.
-    # Accounts.
-    account_filter = model.Account.slice_ == slice_
-    all_accounts = (model.Session.query(model.Account)
-        .filter(account_filter)
-        ).all()
-    # KeyValues.
-    key_ids = set([spender_key.id])
-    key_ids.update([k.id for k in breakdown_keys])
-    all_key_values = (model.Session.query(model.KeyValue)
-        .filter(model.KeyValue.key_id.in_(key_ids)) # Must use ids for in_().
-        .join((model.Account, model.KeyValue.object_id == model.Account.id))
-        .filter(account_filter)
-        ).all()
-    # Transactions.
-    transaction_filter = and_(
-        model.Transaction.slice_ == slice_,
-        model.Transaction.timestamp >= start_date,
-        model.Transaction.timestamp < end_date,
-        )
-    all_transactions = (model.Session.query(model.Transaction)
-        .filter(transaction_filter)
-        ).all()
-    # Postings.
-    all_postings = (model.Session.query(model.Posting)
-        .join(model.Transaction)
-        .filter(transaction_filter) 
-        ).all()
-    
-    # Uncomment following line for deugging.
-    # return (all_accounts, all_transactions, all_postings, all_key_values)
-    
-    # Loop through all Postings, examine Account, add to relevant bucket.
-    buckets = {} # tuple of values -> float
-    for p in all_postings:
-        a = p.account
-        if a.keyvalues.get(spender_key) not in spender_values:
-            vs = tuple([a.keyvalues.get(k) for k in breakdown_keys])
-            if vs not in buckets:
-                buckets[vs] = 0.0
-            buckets[vs] += p.amount
-    
-    # Sort and return.
-    return {
-        'metadata': {'axes': [k.name for k in breakdown_keys]},
-        'results': [(amount, values) for values, amount in sorted(buckets.items())]
-    }
-
-
-
-def fast_aggregate(
-    slice_,
-    spender_key, # TODO: Slice-dependent default.
-    spender_values=set(['yes']),
-    breakdown_keys=[],
-    start_date=datetime(1000, 1, 1), # Early enough?
-    end_date=datetime(3000, 1, 1), # Late enough?
-):
-    '''
-    A faster reimplementation of `aggregate()`
-    '''
     query, params = _make_aggregate_query(
         slice_,
         spender_key,
@@ -136,9 +75,9 @@ def _make_aggregate_query(
 ):
     '''
     Uses string manipulation to construct the SQL query needed by
-    `fast_aggregate()`.
+    `aggregate()`.
     
-    Parameters: same as `fast_aggregate()`.
+    Parameters: same as `aggregate()`.
     Returns: (string, dict) representing the query and its params.
     '''
     # Compute some useful strings for each breakdown key.
