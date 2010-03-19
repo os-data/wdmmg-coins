@@ -57,6 +57,7 @@ class Fixtures(object):
         self.govt_account = (model.Session.query(model.Account)
             .filter_by(name=CRALoader.govt_account_name)
             ).one()
+        self.spender = model.Session.query(model.Key).filter_by(name=u'spender').one()
         self.dept = model.Session.query(model.Key).filter_by(name=u'dept').one()
         self.pog = model.Session.query(model.Key).filter_by(name=u'pog').one()
         self.cofog = model.Session.query(model.Key).filter_by(name=u'function').one()

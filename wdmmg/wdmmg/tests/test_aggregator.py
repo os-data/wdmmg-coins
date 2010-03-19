@@ -18,7 +18,7 @@ class TestAggregator(object):
     def test_aggregate(self):
         ans = aggregator.aggregate(
             Fixtures.slice_,
-            Fixtures.pog, spender_values=set([None]),
+            Fixtures.spender, spender_values=set([u'yes']),
             breakdown_keys=[
                 Fixtures.dept, Fixtures.cofog,
                 # Omit Fixtures.pog, Fixtures.region,
@@ -26,6 +26,7 @@ class TestAggregator(object):
         assert ans, ans
         assert ans['metadata'] == {'axes': [u'dept', u'function']}, ans
         index = dict([(coords, amount) for (amount, coords) in ans['results']])
+        assert len(index) == 6, index
         for amount, coords in [
             (-608.90, (u'999', u'6. Housing and community amenities')),
             (9.20, (u'Dept004', u'of which: transport')),
@@ -38,6 +39,32 @@ class TestAggregator(object):
             # Tolerate rounding errors.
             assert abs(index[coords] - amount) < 0.01, (coords, amount)
     
+    def test_aggregate_dates(self):
+        ans = aggregator.aggregate(
+            Fixtures.slice_,
+            Fixtures.spender, spender_values=set([u'yes']),
+            breakdown_keys=[
+                Fixtures.dept, Fixtures.cofog,
+                # Omit Fixtures.pog, Fixtures.region,
+            ],
+            start_date=date(2008, 01, 01),
+            end_date=date(2009, 01, 01))
+        assert ans, ans
+        assert ans['metadata'] == {'axes': [u'dept', u'function']}, ans
+        index = dict([(coords, amount) for (amount, coords) in ans['results']])
+        assert len(index) == 6, index
+        for amount, coords in [
+            (-20.60, (u'999', u'6. Housing and community amenities')),
+            (1.30, (u'Dept004', u'of which: transport')),
+            (0.10, (u'Dept047', u'3. Public order and safety')),
+            (30.40, (u'Dept032', u'10. Social protection')),
+            (12.10, (u'Dept032', u'of which: employment policies')),
+            (0.10, (u'Dept022', u'10. Social protection')),
+        ]:
+            assert index.has_key(coords), coords
+            # Tolerate rounding errors.
+            assert abs(index[coords] - amount) < 0.01, (coords, amount)
+
     def test_make_aggregate_query(self):
         query, params = aggregator._make_aggregate_query(
             Fixtures.slice_,
