@@ -18,8 +18,8 @@ class Transaction(DomainObject):
     @classmethod
     def create_with_postings(cls, slice_, timestamp, amount, src, dest):
         txn = cls(slice_=slice_, timestamp=timestamp)
-        srcposting = Posting(timestamp=timestamp, amount=amount, account=src, transaction=txn)
-        destposting = Posting(timestamp=timestamp, amount=-amount, account=dest, transaction=txn)
+        srcposting = Posting(timestamp=timestamp, amount=-amount, account=src, transaction=txn)
+        destposting = Posting(timestamp=timestamp, amount=amount, account=dest, transaction=txn)
         return txn
 
 class Posting(DomainObject):

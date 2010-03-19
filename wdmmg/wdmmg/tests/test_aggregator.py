@@ -27,12 +27,12 @@ class TestAggregator(object):
         assert ans['metadata'] == {'axes': [u'dept', u'function']}, ans
         index = dict([(coords, amount) for (amount, coords) in ans['results']])
         for amount, coords in [
-            (608.90, (u'999', u'6. Housing and community amenities')),
-            (-9.20, (u'Dept004', u'of which: transport')),
-            (-70.70, (u'Dept022', u'10. Social protection')),
-            (-120.80, (u'Dept032', u'10. Social protection')),
-            (-36.20, (u'Dept032', u'of which: employment policies')),
-            (-0.50, (u'Dept047', u'3. Public order and safety')),
+            (-608.90, (u'999', u'6. Housing and community amenities')),
+            (9.20, (u'Dept004', u'of which: transport')),
+            (70.70, (u'Dept022', u'10. Social protection')),
+            (120.80, (u'Dept032', u'10. Social protection')),
+            (36.20, (u'Dept032', u'of which: employment policies')),
+            (0.50, (u'Dept047', u'3. Public order and safety')),
         ]:
             assert index.has_key(coords), coords
             # Tolerate rounding errors.
