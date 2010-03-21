@@ -4,7 +4,9 @@ Provides the BaseController class for subclassing.
 """
 from pylons.controllers import WSGIController
 from pylons.templating import render_genshi as render
+from pylons import tmpl_context as c
 
+import wdmmg
 from wdmmg.model import meta
 
 class BaseController(WSGIController):
@@ -18,3 +20,7 @@ class BaseController(WSGIController):
             return WSGIController.__call__(self, environ, start_response)
         finally:
             meta.Session.remove()
+    
+    def __before__(self, action, **params):
+        c.__version__ = wdmmg.__version__
+

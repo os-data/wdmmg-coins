@@ -11,4 +11,5 @@ log = logging.getLogger(__name__)
 class HomeController(BaseController):
 
     def index(self):
-        return 'Where does my money go?: Version %s' % wdmmg.__version__
+        return render('home/index.html')
+
