@@ -9,10 +9,18 @@ from base import DomainObject
 from keyvalue import add_keyvalues
 
 class Slice(DomainObject):
-    pass
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+        }
 
 class Account(DomainObject):
-    pass
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+        }
 
 class Transaction(DomainObject):
     @classmethod

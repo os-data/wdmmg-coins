@@ -21,6 +21,13 @@ class DomainObject(object):
 
     def __str__(self):
         return self.__unicode__().encode('utf8')
+    
+    def to_dict(self):
+        '''
+        Returns a summary of this DomainObject suitable for inclusion in a
+        JSON list of search results.
+        '''
+        raise NotImplementedError
 
 
 class JsonType(types.TypeDecorator):
