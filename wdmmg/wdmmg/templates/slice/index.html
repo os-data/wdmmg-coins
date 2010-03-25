@@ -4,7 +4,13 @@
   <py:def function="page_title">Home</py:def>
   
   <div py:def="content">
-    <p>There are <strong>${c.count}</strong> slices in the database.</p>
+    <p>The database contains the following slices:</p>
+    <ul>
+      <li py:for="row in c.results">
+        <a href="slice/${row.id}">${row.name}</a>
+      </li>
+    </ul>
+    <p py:if="len(c.results)>=c.limit">Only the first ${c.limit} results are shown.</p>
   </div>
 
   <xi:include href="../layout.html" />

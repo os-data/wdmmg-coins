@@ -12,7 +12,7 @@ log = logging.getLogger(__name__)
 class SliceController(BaseController):
 
     def index(self):
-        c.count = model.Session.query(model.Slice).count()
+        c.limit = int(request.params.get('limit', '100')) # TODO: Nicer error message.
+        c.results = model.Session.query(model.Slice)[:c.limit]
         return render('slice/index.html')
-
 
