@@ -22,8 +22,10 @@ def make_map():
 
     map.connect('home', '/', controller='home', action='index')
 
-    map.connect('/{controller}', action='index')
-    map.connect('/{controller}/{action}')
-    map.connect('/{controller}/{action}/{id}')
+    map.connect('/slice/{id}', controller='slice', action='view')
+    map.connect('/slice/{action}/{id}', controller='slice')
+
+    map.connect('/api', controller='api', action='index')
+    map.connect('/api/{action}', controller='api')
 
     return map
