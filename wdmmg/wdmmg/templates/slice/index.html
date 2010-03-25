@@ -1,0 +1,12 @@
+<html xmlns:py="http://genshi.edgewall.org/"
+  xmlns:xi="http://www.w3.org/2001/XInclude">
+
+  <py:def function="page_title">Home</py:def>
+  
+  <div py:def="content">
+    <p>There are <strong>${c.count}</strong> slices in the database.</p>
+  </div>
+
+  <xi:include href="../layout.html" />
+</html>
+
