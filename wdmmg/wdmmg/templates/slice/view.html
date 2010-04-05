@@ -1,0 +1,24 @@
+<html xmlns:py="http://genshi.edgewall.org/"
+  xmlns:xi="http://www.w3.org/2001/XInclude">
+
+  <py:def function="page_title">View slice</py:def>
+  
+  <div py:def="content">
+    <p>Properties of slice '${c.row.name}':</p>
+    <dl>
+      <dt>Number of accounts:</dt>
+      <dd><a href="/accounts?slice=${c.row.id}">${c.num_accounts}</a></dd>
+      
+      <dt>Number of transactions:</dt>
+      <dd><a href="/transactions?slice=${c.row.id}">${c.num_transactions}</a></dd>
+      
+      <py:if test="c.row.notes">
+        <dt>Notes:</dt>
+        <dd>${c.row.notes}</dd> <!-- TODO: Markdown -->
+      </py:if>
+    </dl>
+  </div>
+
+  <xi:include href="../layout.html" />
+</html>
+

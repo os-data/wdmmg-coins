@@ -16,3 +16,15 @@ class SliceController(BaseController):
         c.results = model.Session.query(model.Slice)[:c.limit]
         return render('slice/index.html')
 
+    def view(self, id=None):
+        c.row = (model.Session.query(model.Slice)
+            .filter_by(id=id)
+            ).one()
+        c.num_accounts = (model.Session.query(model.Account)
+            .filter_by(slice_=c.row)
+            ).count()
+        c.num_transactions = (model.Session.query(model.Transaction)
+            .filter_by(slice_=c.row)
+            ).count()
+        return render('slice/view.html')
+
