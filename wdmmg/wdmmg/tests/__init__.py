@@ -18,9 +18,6 @@ from webtest import TestApp
 
 import pylons.test
 
-import wdmmg.model as model
-from wdmmg.getdata.cra import CRALoader
-
 __all__ = ['environ', 'url', 'TestController', 'Fixtures']
 
 # Invoke websetup with the current config file
@@ -42,29 +39,5 @@ class TestController(TestCase):
         url._push_object(URLGenerator(config['routes.map'], environ))
         TestCase.__init__(self, *args, **kwargs)
 
-class Fixtures(object):
-    @classmethod
-    def setup(self):
-        model.repo.delete_all()
-        model.Session.remove()
-        fileobj = pkg_resources.resource_stream('wdmmg', 'tests/cra_2009_db_short.csv')
-        CRALoader.load(fileobj)
-        model.Session.commit()
-        model.Session.remove()
-        self.slice_ = (model.Session.query(model.Slice)
-            .filter_by(name=CRALoader.slice_name)
-            ).one()
-        self.govt_account = (model.Session.query(model.Account)
-            .filter_by(name=CRALoader.govt_account_name)
-            ).one()
-        self.spender = model.Session.query(model.Key).filter_by(name=u'spender').one()
-        self.dept = model.Session.query(model.Key).filter_by(name=u'dept').one()
-        self.pog = model.Session.query(model.Key).filter_by(name=u'pog').one()
-        self.cofog = model.Session.query(model.Key).filter_by(name=u'function').one()
-        self.region = model.Session.query(model.Key).filter_by(name=u'region').one()
-    
-    @classmethod
-    def teardown(self):
-        model.repo.delete_all()
-        model.Session.remove()
-
+import wdmmg.lib.cli
+Fixtures = wdmmg.lib.cli.Fixtures

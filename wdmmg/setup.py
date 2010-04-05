@@ -28,5 +28,9 @@ setup(
 
     [paste.app_install]
     main = pylons.util:PylonsInstaller
+
+    [paste.paster_command]
+    db = wdmmg.lib.cli:ManageDb
+    fixtures = wdmmg.lib.cli:Fixtures
     """,
 )

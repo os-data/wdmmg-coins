@@ -10,6 +10,7 @@ from keyvalue import Key, EnumerationValue, KeyValue
 def init_model(engine):
     '''Call me before using any of the tables or classes in the model'''
     meta.Session.configure(bind=engine)
+    meta.metadata.bind = engine
     meta.engine = engine
 
 
@@ -18,14 +19,14 @@ class Repository(object):
         meta.metadata.create_all()
     
     def init_db(self):
-        pass
+        self.create_db()
     
     def clean_db(self):
         meta.metadata.drop_all()
 
     def rebuild_db(self):
         self.clean_db()
-        self.create_db()
+        self.init_db()
     
     def delete_all(self):
         for obj in [ Posting, Transaction, Account, Slice, KeyValue, Key, 
@@ -33,8 +34,6 @@ class Repository(object):
             Session.query(obj).delete()
         Session.commit()
         Session.remove()
-
-
 
 repo = Repository()
 
