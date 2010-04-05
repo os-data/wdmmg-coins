@@ -1,0 +1,31 @@
+<html xmlns:py="http://genshi.edgewall.org/"
+  xmlns:xi="http://www.w3.org/2001/XInclude">
+
+  <py:def function="page_title">View account</py:def>
+  
+  <div py:def="content">
+    <p>Properties of account '${c.row.name}':</p>
+    <dl>
+      <dt>Slice:</dt>
+      <dd><a href="/slice/${c.row.slice_.id}">${c.row.slice_.name}</a></dd>
+      
+      <dt>Keys and values:</dt>
+      <dd>
+        <dl>
+          <py:for each="key, value in sorted(c.row.keyvalues.items())">
+            <dt><a href="/key/${key.id}">${key.name}</a></dt>
+            <dd>${value}</dd> <!-- href? -->
+          </py:for>
+        </dl>
+      </dd>
+      
+      <py:if test="c.row.notes">
+        <dt>Notes:</dt>
+        <dd>${c.row.notes}</dd> <!-- TODO: Markdown -->
+      </py:if>
+    </dl>
+  </div>
+
+  <xi:include href="../layout.html" />
+</html>
+

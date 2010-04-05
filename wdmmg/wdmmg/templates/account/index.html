@@ -1,0 +1,22 @@
+<html xmlns:py="http://genshi.edgewall.org/"
+  xmlns:xi="http://www.w3.org/2001/XInclude">
+
+  <py:def function="page_title">All accounts for slice '${c.slice_.name}'</py:def>
+  
+  <div py:def="content">
+    <p>
+      Slice
+      '<a href="/slice/${c.slice_.id}">${c.slice_.name}</a>'
+      contains the following accounts:
+    </p>
+    <ul>
+      <li py:for="row in c.results">
+        <a href="/account/${row.id}">${row.name}</a>
+      </li>
+    </ul>
+    <p py:if="len(c.results)>=c.limit">Only the first ${c.limit} results are shown.</p>
+  </div>
+
+  <xi:include href="../layout.html" />
+</html>
+
