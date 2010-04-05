@@ -19,7 +19,11 @@ class SliceController(BaseController):
     def view(self, id=None):
         c.row = (model.Session.query(model.Slice)
             .filter_by(id=id)
-            ).one()
+            ).first()
+        if not c.row:
+            c.row = (model.Session.query(model.Slice)
+                .filter_by(name=id)
+                ).first()
         c.num_accounts = (model.Session.query(model.Account)
             .filter_by(slice_=c.row)
             ).count()
