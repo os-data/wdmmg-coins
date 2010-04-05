@@ -6,12 +6,12 @@
   <div py:def="content">
     <p>
       Slice
-      '<a href="/slice/${c.slice_.id}">${c.slice_.name}</a>'
+      '<a href="${url(controller='slice', action='view', id_or_name=c.slice_.id)}">${c.slice_.name}</a>'
       contains the following accounts:
     </p>
     <ul>
       <li py:for="row in c.results">
-        <a href="/account/${row.id}">${row.name}</a>
+        <a href="${url(controller='account', action='view', id_=row.id)}">${row.name}</a>
       </li>
     </ul>
     <p py:if="len(c.results)>=c.limit">Only the first ${c.limit} results are shown.</p>

@@ -23,16 +23,14 @@ def make_map():
     map.connect('home', '/', controller='home', action='index')
 
     map.connect('/slice', controller='slice', action='index')
-    map.connect('/slice/{id}', controller='slice', action='view')
-    map.connect('/slice/{action}/{id}', controller='slice')
+    map.connect('/slice/{id_or_name}', controller='slice', action='view')
+    map.connect('/slice/{id_or_name}/{action}', controller='slice')
 
-    map.connect('/account', controller='account', action='index')
-    map.connect('/account/{id}', controller='account', action='view')
-    map.connect('/account/{action}/{id}', controller='account')
+    map.connect('/account/{id_}', controller='account', action='view')
+    map.connect('/account/{id_}/{action}', controller='account')
 
-    map.connect('/transaction', controller='transaction', action='index')
-    map.connect('/transaction/{id}', controller='transaction', action='view')
-    map.connect('/transaction/{action}/{id}', controller='transaction')
+    map.connect('/transaction/{id_}', controller='transaction', action='view')
+    map.connect('/transaction/{id_}/{action}', controller='transaction')
 
     map.connect('/api', controller='api', action='index')
     map.connect('/api/{action}', controller='api')

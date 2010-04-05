@@ -16,13 +16,13 @@ class SliceController(BaseController):
         c.results = model.Session.query(model.Slice)[:c.limit]
         return render('slice/index.html')
 
-    def view(self, id=None):
+    def view(self, id_or_name=None):
         c.row = (model.Session.query(model.Slice)
-            .filter_by(id=id)
+            .filter_by(id=id_or_name)
             ).first()
         if not c.row:
             c.row = (model.Session.query(model.Slice)
-                .filter_by(name=id)
+                .filter_by(name=id_or_name)
                 ).first()
         c.num_accounts = (model.Session.query(model.Account)
             .filter_by(slice_=c.row)
@@ -31,4 +31,18 @@ class SliceController(BaseController):
             .filter_by(slice_=c.row)
             ).count()
         return render('slice/view.html')
+
+    def accounts(self, id_or_name=None):
+        c.limit = int(request.params.get('limit', '100')) # TODO: Nicer error message.
+        c.slice_ = (model.Session.query(model.Slice)
+            .filter_by(id=id_or_name)
+            ).first()
+        if not c.slice_:
+            c.slice_ = (model.Session.query(model.Slice)
+                .filter_by(name=id_or_name)
+                ).first()
+        c.results = (model.Session.query(model.Account)
+            .filter_by(slice_=c.slice_)
+            )[:c.limit]
+        return render('slice/accounts.html')
 
