@@ -1,13 +1,13 @@
 <html xmlns:py="http://genshi.edgewall.org/"
   xmlns:xi="http://www.w3.org/2001/XInclude">
 
-  <py:def function="page_title">Home</py:def>
+  <py:def function="page_title">All slices</py:def>
   
   <div py:def="content">
     <p>The database contains the following slices:</p>
     <ul>
       <li py:for="row in c.results">
-        <a href="slice/${row.id}">${row.name}</a>
+        <a href="/slice/${row.id}">${row.name}</a>
       </li>
     </ul>
     <p py:if="len(c.results)>=c.limit">Only the first ${c.limit} results are shown.</p>
