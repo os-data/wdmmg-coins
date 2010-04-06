@@ -105,11 +105,8 @@ SELECT''')
     query.write('''
     SUM(p.amount) as amount''')
     # FROM
-    # TODO: Join on transaction.
     query.write('''
 FROM account a, posting p, "transaction" t''')
-    # TODO: Filter on slice.id.
-    # TODO: Filter on transaction.timestamp.
     # WHERE
     query.write('''
 WHERE a.slice_id = :slice_id''')
