@@ -35,3 +35,9 @@ class TestSliceController(TestController):
         assert 1 in response, response
         assert 5 in response, response
 
+    def test_accounts(self):
+        response = self.app.get(url(controller='slice', action='transactions', id_or_name='cra'))
+        assert "'cra'" in response
+        assert '''contains the following transactions:''' in response
+        assert 'Next' in response, response
+

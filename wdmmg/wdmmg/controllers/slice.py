@@ -34,8 +34,6 @@ class SliceController(BaseController):
 
     def accounts(self, id_or_name=None):
         c.items_per_page = int(request.params.get('items_per_page', 50))
-        page = int(request.params.get('page', 1))
-
         c.slice_ = (model.Session.query(model.Slice)
             .filter_by(id=id_or_name)
             ).first()
@@ -46,9 +44,26 @@ class SliceController(BaseController):
         query = model.Session.query(model.Account).filter_by(slice_=c.slice_)
         c.page = Page(
             collection=query,
-            page=page,
+            page=int(request.params.get('page', 1)),
             items_per_page=c.items_per_page,
             item_count=query.count()
         )
         return render('slice/accounts.html')
+
+    def transactions(self, id_or_name=None):
+        c.slice_ = (model.Session.query(model.Slice)
+            .filter_by(id=id_or_name)
+            ).first()
+        if not c.slice_:
+            c.slice_ = (model.Session.query(model.Slice)
+                .filter_by(name=id_or_name)
+                ).first()
+        query = model.Session.query(model.Transaction).filter_by(slice_=c.slice_)
+        c.page = Page(
+            collection=query,
+            page=int(request.params.get('page', 1)),
+            items_per_page=c.items_per_page,
+            item_count=query.count()
+        )
+        return render('slice/transactions.html')
 
