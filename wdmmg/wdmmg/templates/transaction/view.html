@@ -1,0 +1,48 @@
+<html xmlns:py="http://genshi.edgewall.org/"
+  xmlns:xi="http://www.w3.org/2001/XInclude">
+
+  <py:def function="page_title">View transaction</py:def>
+  
+  <div py:def="content">
+    <p>Properties of transaction '${c.row.id}':</p>
+    <dl>
+      <dt>Slice:</dt>
+      <dd><a href="/slice/${c.row.slice_.id}">${c.row.slice_.name}</a></dd>
+      
+      <dt>Date:</dt>
+      <dd>${c.row.timestamp.strftime('%Y-%m-%d')}</dd>
+      
+      <dt>Postings:</dt>
+      <dd>
+        <table>
+          <tr>
+            <th scope="col">Timestamp</th>
+            <th scope="col">Amount</th>
+            <th scope="col">Account</th>
+          </tr>
+          
+          <tr py:for="p in c.row.postings">
+            <td>${p.timestamp.strftime('%Y-%m-%d')}</td>
+            
+            <td class="credit" py:if="p.amount &gt;= 0">${p.amount}</td>
+            <td class="debit" py:if="p.amount &lt; 0">(${-p.amount})</td>
+            
+            <td>
+              <a href="${url(controller='account', action='view', id_=p.account.id)}">
+                ${p.account.name}
+              </a>
+            </td>
+          </tr>
+        </table>
+      </dd>
+      
+      <py:if test="c.row.notes">
+        <dt>Notes:</dt>
+        <dd>${c.row.notes}</dd> <!-- TODO: Markdown -->
+      </py:if>
+    </dl>
+  </div>
+
+  <xi:include href="../layout.html" />
+</html>
+

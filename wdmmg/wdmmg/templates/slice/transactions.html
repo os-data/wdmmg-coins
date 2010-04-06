@@ -1,0 +1,35 @@
+<html xmlns:py="http://genshi.edgewall.org/"
+  xmlns:xi="http://www.w3.org/2001/XInclude">
+
+  <py:def function="page_title">All transactions for slice '${c.slice_.name}'</py:def>
+  
+  <div py:def="content">
+    <p>
+      Slice
+      '<a href="${url(controller='slice', action='view', id_or_name=c.slice_.id)}">${c.slice_.name}</a>'
+      contains the following transactions:
+    </p>
+
+    ${c.page.pager(items_per_page=c.items_per_page)}
+    <table>
+      <tr>
+        <th scope="col">Id</th>
+        <th scope="col">Date</th>
+        <th scope="col">Amount</th>
+      </tr>
+      <tr py:for="row in c.page.items">
+        <td>
+          <a href="${url(controller='transaction', action='view', id_=row.id)}">
+            ${row.id}
+          </a>
+        </td>
+        <td>${row.timestamp.strftime('%Y-%m-%d')}</td>
+        <td>${row.amount}</td>
+      </tr>
+    </table>
+    ${c.page.pager(items_per_page=c.items_per_page)}
+  </div>
+
+  <xi:include href="../layout.html" />
+</html>
+
