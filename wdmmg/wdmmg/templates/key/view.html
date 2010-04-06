@@ -6,6 +6,15 @@
   <div py:def="content">
     <p>Properties of key '${c.row.name}':</p>
     <dl>
+      <dt>Usage (number of accounts):</dt>
+      <dd>
+        <a href="${url(controller='key', action='accounts', id_=c.row.id)}">${c.num_accounts}</a>
+      </dd>
+      
+      <py:if test="c.row.notes">
+        <dt>Notes:</dt>
+        <dd>${c.row.notes}</dd> <!-- TODO: Markdown -->
+      </py:if>
     
       <dt>Values with defined meanings:</dt>
       <dd py:if="not c.row.enumeration_values"><em>(None)</em></dd>
@@ -19,11 +28,6 @@
           </li>
         </ul>
       </dd>
-      
-      <py:if test="c.row.notes">
-        <dt>Notes:</dt>
-        <dd>${c.row.notes}</dd> <!-- TODO: Markdown -->
-      </py:if>
     </dl>
   </div>
 
