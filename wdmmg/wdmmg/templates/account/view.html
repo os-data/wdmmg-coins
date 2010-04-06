@@ -9,6 +9,11 @@
       <dt>Slice:</dt>
       <dd><a href="/slice/${c.row.slice_.id}">${c.row.slice_.name}</a></dd>
       
+      <dt>Number of postings:</dt>
+      <dd>
+        <a href="${url(controller='account', action='postings', id_=c.row.id)}">${c.num_postings}</a>
+      </dd>
+
       <dt>Keys and values:</dt>
       <dd>
         <dl>
