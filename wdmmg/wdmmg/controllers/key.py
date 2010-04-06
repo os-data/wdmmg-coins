@@ -15,6 +15,10 @@ class KeyController(BaseController):
         c.row = (model.Session.query(model.Key)
             .filter_by(id=id_)
             ).one()
+        c.num_accounts = (model.Session.query(model.KeyValue)
+            .filter_by(key=c.row)
+            .filter_by(ns='account')
+            ).count()
         query = model.Session.query(model.EnumerationValue).filter_by(key_id=c.row.id)
         c.page = Page(
             collection=query,
