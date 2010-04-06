@@ -11,6 +11,10 @@ log = logging.getLogger(__name__)
 
 class KeyController(BaseController):
 
+    def index(self):
+        c.results = (model.Session.query(model.Key)).all()
+        return render('key/index.html')
+
     def view(self, id_=None):
         c.row = (model.Session.query(model.Key)
             .filter_by(id=id_)

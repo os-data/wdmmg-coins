@@ -32,6 +32,7 @@ def make_map():
     map.connect('/transaction/{id_}', controller='transaction', action='view')
     map.connect('/transaction/{id_}/{action}', controller='transaction')
 
+    map.connect('/key', controller='key', action='index')
     map.connect('/key/{id_}', controller='key', action='view')
     map.connect('/key/{id_}/{action}', controller='key')
 

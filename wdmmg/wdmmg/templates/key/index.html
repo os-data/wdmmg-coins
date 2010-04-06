@@ -1,0 +1,17 @@
+<html xmlns:py="http://genshi.edgewall.org/"
+  xmlns:xi="http://www.w3.org/2001/XInclude">
+
+  <py:def function="page_title">All keys</py:def>
+  
+  <div py:def="content">
+    <p>The database contains the following keys:</p>
+    <ul>
+      <li py:for="row in c.results">
+        <a href="${url(controller='key', action='view', id_=row.id)}">${row.name}</a>
+      </li>
+    </ul>
+  </div>
+
+  <xi:include href="../layout.html" />
+</html>
+

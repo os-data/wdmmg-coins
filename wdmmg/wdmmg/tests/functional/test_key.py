@@ -10,6 +10,11 @@ class TestKeyController(TestController):
     def teardown_class(self):
         Fixtures.teardown()
 
+    def test_index(self):
+        response = self.app.get(url(controller='key', action='index'))
+        assert '''The database contains the following keys:''' in response
+        assert '''spender''' in response
+
     def test_view(self):
         response = self.app.get(url(controller='key', action='view', id_=Fixtures.region.id))
         assert '''region''' in response
