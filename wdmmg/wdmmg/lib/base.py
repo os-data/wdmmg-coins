@@ -4,7 +4,7 @@ Provides the BaseController class for subclassing.
 """
 from pylons.controllers import WSGIController
 from pylons.templating import render_genshi as render
-from pylons import tmpl_context as c
+from pylons import tmpl_context as c, request
 
 import wdmmg
 from wdmmg.model import meta
@@ -23,4 +23,5 @@ class BaseController(WSGIController):
     
     def __before__(self, action, **params):
         c.__version__ = wdmmg.__version__
+        c.items_per_page = int(request.params.get('items_per_page', 20))
 
