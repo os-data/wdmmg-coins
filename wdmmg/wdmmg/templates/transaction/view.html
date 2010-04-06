@@ -25,7 +25,7 @@
             <td>${p.timestamp.strftime('%Y-%m-%d')}</td>
             
             <td class="credit" py:if="p.amount &gt;= 0">${p.amount}</td>
-            <td class="debit" py:if="p.amount &lt; 0">(${-p.amount})</td>
+            <td class="debit" py:if="p.amount &lt; 0">(${p.amount})</td>
             
             <td>
               <a href="${url(controller='account', action='view', id_=p.account.id)}">
