@@ -1,0 +1,32 @@
+<html xmlns:py="http://genshi.edgewall.org/"
+  xmlns:xi="http://www.w3.org/2001/XInclude">
+
+  <py:def function="page_title">View key</py:def>
+  
+  <div py:def="content">
+    <p>Properties of key '${c.row.name}':</p>
+    <dl>
+    
+      <dt>Values with defined meanings:</dt>
+      <dd py:if="not c.row.enumeration_values"><em>(None)</em></dd>
+      <dd py:if="c.row.enumeration_values">
+        ${c.page.pager(items_per_page=c.items_per_page)}
+        <ul>
+          <li py:for="v in c.page.items">
+            <a href="${url(controller='enumeration_value', action='view', key_id=c.row.id, name=v.name)}">
+              ${v.name}
+            </a>
+          </li>
+        </ul>
+      </dd>
+      
+      <py:if test="c.row.notes">
+        <dt>Notes:</dt>
+        <dd>${c.row.notes}</dd> <!-- TODO: Markdown -->
+      </py:if>
+    </dl>
+  </div>
+
+  <xi:include href="../layout.html" />
+</html>
+
