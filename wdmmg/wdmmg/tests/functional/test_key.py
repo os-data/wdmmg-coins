@@ -19,3 +19,8 @@ class TestKeyController(TestController):
         response = self.app.get(url(controller='key', action='view', id_=Fixtures.pog.id, items_per_page=3))
         assert '''Next''' in response
 
+    def test_accounts(self):
+        response = self.app.get(url(controller='key', action='accounts', id_=Fixtures.spender.id))
+        assert Fixtures.spender.name in response
+        assert Fixtures.govt_account.name in response
+

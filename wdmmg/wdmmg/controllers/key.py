@@ -17,7 +17,7 @@ class KeyController(BaseController):
             ).one()
         c.num_accounts = (model.Session.query(model.KeyValue)
             .filter_by(key=c.row)
-            .filter_by(ns='account')
+            .filter_by(ns=u'account')
             ).count()
         query = model.Session.query(model.EnumerationValue).filter_by(key_id=c.row.id)
         c.page = Page(
@@ -27,4 +27,20 @@ class KeyController(BaseController):
             item_count=query.count()
         )
         return render('key/view.html')
+
+    def accounts(self, id_=None):
+        c.row = (model.Session.query(model.Key)
+            .filter_by(id=id_)
+            ).one()
+        query = (model.Session.query(model.Account)
+            .join((model.KeyValue, model.Account.id==model.KeyValue.object_id))
+            .filter_by(key=c.row)
+            .order_by(model.Account.id))
+        c.page = Page(
+            collection=query,
+            page=int(request.params.get('page', 1)),
+            items_per_page=c.items_per_page,
+            item_count=query.count()
+        )
+        return render('key/accounts.html')
 
