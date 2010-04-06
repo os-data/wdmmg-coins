@@ -29,6 +29,10 @@ class Transaction(DomainObject):
         srcposting = Posting(timestamp=timestamp, amount=-amount, account=src, transaction=txn)
         destposting = Posting(timestamp=timestamp, amount=amount, account=dest, transaction=txn)
         return txn
+    
+    @property
+    def amount(self):
+        return sum([p.amount for p in self.postings if p.amount>0])
 
 class Posting(DomainObject):
     pass
