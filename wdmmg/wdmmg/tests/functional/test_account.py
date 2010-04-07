@@ -23,3 +23,12 @@ class TestAccountController(TestController):
         assert Fixtures.govt_account.name in response
         assert '''Next''' in response
 
+    def test_search(self):
+        response = self.app.get(url(controller='account', action='search'))
+        assert '''E.g.''' in response
+
+    def test_search_results(self):
+        response = self.app.get(url(controller='account', action='search',
+            q='work pensIONS'))
+        assert '''Department for Work and Pensions''' in response, response
+

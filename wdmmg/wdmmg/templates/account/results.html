@@ -1,0 +1,24 @@
+<html xmlns:py="http://genshi.edgewall.org/"
+  xmlns:xi="http://www.w3.org/2001/XInclude">
+
+  <py:def function="page_title">Search for accounts</py:def>
+  
+  <div py:def="content">
+    <form action="${url(controller='account', action='search')}" method="get">
+      <input type="text" name="q" size="40" value="${c.q}"/>
+      <input type="submit" value="Search again" />
+    </form>
+    
+    <p>${c.page.item_count} results.</p>
+    ${c.page.pager(items_per_page=c.items_per_page)}
+    <ul>
+      <li py:for="row in c.page.items">
+        <a href="${url(controller='account', action='view', id_=row.id)}">${row.name}</a>
+      </li>
+    </ul>
+    ${c.page.pager(items_per_page=c.items_per_page)}
+  </div>
+
+  <xi:include href="../layout.html" />
+</html>
+

@@ -27,6 +27,7 @@ def make_map():
     map.connect('/slice/{id_or_name}/{action}', controller='slice')
 
     map.connect('/account', controller='account', action='index')
+    map.connect('/account/search', controller='account', action='search')
     map.connect('/account/{id_}', controller='account', action='view')
     map.connect('/account/{id_}/{action}', controller='account')
 
