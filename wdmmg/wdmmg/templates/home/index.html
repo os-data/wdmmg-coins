@@ -4,9 +4,13 @@
   <py:def function="page_title">Home</py:def>
 
   <div py:def="content">
-    <h2>The Data Store for <a
-      href="http://www.wheredoesmymoneygo.org/">Where Does My Money
-      Go?</a></h2>
+    <p>Welcome to the Data Store!. The store currently holds:</p>
+    <ul>
+      <li>${h.link_to('%s slice(s)' % c.slice_count, url(controller='slice', action='index'))} &ndash; a slice is a set of data (accounts and transactions) which it is useful to consider as a whole, for example a set which is <em>non-overlapping</em> (i.e. has no double accounting of spending)</li>
+      <li>${h.link_to('%s accounts' % c.account_count, url(controller='account', action='index'))} &ndash; normal double-entry accounting 'accounts'</li>
+      <li>${h.link_to('%s transactions' % c.transaction_count, url(controller='transaction', action='index'))} &ndash; normal double-entry accounting 'transactions' (transactions have postings)</li>
+      <li>${h.link_to('%s keys' % c.key_count, url(controller='key', action='index'))} &ndash; enumeration names</li>
+    </ul>
 
     <h3>Background</h3>
     <p>For more information about this project see the main <a

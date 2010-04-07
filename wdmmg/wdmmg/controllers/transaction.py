@@ -10,6 +10,8 @@ from wdmmg import model
 log = logging.getLogger(__name__)
 
 class TransactionController(BaseController):
+    def index(self):
+        return render('transaction/index.html')
 
     def view(self, id_=None):
         c.row = (model.Session.query(model.Transaction)

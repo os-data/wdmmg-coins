@@ -10,6 +10,8 @@ from wdmmg import model
 log = logging.getLogger(__name__)
 
 class AccountController(BaseController):
+    def index(self):
+        return render('account/index.html')
 
     def view(self, id_=None):
         c.row = (model.Session.query(model.Account)

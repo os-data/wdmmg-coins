@@ -6,7 +6,7 @@
   >
 
 <head>
-  <title>Where Does My Money Go? Store - ${page_title()}</title>
+  <title>Where Does My Money Go? Data Store - ${page_title()}</title>
 
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
   <link rel="shortcut icon" href="http://m.okfn.org/gfx/logo/favicon.ico" type="image/x-icon" />
@@ -50,8 +50,8 @@
         <!--</topbar>-->
       </div><!-- /top-bar -->
     <h1>
-      <a href="${url('home')}" title="Where Does My Money Go? Store Home">Where
-        Does My Money Go? Store</a><sup style="font-size:0.4em;">v${c.__version__}</sup>
+      <a href="${url('home')}" title="Where Does My Money Go? Data Store Home">Where
+        Does My Money Go? Data Store</a><sup style="font-size:0.4em;">v${c.__version__}</sup>
     </h1>
     
     </div><!-- /top-inner -->
@@ -59,7 +59,9 @@
     <h3 class="hidden">Sections:</h3>
     <ul id="navigation">
       <li><a href="${url('home')}">Home</a></li>
-      <li><a href="${url(controller='slice', action='index')}">Database</a></li>
+      <li><a href="${url(controller='slice', action='index')}">Slices</a></li>
+      <li><a href="${url(controller='account', action='index')}">Accounts</a></li>
+      <li><a href="${url(controller='transaction', action='index')}">Transactions</a></li>
       <li><a href="${url(controller='api', action='index')}">API</a></li>
     </ul>
     <h3 class="hidden">In this section:</h3>
