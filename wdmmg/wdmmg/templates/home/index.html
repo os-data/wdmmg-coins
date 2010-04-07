@@ -4,7 +4,7 @@
   <py:def function="page_title">Home</py:def>
 
   <div py:def="content">
-    <p>Welcome to the Data Store!. The store currently holds:</p>
+    <p>Welcome to the Data Store! The store currently holds:</p>
     <ul>
       <li>${h.link_to('%s slice(s)' % c.slice_count, url(controller='slice', action='index'))} &ndash; a slice is a set of data (accounts and transactions) which it is useful to consider as a whole, for example a set which is <em>non-overlapping</em> (i.e. has no double accounting of spending)</li>
       <li>${h.link_to('%s accounts' % c.account_count, url(controller='account', action='index'))} &ndash; normal double-entry accounting 'accounts'</li>

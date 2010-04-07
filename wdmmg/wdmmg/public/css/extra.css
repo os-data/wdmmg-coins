@@ -36,3 +36,39 @@
 .debit {
   color: #600
 }
+
+/* ======================= */
+/* = Fixes to KForge CSS = */
+/* ======================= */
+
+#top h1 a:hover {
+	background: transparent;
+}
+
+#top {
+	margin: 0.3em 0 0 0;
+}
+
+#top-bar img {
+	margin: -5px 0 0 0;
+	vertical-align: middle;
+}
+
+#subnav li.intro {
+	color: #777;
+	padding-right: 5px;
+}
+
+#subnav:empty {
+	background: transparent;
+	height: 0;
+}
+
+#primary {
+	margin-top: 15px;
+}
+
+#main {
+  margin-top: 15px;
+}
+
