@@ -1,7 +1,7 @@
 import os
 import sys
 
-import paste.script
+import paste.script.command
 
 class WdmmgCommand(paste.script.command.Command):
     parser = paste.script.command.Command.standard_parser(verbose=True)
