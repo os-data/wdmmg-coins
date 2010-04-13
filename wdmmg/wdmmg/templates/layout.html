@@ -6,7 +6,7 @@
   >
 
 <head>
-  <title>Where Does My Money Go? Data Store - ${page_title()}</title>
+  <title>${c.site_title} - ${page_title()}</title>
 
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
   <link rel="shortcut icon" href="http://m.okfn.org/gfx/logo/favicon.ico" type="image/x-icon" />
@@ -14,11 +14,11 @@
   <link rel="stylesheet" href="http://m.okfn.org/kforge/css/master.css" type="text/css" media="screen, print" title="Master stylesheet" charset="utf-8" />
   <link rel="stylesheet" href="/css/extra.css" type="text/css" media="screen, print" title="Master stylesheet" charset="utf-8" />
 
-  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.3/jquery.min.js"></script>
-  <script type="text/javascript" src="http://m.okfn.org/kforge/scripts/kforge.js"></script>
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4/jquery.min.js"></script>
+  <script type="text/javascript" src="/css/application.js"></script>
 
-  <py:if test="defined('page_specific_css')">
-    ${page_specific_css()}
+  <py:if test="defined('optional_head')">
+    ${optional_head()}
   </py:if>
 </head>
 
@@ -50,8 +50,7 @@
         <!--</topbar>-->
       </div><!-- /top-bar -->
     <h1>
-      <a href="${url('home')}" title="Where Does My Money Go? Data Store Home">Where
-        Does My Money Go? Data Store</a><sup style="font-size:0.4em;">v${c.__version__}</sup>
+      <a href="${url('home')}" title="${c.site_title} Home">${c.site_title}</a><sup style="font-size:0.4em;">v${c.__version__}</sup>
     </h1>
     
     </div><!-- /top-inner -->

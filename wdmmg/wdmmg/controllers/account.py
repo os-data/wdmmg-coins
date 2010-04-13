@@ -12,7 +12,7 @@ log = logging.getLogger(__name__)
 
 class AccountController(BaseController):
     def index(self):
-        return render('account/index.html')
+        return self.search()
 
     def view(self, id_=None):
         c.row = (model.Session.query(model.Account)
@@ -30,6 +30,15 @@ class AccountController(BaseController):
         query = (model.Session.query(model.Posting)
             .filter_by(account=c.row)
             .order_by('timestamp'))
+        # TODO: as sql
+        # import wdmmg.model.atp as atp
+        # amountq = atp.table_posting.select().where(
+        #        atp.table_posting.c.account_id==c.row.id
+        #        ).group_by(atp.table_posting.c.timestamp)
+        # c.amount = amountq.execute().fetchall()
+        c.amounts = {}
+        for posting in query:
+            c.amounts[posting.timestamp] = c.amounts.get(posting.timestamp, 0) + posting.amount
         c.page = Page(
             collection=query,
             page=int(request.params.get('page', 1)),

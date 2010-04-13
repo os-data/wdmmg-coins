@@ -2,12 +2,43 @@
   xmlns:xi="http://www.w3.org/2001/XInclude">
 
   <py:def function="page_title">Transactions for account '${c.row.name}'</py:def>
+
+  <py:def function="optional_head">
+    <!--[if IE]><script language="javascript" type="text/javascript" src="/scripts/flot-0.5/excanvas.pack.js"></script><![endif]-->
+    <script type="text/javascript" src="http://m.okfn.org/ext/flot-0.6/jquery.flot.js">//pointless jscript comment</script>
+  </py:def>
   
   <div py:def="content">
     <p>
       The following postings have been made against account
       '<a href="${url(controller='account', action='view', id_=c.row.id)}">${c.row.name}</a>':
     </p>
+
+    <div id="postings_graph" style="width:600px;height:300px"></div>
+    <script type="text/javascript">
+      var options = {
+          xaxis: {
+            mode: "time",
+            timeformat: "%y-%b"
+          },
+          legend: {
+            position: "nw",
+          },
+          colors: ["#ffcc33"]
+      };
+      var data = [
+        {label: "Amount ($)",
+          lines: {
+            fill: 1,
+            },
+        data: [ 
+        <py:for each="timestamp,amount in sorted(c.amounts.items())">
+        [ new Date(${timestamp.year}, ${timestamp.month}, ${timestamp.day}), ${amount} ],
+        </py:for>
+        ]}
+      ];
+      $.plot($("#postings_graph"), data, options);
+    </script>
 
     ${c.page.pager(items_per_page=c.items_per_page)}
     <table>
