@@ -8,9 +8,9 @@ import wdmmg.model as model
 
 def aggregate(
     slice_,
-    spender_key, # TODO: Slice-dependent default.
-    spender_values=set(['yes']),
-    breakdown_keys=[],
+    exclude=[], # list((Key, unicode))
+    include={}, # list((Key, unicode))
+    axes=[], # list(Key)
     start_date=datetime(1000, 1, 1), # Early enough?
     end_date=datetime(3000, 1, 1), # Late enough?
 ):
@@ -19,7 +19,8 @@ def aggregate(
     consists of two steps:
     
     1. Draw a boundary between the "inside" and the "outside" of the spending 
-    body, and keep only Transactions that cross the boundary.
+    body, and keep only Transactions that cross the boundary. This is
+    essentially a filter on postings.
     
     2. Classify the Transactions according to the properties of the Accounts 
     outside the boundary, and summarise the data by summing over all variables 
@@ -29,47 +30,62 @@ def aggregate(
     
     slice_ - a Slice object representing the dataset of interest.
     
-    spender_key - a Key object representing the criterion used to distinguish 
-        Accounts "inside" the spending body from those "outside" it.
+    exclude - rules for excluding postings. This is a list of (key, value)
+        pairs. A posting will be excluded if the value is a prefix
+        of the posting's account's value for the key.
     
-    spender_values - a set of the `spender_key` values representing Accounts 
-        "inside" the spending body. `None` may be used to select Accounts with
-        no value defined for `spender_key`.
+    include - rules for including postings. This is a list of (key, value)
+        pairs. A posting will be excluded unless the value is a prefix
+        of the posting's account's value for the key.
     
-    breakdown_keys - a list of Key objects representing the desired axes of 
-        the pivot table.
+    axes - a list of Key objects representing the desired axes of the pivot
+        table.
     
     start_date - a DateTime object. Transactions before this date are ignored.
         Default: 01/01/1000.
     
     end_date - a DateTime object. Transactions on or after this date are 
-        ignored. Default: now.
+        ignored. Default: 01/01/3000.
     
     Note that the timestamp that matters is the one on the Transaction object; 
     the timestamps of the individual Postings are ignored.
+    
+    Returns a (dates, axes, sparse matrix) tuple. The "dates" are a list of
+    dates in sorted order. The "axes" are a list of Key names. The sparse
+    matrix takes the form of a list of (coordinates, time series) pairs.
+    The "coordinates" are a list giving the values of the
+    Keys in the same order as they appear in `axes`. If no KeyValue exists for
+    a given Key, the value `None` is supplied. The "time series" is a list of
+    spending totals, one for each date in `dates`. If there was no spending on
+    a given date, then `0.0` is supplied.
     '''
     query, params = _make_aggregate_query(
         slice_,
-        spender_key,
-        spender_values,
-        breakdown_keys,
+        exclude,
+        include,
+        axes,
         start_date,
         end_date
     )
-    results = model.Session.execute(query, params)
-    return {
-        'metadata': {'axes': [key.name for key in breakdown_keys]},
-        'results': [
-            (row['amount'], tuple([row[i] for i, _ in enumerate(breakdown_keys)]))
-            for row in results
-        ]
-    }
+#    print query
+#    for k, v in params.items():
+#        print k, v
+    results = list(model.Session.execute(query, params))
+    dates = sorted(set([row.timestamp for row in results]))
+    date_index = dict([(date, index) for index, date in enumerate(dates)])
+    matrix = {}
+    for row in results:
+        coordinates = tuple([row[i] for i in range(len(axes))])
+        if coordinates not in matrix:
+            matrix[coordinates] = [0.0] * len(dates)
+        matrix[coordinates][date_index[row['timestamp']]] = row['amount']
+    return (dates, [key.name for key in axes], matrix.items())
 
 def _make_aggregate_query(
     slice_,
-    spender_key, # TODO: Slice-dependent default.
-    spender_values,
-    breakdown_keys,
+    exclude,
+    include,
+    axes,
     start_date,
     end_date
 ):
@@ -78,22 +94,40 @@ def _make_aggregate_query(
     `aggregate()`.
     
     Parameters: same as `aggregate()`.
-    Returns: (string, dict) representing the query and its params.
+    Returns: (string, dict) pair representing the query and its params.
     '''
     # Compute some useful strings for each breakdown key.
     bds = [{
-        'id': key.id, # The database 'id' of the Key.
-        'param': 'bd_%d_id' % i, # The SQL bind parameter whose value is `id`.
-        'name': 'bd_%d' % i, # The SQL alias used for this coordinate.
-    } for i, key in enumerate(breakdown_keys)]
-    # Compute some useful strings for each spender value.
-    svs = [{
-        'param': 'sv_%d' % i, # The SQL bind parameter whose value is `value`.
-        'value': value, # The SQL literal value.
-    } for i, value in enumerate(spender_values)]
+        'id': key.id, # The database `id` of the Key.
+        'param': 'ak_%d' % i, # The SQL bind parameter whose value is `id`.
+        'name': 'axis_%d' % i, # The SQL alias used for this coordinate.
+    } for i, key in enumerate(axes)]
 
     # Compile an SQL query and its bind parameters at the same time.
     query, params = StringIO(), {}
+    subselect_count = [0] # Use a singleton list for a mutable up-value.
+
+    def write_subselect(key, value):
+        '''
+        Writes a sub-query that selects a set of account IDs, based on the
+        value of a key. The query is a prefix search.
+        
+        key - a Key object
+        value - a unicode string that should be a prefix of the value.
+        '''
+        # Update counter, and choose unambiguous SQL bind parameter names.
+        n = subselect_count[0]
+        subselect_count[0] += 1
+        kv = {
+            'k_param': 'k_%d' % n, # The SQL bind parameter whose value is `key.id`.
+            'v_param': 'v_%d' % n, # The SQL bind parameter whose value is `value`.
+        }
+        # Write the sub-select query.
+        query.write('''(SELECT object_id FROM key_value
+    WHERE key_id = :%(k_param)s AND value LIKE :%(v_param)s)''' % kv)
+        params[kv['k_param']] = key.id
+        params[kv['v_param']] = value + '%'
+
     # SELECT
     query.write('''\
 SELECT''')
@@ -103,7 +137,8 @@ SELECT''')
         AND key_id = :%(param)s) AS %(name)s,''' % bd)
         params[bd['param']] = bd['id']
     query.write('''
-    SUM(p.amount) as amount''')
+    SUM(p.amount) as amount,
+    t.timestamp''')
     # FROM
     query.write('''
 FROM account a, posting p, "transaction" t''')
@@ -112,16 +147,15 @@ FROM account a, posting p, "transaction" t''')
 WHERE a.slice_id = :slice_id''')
     params['slice_id'] = slice_.id
     query.write('''
-AND a.id = p.account_id
-AND a.id NOT IN (SELECT object_id FROM key_value
-    WHERE key_id = :spender_key_id''')
-    params['spender_key_id'] = spender_key.id
-    query.write('''
-    AND value IN (''')
-    for sv in svs:
-        query.write(':%(param)s, ' % sv)
-        params[sv['param']] = sv['value']
-    query.write('''NULL))''') # Absorbs final comma; copes with len(svs)==0.
+AND a.id = p.account_id''')
+    for key, value in exclude:
+        query.write('''
+AND a.id NOT IN ''')
+        write_subselect(key, value)
+    for key, value in include:
+        query.write('''
+AND a.id IN ''')
+        write_subselect(key, value)
     query.write('''
 AND t.id = p.transaction_id
 AND t.timestamp >= :start_date
@@ -129,22 +163,17 @@ AND t.timestamp < :end_date''')
     params['start_date'] = start_date
     params['end_date'] = end_date
     # GROUP BY
-    separator = '''
-GROUP BY '''
+    query.write('''
+GROUP BY t.timestamp''')
     for bd in bds:
-        query.write(separator)
-        query.write('%(name)s' % bd)
-        separator = ', '
+        query.write(', %(name)s' % bd)
     # ORDER BY
-    separator = '''
-ORDER BY '''
+    query.write('''
+ORDER BY t.timestamp''')
     for bd in bds:
-        query.write(separator)
-        query.write('%(name)s' % bd)
-        separator = ', '
+        query.write(', %(name)s' % bd)
 
     return (query.getvalue(), params)
-    
 
 # Following attempt to alchemise the raw SQL fails.
 # Problem is that the sub-query `dept_sq` has a free variable

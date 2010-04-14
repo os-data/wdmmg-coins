@@ -16,22 +16,28 @@ class TestApiController(TestController):
         assert '''the following requests:''' in response, response
         print type(response)
         assert re.search(r'api/aggregate\?.*slice=', response), response
-        assert re.search(r'api/aggregate\?.*spender_key=', response), response
-        assert re.search(r'api/aggregate\?.*spender_value=', response), response
-        assert re.search(r'api/aggregate\?.*breakdown_key1=', response), response
+        assert re.search(r'api/aggregate\?.*exclude-', response), response
+        assert re.search(r'api/aggregate\?.*include-', response), response
+        assert re.search(r'api/aggregate\?.*breakdown-', response), response
         assert re.search(r'api/aggregate\?.*start_date=', response), response
         assert re.search(r'api/aggregate\?.*end_date=', response), response
 
     def test_aggregate(self):
         response = self.app.get(url(controller='api', action='aggregate',
             slice='cra'))
-        assert '"metadata": {"axes": []}' in response
+        assert '"metadata": {' in response, response
+        assert '"slice": "cra"' in response, response
+        assert '"exclude": []' in response, response
+        assert '"include": []' in response, response
+        assert '"dates": ["' in response, response
+        assert '"axes": []' in response, response
         assert '"results": [[' in response
 
     def test_aggregate_with_breakdown(self):
-        response = self.app.get(url(controller='api', action='aggregate',
-            slice='cra', breakdown_key1='region'))
-        assert '"metadata": {"axes": ["region"]}' in response, response
-        assert '"results": [[' in response, response
+        u = url(controller='api', action='aggregate',
+            slice='cra', **{'breakdown-region': 'yes'})
+        print u
+        response = self.app.get(u)
+        assert '"axes": ["region"]' in response, response
         assert '"ENGLAND_London"' in response, response
 

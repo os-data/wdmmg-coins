@@ -36,22 +36,25 @@ over all other axes.
 
 Example:
 
-    %(aggregate)s?slice=cra&spender_key=spender&spender_value=yes&breakdown_key1=dept&breakdown_key2=region&start_date=2004-01-01&end_date=2005-01-01
+    %(aggregate)s?slice=cra&exclude-spender=yes&include-function=7&breakdown-dept=yes&breakdown-region=yes&start_date=2004-01-01&end_date=2005-01-01
 
 Parameters:
 
-    slice - the name of the data set to retrieve.
+    slice=<value> - the name of the data set to retrieve. In the above example, 'cra'
+        is the name of the Country Regional Analysis data set.
     
-    spender_key (optional, default='spender') - the key name used to 
-        distinguish source accounts from destination accounts. Data is only 
-        returned for destination accounts.
+    exclude-<key>=<value> (optional, repeatable) - omit postings whose <key>
+        matches <value> (prefix search). In the above example, this is used to
+        exclude postings on the central government account, whose "spender"
+        attribute is "yes".
+        
+    include-<key>=<value> (optional, repeatable) - omit postings whose <key>
+        does not match <value> (prefix search). In the above example, this is
+        used to examine only accounts whose "function" begins with "7" (meaning
+        "Health").
     
-    spender_value (optional, default='yes') - the value that 'spender_key' 
-        adopts for source accounts.
-    
-    breakdown_key1 - The key name used to define the first axis.
-    
-    breakdown_key2 - etc.
+    breakdown-<key>=<value> (optional, repeatable) - Makes an axis with <key>
+        as its coordinate. <value> is ignored.
     
     start_date (optional, default='1000-01-01') - Tranactions before this date 
         are ignored.
@@ -67,31 +70,65 @@ Parameters:
         slice_ = (model.Session.query(model.Slice)
             .filter_by(name=request.params.get('slice'))
             ).one() # FIXME: Nicer error message needed.
-        spender_key = (model.Session.query(model.Key)
-#            .filter_by(slice_=slice_)
-            .filter_by(name=request.params.get('spender_key', u'spender'))
-            ).one() # FIXME: Nicer error message needed.
-        spender_value = request.params.get('spender_value', u'yes')
-        breakdown_keys = []
-        while True:
-            n = 1 + len(breakdown_keys)
-            bd_key_name = request.params.get('breakdown_key%d' % n)
-            if not bd_key_name:
-                break
-            bd_key = (model.Session.query(model.Key)
-                .filter_by(name=bd_key_name)
-                ).one() # FIXME: Nicer error message needed.
-            breakdown_keys.append(bd_key)
         start_date = ApiController.to_datetime(
             request.params.get('start_date', '1000-01-01'))
         end_date = ApiController.to_datetime(
             request.params.get('end_date', '3000-01-01'))
-        return aggregator.aggregate(
+        # Retrieve request parameters of the form "verb-key=value"
+        include, exclude, axes = [], [], []
+        for param, value in request.params.items():
+            if param.startswith('exclude-'):
+                key = (model.Session.query(model.Key)
+                    .filter_by(name=unicode(param[8:]))
+                    ).one() # FIXME: Nicer error message needed.
+                exclude.append((key, value))
+            elif param.startswith('include-'):
+                key = (model.Session.query(model.Key)
+                    .filter_by(name=unicode(param[8:]))
+                    ).one() # FIXME: Nicer error message needed.
+                include.append((key, value))
+            elif param.startswith('breakdown-'):
+                key = (model.Session.query(model.Key)
+                    .filter_by(name=unicode(param[10:]))
+                    ).one() # FIXME: Nicer error message needed.
+                axes.append(key) # Value ignored (e.g. "yes").
+            # TODO: Other verbs: "per", ...
+#        print slice_
+#        print exclude
+#        print include
+#        print axes
+        dates, axes, matrix = aggregator.aggregate(
             slice_,
-            spender_key=spender_key,
-            spender_values=set([spender_value]),
-            breakdown_keys=breakdown_keys,
-            start_date=start_date,
-            end_date=end_date
+            exclude,
+            include,
+            axes,
+            start_date,
+            end_date
         )
+        return {
+            'metadata': {
+                'slice': slice_.name,
+                'exclude': [(k.name, v) for (k, v) in exclude],
+                'include': [(k.name, v) for (k, v) in include],
+                'dates': dates,
+                'axes': axes,
+            },
+            'results': matrix,
+        }
 
+# TODO: Move JSON structure into this controller. Useful code follows...
+'''
+    return {
+        'metadata': {
+            'exclude': dict([(key.name, value) for key, value in exclude]),
+            'include': dict([(key.name, value) for key, value in exclude]),
+            'axes': [key.name for key in breakdown_keys]
+            'start_date': 
+            'end_date':
+        },
+        'results': [
+            (row['amount'], tuple([row[i] for i, _ in enumerate(axes)]))
+            for row in results
+        ]
+    }
+'''
