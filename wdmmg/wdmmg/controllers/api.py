@@ -110,7 +110,7 @@ Parameters:
                 'slice': slice_.name,
                 'exclude': [(k.name, v) for (k, v) in exclude],
                 'include': [(k.name, v) for (k, v) in include],
-                'dates': dates,
+                'dates': [unicode(d) for d in dates],
                 'axes': axes,
             },
             'results': matrix,
