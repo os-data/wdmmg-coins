@@ -54,12 +54,12 @@ class TestAccountBasics(object):
         pog1 = model.EnumerationValue(name=u'surestart', key=pog)
         pog2 = model.EnumerationValue(name=u'anotherstart', key=pog)
 
-        kv1 = model.KeyValue(ns=u'account', account=acc_src, key=region,
+        kv1 = model.KeyValue(ns=u'account', ns_account=acc_src, key=region,
                 value=northwest.name)
         acc_src.keyvalues[region] = northeast.name # This should overwrite the KeyValue explicitly constructed above.
         acc_src.keyvalues[randomkey]= u'annakarenina' # This should create a new KeyValue.
 
-        kv2 = model.KeyValue(ns=u'account', account=acc_dest, key=randomkey,
+        kv2 = model.KeyValue(ns=u'account', ns_account=acc_dest, key=randomkey,
                 value=u'orangesarenottheonlyfruit') # This one should not get overwritten.
         acc_dest.keyvalues[region] = northwest.name # This should create a new KeyValue.
 
@@ -91,7 +91,7 @@ class TestAccountBasics(object):
         assert northeast.key == region, northest.key
         assert northeast.name == u'Northeast', northeast.name
         
-        acc_src_region_kv = model.Session.query(model.KeyValue).filter_by(account=acc_src).filter_by(key=region).one()
+        acc_src_region_kv = model.Session.query(model.KeyValue).filter_by(ns_account=acc_src).filter_by(key=region).one()
         assert acc_src_region_kv.value == u'Northeast'
         assert acc_src_region_kv.enumeration_value == northeast, acc_src_region_kv.enumeration_value
         assert acc_src._keyvalues[region] == acc_src_region_kv
