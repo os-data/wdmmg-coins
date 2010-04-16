@@ -135,16 +135,10 @@ def load():
 
     import datapkg
     indexpath = config['getdata_cache']
-    pkgname = 'ukgov_finances_ccra'
+    pkgname = 'ukgov_finances_cra'
     # could just use pkg path ...
     pkgspec = 'file://%s' % os.path.join(indexpath, pkgname)
     pkg = datapkg.load_package(pkgspec)
-    # idx,_ = spec.index_from_spec()
-#    if 'ukgov_finances_cra' not in idx:
-#        msg = 'You need to install the CRA datapkg: datapkg install ukgov-finances-cra'
-#        print(msg)
-#        return
-    # pkg = idx.get('uukgov_finances_cra')
     fileobj = pkg.stream('cra_2009_db.csv')
     CRALoader.load(fileobj, commit_every=100)
     model.Session.commit()
