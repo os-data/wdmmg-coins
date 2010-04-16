@@ -37,6 +37,7 @@ class TestAccountBasics(object):
         assert len(txn.postings) == 2, txn
         assert self.accsrc in [ posting.account.name for posting in txn.postings ]
 
+    # TODO: Factor this into multiple tests, with setup done somewhere sensible.
     def test_02(self):
         slice_ = model.Session.query(model.Slice).filter_by(name=self.slice_).one()
         acc_src = (model.Session.query(model.Account)
@@ -100,4 +101,16 @@ class TestAccountBasics(object):
         
         assert acc_dest.keyvalues[region] == u'Northwest'
         assert acc_dest.keyvalues[randomkey] == u'orangesarenottheonlyfruit'
-
+        
+        # Test purging of KeyValues.
+        before_count = model.Session.query(model.KeyValue).count()
+        acc_src.keyvalues = {}
+        model.Session.commit()
+        model.Session.remove()
+        
+        acc_src = model.Session.query(model.Account).filter_by(name=self.accsrc).one()
+        assert not acc_src.keyvalues
+        print [str(x) for x in model.Session.query(model.KeyValue).all()]
+        after_count = model.Session.query(model.KeyValue).count()
+        assert before_count > after_count, (before_count, after_count)
+        

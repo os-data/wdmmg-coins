@@ -45,7 +45,8 @@ def add_keyvalues(domain_object, proxy_name='keyvalues',
         primaryjoin=primaryjoin,
         foreign_keys=foreign_keys,
         collection_class=attribute_mapped_collection('key'),
-        backref='ns_'+domain_object.__name__.lower()
+        backref='ns_'+domain_object.__name__.lower(),
+        cascade='all, delete, delete-orphan'
         )
     )
     from sqlalchemy.ext.associationproxy import association_proxy
