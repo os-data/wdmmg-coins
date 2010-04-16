@@ -45,7 +45,8 @@ def add_keyvalues(domain_object, proxy_name='keyvalues',
         primaryjoin=primaryjoin,
         foreign_keys=foreign_keys,
         collection_class=attribute_mapped_collection('key'),
-        backref=domain_object.__name__.lower()
+        backref='ns_'+domain_object.__name__.lower(),
+        cascade='all, delete, delete-orphan'
         )
     )
     from sqlalchemy.ext.associationproxy import association_proxy
@@ -59,13 +60,14 @@ def add_keyvalues(domain_object, proxy_name='keyvalues',
 make_uuid = lambda: unicode(uuid.uuid4())
 table_key = Table('key', meta.metadata,
     Column('id', UnicodeText(), primary_key=True, default=make_uuid),
-    Column('name', UnicodeText()),
+    Column('name', UnicodeText(), unique=True),
     Column('notes', UnicodeText()),
     )
 
 table_enumeration_value = Table('enumeration_value', meta.metadata,
-    Column('key_id', UnicodeText(), ForeignKey('key.id'), primary_key=True),
-    Column('name', UnicodeText(), primary_key=True),
+    Column('id', UnicodeText(), primary_key=True, default=make_uuid),
+    Column('key_id', UnicodeText(), ForeignKey('key.id')),
+    Column('name', UnicodeText()),
     Column('notes', UnicodeText()),
     )
 
@@ -83,13 +85,16 @@ mapper(Key, table_key,
     )
 
 mapper(EnumerationValue, table_enumeration_value, properties={
-        'key': relation(Key, backref='enumeration_values'),
+        'key': relation(Key, backref=backref(
+            'enumeration_values',
+            cascade='all, delete, delete-orphan'
+        )),
     },
     order_by=[table_enumeration_value.c.key_id,table_enumeration_value.c.name]
     )
 
 mapper(KeyValue, table_key_value, properties={
-        'key': relation(Key, backref='key_values'),
+        'key': relation(Key, backref=backref('key_values', cascade='all, delete, delete-orphan')),
         'enumeration_value': relation(
             EnumerationValue,
             primaryjoin=and_(
@@ -104,4 +109,6 @@ mapper(KeyValue, table_key_value, properties={
     order_by=table_key_value.c.id
     )
 
+add_keyvalues(Key)
+add_keyvalues(EnumerationValue)
 

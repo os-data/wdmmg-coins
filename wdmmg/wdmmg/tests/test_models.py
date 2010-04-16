@@ -37,6 +37,7 @@ class TestAccountBasics(object):
         assert len(txn.postings) == 2, txn
         assert self.accsrc in [ posting.account.name for posting in txn.postings ]
 
+    # TODO: Factor this into multiple tests, with setup done somewhere sensible.
     def test_02(self):
         slice_ = model.Session.query(model.Slice).filter_by(name=self.slice_).one()
         acc_src = (model.Session.query(model.Account)
@@ -54,12 +55,12 @@ class TestAccountBasics(object):
         pog1 = model.EnumerationValue(name=u'surestart', key=pog)
         pog2 = model.EnumerationValue(name=u'anotherstart', key=pog)
 
-        kv1 = model.KeyValue(ns=u'account', account=acc_src, key=region,
+        kv1 = model.KeyValue(ns=u'account', ns_account=acc_src, key=region,
                 value=northwest.name)
         acc_src.keyvalues[region] = northeast.name # This should overwrite the KeyValue explicitly constructed above.
         acc_src.keyvalues[randomkey]= u'annakarenina' # This should create a new KeyValue.
 
-        kv2 = model.KeyValue(ns=u'account', account=acc_dest, key=randomkey,
+        kv2 = model.KeyValue(ns=u'account', ns_account=acc_dest, key=randomkey,
                 value=u'orangesarenottheonlyfruit') # This one should not get overwritten.
         acc_dest.keyvalues[region] = northwest.name # This should create a new KeyValue.
 
@@ -91,7 +92,7 @@ class TestAccountBasics(object):
         assert northeast.key == region, northest.key
         assert northeast.name == u'Northeast', northeast.name
         
-        acc_src_region_kv = model.Session.query(model.KeyValue).filter_by(account=acc_src).filter_by(key=region).one()
+        acc_src_region_kv = model.Session.query(model.KeyValue).filter_by(ns_account=acc_src).filter_by(key=region).one()
         assert acc_src_region_kv.value == u'Northeast'
         assert acc_src_region_kv.enumeration_value == northeast, acc_src_region_kv.enumeration_value
         assert acc_src._keyvalues[region] == acc_src_region_kv
@@ -100,4 +101,43 @@ class TestAccountBasics(object):
         
         assert acc_dest.keyvalues[region] == u'Northwest'
         assert acc_dest.keyvalues[randomkey] == u'orangesarenottheonlyfruit'
+        
+        # Test cascading deletion of KeyValues when removed from objects.
+        print [str(x) for x in model.Session.query(model.KeyValue).all()]
+        before_count = model.Session.query(model.KeyValue).count()
+        acc_src.keyvalues.clear()
+        model.Session.commit()
+        model.Session.remove()
+        
+        acc_src = model.Session.query(model.Account).filter_by(name=self.accsrc).one()
+        assert not acc_src.keyvalues
+        print [str(x) for x in model.Session.query(model.KeyValue).all()]
+        after_count = model.Session.query(model.KeyValue).count()
+        assert before_count > after_count, (before_count, after_count)
+        
+        # Test cascading deletion of EnumerationValues when Keys are deleted.
+        print [str(x) for x in model.Session.query(model.EnumerationValue).all()]
+        before_count = model.Session.query(model.EnumerationValue).count()
+        region = model.Session.query(model.Key).filter_by(name=u'region').one()
+        print 'region =', region
+        model.Session.delete(region)
+        model.Session.commit()
+        model.Session.remove()
+
+        print [str(x) for x in model.Session.query(model.EnumerationValue).all()]
+        after_count = model.Session.query(model.EnumerationValue).count()
+        assert before_count > after_count, (before_count, after_count)
+        
+        # Test cascading deletion of KeyValues when Keys are deleted.
+        print [str(x) for x in model.Session.query(model.KeyValue).all()]
+        before_count = model.Session.query(model.KeyValue).count()
+        randomkey = model.Session.query(model.Key).filter_by(name=u'randomkey').one()
+        print 'randomkey =', randomkey
+        model.Session.delete(randomkey)
+        model.Session.commit()
+        model.Session.remove()
+
+        print [str(x) for x in model.Session.query(model.KeyValue).all()]
+        after_count = model.Session.query(model.KeyValue).count()
+        assert before_count > after_count, (before_count, after_count)
 
