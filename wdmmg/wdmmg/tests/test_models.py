@@ -102,9 +102,10 @@ class TestAccountBasics(object):
         assert acc_dest.keyvalues[region] == u'Northwest'
         assert acc_dest.keyvalues[randomkey] == u'orangesarenottheonlyfruit'
         
-        # Test purging of KeyValues.
+        # Test cascading deletion of KeyValues when removed from objects.
+        print [str(x) for x in model.Session.query(model.KeyValue).all()]
         before_count = model.Session.query(model.KeyValue).count()
-        acc_src.keyvalues = {}
+        acc_src.keyvalues.clear()
         model.Session.commit()
         model.Session.remove()
         
@@ -114,3 +115,29 @@ class TestAccountBasics(object):
         after_count = model.Session.query(model.KeyValue).count()
         assert before_count > after_count, (before_count, after_count)
         
+        # Test cascading deletion of EnumerationValues when Keys are deleted.
+        print [str(x) for x in model.Session.query(model.EnumerationValue).all()]
+        before_count = model.Session.query(model.EnumerationValue).count()
+        region = model.Session.query(model.Key).filter_by(name=u'region').one()
+        print 'region =', region
+        model.Session.delete(region)
+        model.Session.commit()
+        model.Session.remove()
+
+        print [str(x) for x in model.Session.query(model.EnumerationValue).all()]
+        after_count = model.Session.query(model.EnumerationValue).count()
+        assert before_count > after_count, (before_count, after_count)
+        
+        # Test cascading deletion of KeyValues when Keys are deleted.
+        print [str(x) for x in model.Session.query(model.KeyValue).all()]
+        before_count = model.Session.query(model.KeyValue).count()
+        randomkey = model.Session.query(model.Key).filter_by(name=u'randomkey').one()
+        print 'randomkey =', randomkey
+        model.Session.delete(randomkey)
+        model.Session.commit()
+        model.Session.remove()
+
+        print [str(x) for x in model.Session.query(model.KeyValue).all()]
+        after_count = model.Session.query(model.KeyValue).count()
+        assert before_count > after_count, (before_count, after_count)
+

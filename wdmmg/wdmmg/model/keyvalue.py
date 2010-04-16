@@ -85,13 +85,16 @@ mapper(Key, table_key,
     )
 
 mapper(EnumerationValue, table_enumeration_value, properties={
-        'key': relation(Key, backref='enumeration_values'),
+        'key': relation(Key, backref=backref(
+            'enumeration_values',
+            cascade='all, delete, delete-orphan'
+        )),
     },
     order_by=[table_enumeration_value.c.key_id,table_enumeration_value.c.name]
     )
 
 mapper(KeyValue, table_key_value, properties={
-        'key': relation(Key, backref='key_values'),
+        'key': relation(Key, backref=backref('key_values', cascade='all, delete, delete-orphan')),
         'enumeration_value': relation(
             EnumerationValue,
             primaryjoin=and_(
