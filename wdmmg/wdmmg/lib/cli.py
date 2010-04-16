@@ -28,9 +28,10 @@ class WdmmgCommand(paste.script.command.Command):
 class ManageDb(WdmmgCommand):
     '''Perform various tasks on the database.
     
-    db create # create
-    db init # create and put in default data
+    db create
     db clean
+    db rebuild # clean and create
+    db init # create and put in default data
     # db upgrade [{version no.}] # Data migrate
     '''
     summary = __doc__.split('\n')[0]
@@ -49,6 +50,8 @@ class ManageDb(WdmmgCommand):
             model.repo.init_db()
         elif cmd == 'clean' or cmd == 'drop':
             model.repo.clean_db()
+        elif cmd == 'rebuild':
+            model.repo.rebuild_db()
         elif cmd == 'upgrade':
             if len(self.args) > 1:
                 model.repo.upgrade_db(self.args[1])
@@ -107,4 +110,24 @@ class Fixtures(WdmmgCommand):
         from wdmmg import model
         model.repo.delete_all()
         model.Session.remove()
+
+
+class Loader(WdmmgCommand):
+    '''Load external data into domain model.
+
+        cra: Load CRA data.
+    '''
+    summary = __doc__.split('\n')[0]
+    usage = __doc__
+    max_args = None
+    min_args = 1
+
+    def command(self):
+        self._load_config()
+        cmd = self.args[0]
+        if cmd == 'cra':
+            import wdmmg.getdata.cra
+            wdmmg.getdata.cra.load()
+        else:
+            print 'Action not recognized'
 

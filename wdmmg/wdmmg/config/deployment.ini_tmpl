@@ -19,7 +19,7 @@ use = egg:wdmmg
 full_stack = true
 static_files = true
 
-cache_dir = %(here)s/data
+cache_dir = %(here)s/pylons_data
 beaker.session.key = wdmmg
 beaker.session.secret = ${app_instance_secret}
 app_instance_uuid = ${app_instance_uuid}
@@ -29,6 +29,9 @@ app_instance_uuid = ${app_instance_uuid}
 # here:
 #beaker.cache.data_dir = %(here)s/data/cache
 #beaker.session.data_dir = %(here)s/data/sessions
+
+# (wdmmg) directory for storing downloaded data and the like
+getdata_cache = %(cache_dir)s/getdata
 
 # SQLAlchemy database URL
 sqlalchemy.url = sqlite:///production.db

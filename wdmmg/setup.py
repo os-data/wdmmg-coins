@@ -32,5 +32,6 @@ setup(
     [paste.paster_command]
     db = wdmmg.lib.cli:ManageDb
     fixtures = wdmmg.lib.cli:Fixtures
+    loader = wdmmg.lib.cli:Loader
     """,
 )
