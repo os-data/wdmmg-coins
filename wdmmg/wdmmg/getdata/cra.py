@@ -159,7 +159,7 @@ class CRALoader(object):
             if len(cofog_parts) >= 2:
                 dest.keyvalues[key_cofog2] = cofog_parts[1]
             if len(cofog_parts) >= 3:
-                dest.keyvalues[key_cofog2] = cofog_parts[2]
+                dest.keyvalues[key_cofog3] = cofog_parts[2]
             
             # Make a Transaction for each non-zero expenditure.
             for year, exp in zip(years, expenditures):

@@ -41,7 +41,11 @@ class TestCRALoader(object):
         assert out > 5, out
     
     def test_keys(self):
-        for key_name in u'dept', u'pog', u'cofog1', u'region':
-            out = model.Session.query(model.Key).filter_by(name=key_name).one()
-            assert out, key_name
+        for key_name in u'dept', u'pog', u'cofog1', u'cofog2', u'cofog3', u'region':
+            key = model.Session.query(model.Key).filter_by(name=key_name).one()
+            assert key, key_name
+            count = (model.Session.query(model.KeyValue)
+                .filter_by(key=key)
+                ).count()
+            assert count, (key_name, count)
 
