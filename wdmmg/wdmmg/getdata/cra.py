@@ -226,7 +226,7 @@ def load():
     # Make a CofogMapper.
     cofog_mapper = CofogMapper(json.load(pkg.stream('cofog_map.json')))
     # Load the data.
-    CRALoader.load(pkg.stream('cra_2009_db.csv'), cofog_mapper, commit_every=100)
+    CRALoader.load(pkg.stream('cra_2009_db.csv'), cofog_mapper, commit_every=1000)
     model.Session.commit()
     model.Session.remove()
 
