@@ -1,4 +1,6 @@
-import os, sys, csv, json, re
+import os, sys, csv, re
+try: import json
+except ImportError: import simplejson as json
 from datetime import date
 
 import datapkg
