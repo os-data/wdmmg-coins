@@ -33,7 +33,7 @@
             },
         data: [ 
         <py:for each="timestamp,amount in sorted(c.amounts.items())">
-        [ new Date(int(timestamp[:4]), 4, 5), ${amount} ],
+        [ new Date(${int(timestamp[:4])}, 4, 5), ${amount} ],
         </py:for>
         ]}
       ];
