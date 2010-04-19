@@ -8,7 +8,7 @@ class TestAccountBasics(object):
         self.slice_ = u'test'
         self.accsrc = u'acc1'
         self.accdest = u'acc2'
-        self.timestamp = datetime.now()
+        self.timestamp = u'now'
         slice_ = model.Slice(name=self.slice_)
         acc_src = model.Account(slice_=slice_, name=self.accsrc)
         acc_dest = model.Account(slice_=slice_, name=self.accdest)

@@ -10,7 +10,7 @@
       <dd><a href="/slice/${c.row.slice_.id}">${c.row.slice_.name}</a></dd>
       
       <dt>Date:</dt>
-      <dd>${c.row.timestamp.strftime('%Y-%m-%d')}</dd>
+      <dd>${c.row.timestamp}</dd>
       
       <dt>Postings:</dt>
       <dd>
@@ -22,7 +22,7 @@
           </tr>
           
           <tr py:for="p in c.row.postings">
-            <td>${p.timestamp.strftime('%Y-%m-%d')}</td>
+            <td>${p.timestamp}</td>
             
             <td class="credit" py:if="p.amount &gt;= 0">${p.amount}</td>
             <td class="debit" py:if="p.amount &lt; 0">(${p.amount})</td>

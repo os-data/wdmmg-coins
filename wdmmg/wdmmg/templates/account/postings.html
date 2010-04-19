@@ -33,7 +33,7 @@
             },
         data: [ 
         <py:for each="timestamp,amount in sorted(c.amounts.items())">
-        [ new Date(${timestamp.year}, ${timestamp.month}, ${timestamp.day}), ${amount} ],
+        [ new Date(int(timestamp[:4]), 4, 5), ${amount} ],
         </py:for>
         ]}
       ];
@@ -53,7 +53,7 @@
             ${p.id}
           </a>
         </td>
-        <td>${p.timestamp.strftime('%Y-%m-%d')}</td>
+        <td>${p.timestamp}</td>
         <td class="credit" py:if="p.amount &gt;= 0">${p.amount}</td>
         <td class="debit" py:if="p.amount &lt; 0">(${p.amount})</td>
       </tr>

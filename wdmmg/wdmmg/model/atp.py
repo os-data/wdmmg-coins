@@ -26,6 +26,7 @@ class Transaction(DomainObject):
     @classmethod
     def create_with_postings(cls, slice_, timestamp, amount, src, dest,
             currency='gbp'):
+        assert isinstance(timestamp, unicode)
         txn = cls(slice_=slice_, timestamp=timestamp)
         srcposting = Posting(timestamp=timestamp, amount=-amount, account=src, transaction=txn)
         destposting = Posting(timestamp=timestamp, amount=amount, account=dest, transaction=txn)
@@ -57,13 +58,13 @@ table_account = Table('account', meta.metadata,
 table_transaction = Table('transaction', meta.metadata,
     Column('id', UnicodeText(), primary_key=True, default=make_uuid),
     Column('slice_id', UnicodeText(), ForeignKey('slice.id')),
-    Column('timestamp', DateTime()),
+    Column('timestamp', UnicodeText()),
     Column('notes', UnicodeText()),
     )
 
 table_posting = Table('posting', meta.metadata,
     Column('id', UnicodeText(), primary_key=True, default=make_uuid),
-    Column('timestamp', DateTime()),
+    Column('timestamp', UnicodeText()),
     Column('amount', Float()),
     Column('currency', UnicodeText()),
     Column('account_id', UnicodeText(), ForeignKey('account.id'), index=True),

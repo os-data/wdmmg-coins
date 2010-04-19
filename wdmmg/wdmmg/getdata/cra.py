@@ -108,9 +108,7 @@ class CRALoader(object):
         reader = csv.reader(fileobj)
         header = reader.next()
         year_col_start = 10
-        # TODO: Represent dates as opaque unicode strings.
-        years = [date(int(x[:4]), 4, 5) # TBC: Periods start on 5th April
-            for x in header[year_col_start:]]
+        years = [unicode(x) for x in header[year_col_start:]]
         for row_index, row in enumerate(reader):
             # Progress output.
             if commit_every and row_index%commit_every == 0:
@@ -176,13 +174,13 @@ def drop():
     '''
     # Delete only the keys we created ourselves.
     # TODO: Move as many as possible of these into separate data packages.
-    for name in ['dept', 'function', 'subfunction', 'pog', 'cap_or_cur', 'region']:
+    for name in [u'dept', u'pog', u'cap_or_cur', u'region']:
         key = (model.Session.query(model.Key)
             .filter_by(name=name)
-            ).one()
-        assert key, name
-        key.keyvalues.clear()
-        model.Session.delete(key)
+            ).first()
+        if key:
+            key.keyvalues.clear()
+            model.Session.delete(key)
     # Delete ATP structure.
     # TODO: ORM-ise this code.
     slice_ = (model.Session.query(model.Slice)
@@ -190,11 +188,10 @@ def drop():
         ).one()
     assert slice_
     (model.Session.query(model.KeyValue)
-        .join(model.Posting)
-        .filter(model.KeyValue.object_id == model.Posting.id)
-        .filter_by(ns='posting')
+        .join((model.Posting, model.KeyValue.object_id == model.Posting.id))
+        .filter(model.KeyValue.ns == 'posting')
         .join(model.Account)
-        .filter_by(slice_=slice_)
+        .filter(model.Account.slice_ == slice_)
         ).delete()
     (model.Session.query(model.Posting)
         .join(model.Account)
