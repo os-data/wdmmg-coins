@@ -24,46 +24,9 @@ class ApiController(BaseController):
         return datetime.strptime(s, '%Y-%m-%d') # FIXME: Nicer error message needed.
 
     def index(self):
-        response.content_type = 'text/plain'
-        return '''\
-This controller responds to the following requests:
-
-aggregate
-=========
-
-Retrieves a slice, specifying axes of interest. The data will be aggregated 
-over all other axes.
-
-Example:
-
-    %(aggregate)s?slice=cra&exclude-spender=yes&include-function=7&breakdown-dept=yes&breakdown-region=yes&start_date=2004-01-01&end_date=2005-01-01
-
-Parameters:
-
-    slice=<value> - the name of the data set to retrieve. In the above example, 'cra'
-        is the name of the Country Regional Analysis data set.
-    
-    exclude-<key>=<value> (optional, repeatable) - omit postings whose <key>
-        matches <value> (prefix search). In the above example, this is used to
-        exclude postings on the central government account, whose "spender"
-        attribute is "yes".
-        
-    include-<key>=<value> (optional, repeatable) - omit postings whose <key>
-        does not match <value> (prefix search). In the above example, this is
-        used to examine only accounts whose "function" begins with "7" (meaning
-        "Health").
-    
-    breakdown-<key>=<value> (optional, repeatable) - Makes an axis with <key>
-        as its coordinate. <value> is ignored.
-    
-    start_date (optional, default='1000-01-01') - Tranactions before this date 
-        are ignored.
-    
-    end_date (optional, default='3000-01-01') - Transactions on or after this 
-        date are ignored.
-''' % {
-        'aggregate': url(controller='api', action='aggregate')
-    }
+        c.aggregate_url = url(controller='api', action='aggregate') + \
+        'slice=cra&exclude-spender=yes&include-function=7&breakdown-dept=yes&breakdown-region=yes&start_date=2004-01-01&end_date=2005-01-01'
+        return render('home/api.html')
 
     @jsonify
     def aggregate(self):

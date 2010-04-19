@@ -1,0 +1,44 @@
+<html xmlns:py="http://genshi.edgewall.org/"
+  xmlns:xi="http://www.w3.org/2001/XInclude">
+
+  <py:def function="page_title">API</py:def>
+
+  <div py:def="content">
+    <h2>The Store API</h2>
+    <p>This controller responds to the following requests:</p>
+
+    <h3>Aggregate</h3>
+
+    <p>Retrieves a slice, specifying axes of interest. The data will be
+    aggregated over all other axes.</p>
+    <p>Example:</p>
+
+    <p>
+      <a href="${c.aggregate_url}">${c.aggregate_url}</a>
+    </p>
+
+    <p>Parameters:</p>
+    <ul>
+      <li>slice={value} - the name of the data set to retrieve. In the above
+      example, 'cra' is the name of the Country Regional Analysis data
+      set.</li>
+      <li>exclude-{key}={value} (optional, repeatable) - omit postings whose {key}
+        matches {value} (prefix search). In the above example, this is used to
+        exclude postings on the central government account, whose "spender"
+        attribute is "yes".</li>
+      <li>include-{key}={value} (optional, repeatable) - omit postings whose {key}
+        does not match {value} (prefix search). In the above example, this is
+        used to examine only accounts whose 'function' begins with '7' (meaning
+        'Health').</li>
+      <li>breakdown-{key}={value} (optional, repeatable) - Makes an axis with {key}
+      as its coordinate. {value} is ignored.</li>
+      <li>start_date (optional, default='1000-01-01') - Tranactions before this date 
+      are ignored.</li>
+      <li>end_date (optional, default='3000-01-01') - Transactions on or after this 
+      date are ignored.</li>
+    </ul>
+  </div>
+
+  <xi:include href="../layout.html" />
+</html>
+
