@@ -1,0 +1,12 @@
+Code          Description
+03            Public order and safety
+03.3          Law courts
+04            Economic affairs
+04.1          General economic, commercial and labour affairs
+04.5          Transport
+04.5.3        Railway transport  (CS)
+06            Housing and community amenities
+07            Health
+10            Social protection
+10.1          Sickness and disability
+10.4          Family and children

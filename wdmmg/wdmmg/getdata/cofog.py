@@ -38,8 +38,15 @@ def load():
     cache = swiss.Cache(path='/tmp/')
     filename = cache.retrieve('http://unstats.un.org/unsd/cr/registry/regdntransfer.asp?f=4')
     zipfile = ZipFile(filename, 'r')
-    txtfile = zipfile.open('COFOG_english_structure.txt', 'rU')
-    headings = txtfile.readline()
+    load_file(zipfile.open('COFOG_english_structure.txt', 'rU'))
+    zipfile.close()
+
+def load_file(fileobj):
+    '''
+    Loads the specified COFOG-like file into the database with key names
+    'cofog1', 'cofog2' and 'cofog3'.
+    '''
+    headings = fileobj.readline()
     # Semaphore to avoid creating multiple copies.
     assert not model.Session.query(model.Key).filter_by(name=u'cofog1').first()
     # Create the 'parent' Key if necessary.
@@ -56,7 +63,7 @@ def load():
     key_cofog3.keyvalues[key_parent] = key_cofog2.name
     model.Session.commit()
     # Create the enumeration values.
-    for line in txtfile.readlines():
+    for line in fileobj.readlines():
         print line
         words = line.split()
         code, description = unicode(words[0]), u' '.join(words[1:])
@@ -81,5 +88,4 @@ def load():
             assert False, code
     model.Session.commit()
     model.Session.remove()
-    zipfile.close()
 

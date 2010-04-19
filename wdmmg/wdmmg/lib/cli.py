@@ -85,12 +85,15 @@ class Fixtures(WdmmgCommand):
     @classmethod
     def setup(self):
         from wdmmg import model
-        import pkg_resources
-        from wdmmg.getdata.cra import CRALoader
+        import pkg_resources, json
+        from wdmmg.getdata import cofog
+        from wdmmg.getdata.cra import CRALoader, CofogMapper
         model.repo.delete_all()
         model.Session.remove()
+        cofog.load_file(pkg_resources.resource_stream('wdmmg', 'tests/COFOG_english_structure_short.txt'))
+        cofog_mapper = CofogMapper(json.load(pkg_resources.resource_stream('wdmmg', 'tests/cofog_map_short.json')))
         fileobj = pkg_resources.resource_stream('wdmmg', 'tests/cra_2009_db_short.csv')
-        CRALoader.load(fileobj)
+        CRALoader.load(fileobj, cofog_mapper)
         model.Session.commit()
         model.Session.remove()
         self.slice_ = (model.Session.query(model.Slice)
@@ -102,8 +105,10 @@ class Fixtures(WdmmgCommand):
         self.spender = model.Session.query(model.Key).filter_by(name=u'spender').one()
         self.dept = model.Session.query(model.Key).filter_by(name=u'dept').one()
         self.pog = model.Session.query(model.Key).filter_by(name=u'pog').one()
-        self.cofog = model.Session.query(model.Key).filter_by(name=u'function').one()
         self.region = model.Session.query(model.Key).filter_by(name=u'region').one()
+        self.cofog1 = model.Session.query(model.Key).filter_by(name=u'cofog1').one()
+        self.cofog2 = model.Session.query(model.Key).filter_by(name=u'cofog2').one()
+        self.cofog3 = model.Session.query(model.Key).filter_by(name=u'cofog3').one()
     
     @classmethod
     def teardown(self):

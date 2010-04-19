@@ -21,24 +21,24 @@ class TestAggregator(object):
             exclude=[(Fixtures.spender, u'yes')],
             include=[(Fixtures.region, 'ENGLAND')],
             axes=[
-                Fixtures.dept, Fixtures.cofog,
+                Fixtures.dept, Fixtures.cofog1,
                 # Omit Fixtures.pog, Fixtures.region,
             ])
         print ans
         assert ans, ans
         dates, axes, matrix = ans
-        assert axes == [u'dept', u'function'], axes
+        assert axes == [u'dept', u'cofog1'], axes
         index = dict([(coords, sum(amount)) for (coords, amount) in matrix])
         for k, v in index.items():
             print k, v
         assert len(index) == 6, index
         for amount, coords in [
-            (-608.90, (u'999', u'6. Housing and community amenities')),
-            (9.20, (u'Dept004', u'of which: transport')),
-            (70.70, (u'Dept022', u'10. Social protection')),
-            (120.80, (u'Dept032', u'10. Social protection')),
-            (-0.10, (u'Dept032', u'of which: employment policies')),
-            (0.50, (u'Dept047', u'3. Public order and safety')),
+            (-608.90, (u'999', u'06')),
+            (9.20, (u'Dept004', u'04')),
+            (70.70, (u'Dept022', u'10')),
+            (120.80, (u'Dept032', u'10')),
+            (-0.10, (u'Dept032', u'04')),
+            (0.50, (u'Dept047', u'03')),
         ]:
             assert index.has_key(coords), coords
             # Tolerate rounding errors.
@@ -50,24 +50,24 @@ class TestAggregator(object):
             exclude=[(Fixtures.spender, u'yes')],
             include=[(Fixtures.region, 'ENGLAND')],
             axes=[
-                Fixtures.dept, Fixtures.cofog,
+                Fixtures.dept, Fixtures.cofog1,
                 # Omit Fixtures.pog, Fixtures.region,
             ],
             start_date=date(2008, 01, 01),
             end_date=date(2009, 01, 01))
         assert ans, ans
         dates, axes, matrix = ans
-        assert axes == [u'dept', u'function'], axes
+        assert axes == [u'dept', u'cofog1'], axes
         index = dict([(coords, amounts[0]) for (coords, amounts) in matrix])
         for k, v in index.items():
             print k, v
         assert len(index) == 5, index
         for amount, coords in [
-            (-20.60, (u'999', u'6. Housing and community amenities')),
-            (1.30, (u'Dept004', u'of which: transport')),
-            (0.10, (u'Dept047', u'3. Public order and safety')),
-            (30.40, (u'Dept032', u'10. Social protection')),
-            (0.10, (u'Dept022', u'10. Social protection')),
+            (-20.60, (u'999', u'06')),
+            (1.30, (u'Dept004', u'04')),
+            (0.10, (u'Dept047', u'03')),
+            (30.40, (u'Dept032', u'10')),
+            (0.10, (u'Dept022', u'10')),
         ]:
             assert index.has_key(coords), coords
             # Tolerate rounding errors.
@@ -79,7 +79,7 @@ class TestAggregator(object):
             exclude=[(Fixtures.spender, u'yes')],
             include=[(Fixtures.region, 'ENGLAND')],
             axes=[
-                Fixtures.dept, Fixtures.cofog,
+                Fixtures.dept, Fixtures.cofog1,
                 # Omit Fixtures.pog, Fixtures.region,
             ],
             start_date=date(2008, 01, 01),

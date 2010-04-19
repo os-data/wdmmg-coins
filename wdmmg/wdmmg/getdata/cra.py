@@ -66,7 +66,7 @@ class CRALoader(object):
             ).first(), 'CRA already loaded'
         # Semaphore to ensure COFOG is loaded first.
         assert (model.Session.query(model.Key)
-            .filter_by(name='cofog1')
+            .filter_by(name=u'cofog1')
             ).first(), 'COFOG must be loaded first'
         # Make a new slice.
         slice_ = model.Slice(name=CRALoader.slice_name)

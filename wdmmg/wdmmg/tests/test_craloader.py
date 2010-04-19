@@ -1,15 +1,19 @@
-import pkg_resources
+import pkg_resources, json
 
 import wdmmg.model as model
-from wdmmg.getdata.cra import CRALoader
+from wdmmg.getdata import cofog
+from wdmmg.getdata.cra import CRALoader, CofogMapper
 
 
 class TestCRALoader(object):
     @classmethod
     def setup_class(self):
         model.repo.delete_all()
+        model.Session.remove()
+        cofog.load_file(pkg_resources.resource_stream('wdmmg', 'tests/COFOG_english_structure_short.txt'))
+        cofog_mapper = CofogMapper(json.load(pkg_resources.resource_stream('wdmmg', 'tests/cofog_map_short.json')))
         fileobj = pkg_resources.resource_stream('wdmmg', 'tests/cra_2009_db_short.csv')
-        CRALoader.load(fileobj)
+        CRALoader.load(fileobj, cofog_mapper)
         model.Session.commit()
         model.Session.remove()
 
@@ -37,7 +41,7 @@ class TestCRALoader(object):
         assert out > 5, out
     
     def test_keys(self):
-        for key_name in u'dept', u'pog', u'function', u'region':
+        for key_name in u'dept', u'pog', u'cofog1', u'region':
             out = model.Session.query(model.Key).filter_by(name=key_name).one()
             assert out, key_name
 
