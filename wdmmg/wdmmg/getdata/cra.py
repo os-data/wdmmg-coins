@@ -1,7 +1,7 @@
 import os, sys, csv, re
+from datetime import date
 try: import json
 except ImportError: import simplejson as json
-from datetime import date
 
 import datapkg
 from pylons import config

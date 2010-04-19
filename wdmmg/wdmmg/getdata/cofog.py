@@ -1,5 +1,6 @@
 from datetime import date
 from zipfile import ZipFile
+from StringIO import StringIO
 import csv
 
 import wdmmg.model as model
@@ -38,7 +39,8 @@ def load():
     cache = swiss.Cache(path='/tmp/')
     filename = cache.retrieve('http://unstats.un.org/unsd/cr/registry/regdntransfer.asp?f=4')
     zipfile = ZipFile(filename, 'r')
-    load_file(zipfile.open('COFOG_english_structure.txt', 'rU'))
+    fileobj = StringIO(zipfile.read('COFOG_english_structure.txt'))
+    load_file(fileobj)
     zipfile.close()
 
 def load_file(fileobj):
