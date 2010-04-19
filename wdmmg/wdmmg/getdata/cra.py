@@ -221,7 +221,7 @@ def load():
     '''
     # Get the CRA data package.
     indexpath = config['getdata_cache']
-    pkgname = 'ukgov_finances_cra'
+    pkgname = 'ukgov_finance_cra'
     # could just use pkg path ...
     pkgspec = 'file://%s' % os.path.join(indexpath, pkgname)
     pkg = datapkg.load_package(pkgspec)

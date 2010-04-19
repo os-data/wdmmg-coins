@@ -133,6 +133,9 @@ class Loader(WdmmgCommand):
         if cmd == 'cra':
             import wdmmg.getdata.cra
             wdmmg.getdata.cra.load()
+        if cmd == 'cofog':
+            import wdmmg.getdata.cofog
+            wdmmg.getdata.cofog.load()
         else:
             print 'Action not recognized'
 
