@@ -19,7 +19,7 @@ class TestAggregator(object):
         ans = aggregator.aggregate(
             Fixtures.slice_,
             exclude=[(Fixtures.spender, u'yes')],
-            include=[(Fixtures.region, 'ENGLAND')],
+            include=[(Fixtures.region, u'ENGLAND_South West')],
             axes=[
                 Fixtures.dept, Fixtures.cofog1,
                 # Omit Fixtures.pog, Fixtures.region,
@@ -31,13 +31,10 @@ class TestAggregator(object):
         index = dict([(coords, sum(amount)) for (coords, amount) in matrix])
         for k, v in index.items():
             print k, v
-        assert len(index) == 6, index
+        assert len(index) == 3, index
         for amount, coords in [
             (-608.90, (u'999', u'06')),
-            (9.20, (u'Dept004', u'04')),
             (70.70, (u'Dept022', u'10')),
-            (120.80, (u'Dept032', u'10')),
-            (-0.10, (u'Dept032', u'04')),
             (0.50, (u'Dept047', u'03')),
         ]:
             assert index.has_key(coords), coords
@@ -48,26 +45,25 @@ class TestAggregator(object):
         ans = aggregator.aggregate(
             Fixtures.slice_,
             exclude=[(Fixtures.spender, u'yes')],
-            include=[(Fixtures.region, 'ENGLAND')],
+            include=[(Fixtures.region, u'ENGLAND_South West')],
             axes=[
                 Fixtures.dept, Fixtures.cofog1,
                 # Omit Fixtures.pog, Fixtures.region,
             ],
-            start_date=date(2008, 01, 01),
-            end_date=date(2009, 01, 01))
+            start_date=u'2009-10',
+            end_date=u'2009-10'
+        )
         assert ans, ans
         dates, axes, matrix = ans
         assert axes == [u'dept', u'cofog1'], axes
         index = dict([(coords, amounts[0]) for (coords, amounts) in matrix])
         for k, v in index.items():
             print k, v
-        assert len(index) == 5, index
+        assert len(index) == 3, index
         for amount, coords in [
-            (-20.60, (u'999', u'06')),
-            (1.30, (u'Dept004', u'04')),
+            (15.8, (u'Dept022', u'10')),
+            (-25.0, (u'999', u'06')),
             (0.10, (u'Dept047', u'03')),
-            (30.40, (u'Dept032', u'10')),
-            (0.10, (u'Dept022', u'10')),
         ]:
             assert index.has_key(coords), coords
             # Tolerate rounding errors.
@@ -77,7 +73,7 @@ class TestAggregator(object):
         query, params = aggregator._make_aggregate_query(
             Fixtures.slice_,
             exclude=[(Fixtures.spender, u'yes')],
-            include=[(Fixtures.region, 'ENGLAND')],
+            include=[(Fixtures.region, u'ENGLAND_South West')],
             axes=[
                 Fixtures.dept, Fixtures.cofog1,
                 # Omit Fixtures.pog, Fixtures.region,
@@ -98,12 +94,12 @@ FROM account a, posting p, "transaction" t
 WHERE a.slice_id = :slice_id
 AND a.id = p.account_id
 AND a.id NOT IN (SELECT object_id FROM key_value
-    WHERE key_id = :k_0 AND value LIKE :v_0)
+    WHERE key_id = :k_0 AND value = :v_0)
 AND a.id IN (SELECT object_id FROM key_value
-    WHERE key_id = :k_1 AND value LIKE :v_1)
+    WHERE key_id = :k_1 AND value = :v_1)
 AND t.id = p.transaction_id
 AND t.timestamp >= :start_date
-AND t.timestamp < :end_date
+AND t.timestamp <= :end_date
 GROUP BY t.timestamp, axis_0, axis_1
 ORDER BY t.timestamp, axis_0, axis_1''', query
 

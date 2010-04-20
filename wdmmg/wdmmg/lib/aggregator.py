@@ -11,8 +11,8 @@ def aggregate(
     exclude=[], # list((Key, unicode))
     include={}, # list((Key, unicode))
     axes=[], # list(Key)
-    start_date=datetime(1000, 1, 1), # Early enough?
-    end_date=datetime(3000, 1, 1), # Late enough?
+    start_date=u'1000', # Early enough?
+    end_date=u'3000', # Late enough?
 ):
     '''
     Returns the dataset `slice_`, converted to a pivot table. The conversion
@@ -41,24 +41,28 @@ def aggregate(
     axes - a list of Key objects representing the desired axes of the pivot
         table.
     
-    start_date - a DateTime object. Transactions before this date are ignored.
-        Default: 01/01/1000.
+    start_date - a unicode string representing a date.
+        Transactions before this date (string comparison) are ignored.
+        Default: u'1000'.
     
-    end_date - a DateTime object. Transactions on or after this date are 
-        ignored. Default: 01/01/3000.
+    end_date - a unicode string representing a date.
+        Transactions after this date (string comparison) are ignored.
+        Default: u'3000'.
     
     Note that the timestamp that matters is the one on the Transaction object; 
     the timestamps of the individual Postings are ignored.
     
     Returns a (dates, axes, sparse matrix) tuple. The "dates" are a list of
-    dates in sorted order. The "axes" are a list of Key names. The sparse
-    matrix takes the form of a list of (coordinates, time series) pairs.
+    unicode strings in sorted order. The "axes" are a list of Key names. The
+    sparse matrix takes the form of a list of (coordinates, time series) pairs.
     The "coordinates" are a list giving the values of the
     Keys in the same order as they appear in `axes`. If no KeyValue exists for
     a given Key, the value `None` is supplied. The "time series" is a list of
     spending totals, one for each date in `dates`. If there was no spending on
     a given date, then `0.0` is supplied.
     '''
+    assert isinstance(start_date, unicode), start_date
+    assert isinstance(end_date, unicode), end_date
     query, params = _make_aggregate_query(
         slice_,
         exclude,
@@ -124,9 +128,9 @@ def _make_aggregate_query(
         }
         # Write the sub-select query.
         query.write('''(SELECT object_id FROM key_value
-    WHERE key_id = :%(k_param)s AND value LIKE :%(v_param)s)''' % kv)
+    WHERE key_id = :%(k_param)s AND value = :%(v_param)s)''' % kv)
         params[kv['k_param']] = key.id
-        params[kv['v_param']] = value + '%'
+        params[kv['v_param']] = value
 
     # SELECT
     query.write('''\
@@ -159,7 +163,7 @@ AND a.id IN ''')
     query.write('''
 AND t.id = p.transaction_id
 AND t.timestamp >= :start_date
-AND t.timestamp < :end_date''')
+AND t.timestamp <= :end_date''')
     params['start_date'] = start_date
     params['end_date'] = end_date
     # GROUP BY

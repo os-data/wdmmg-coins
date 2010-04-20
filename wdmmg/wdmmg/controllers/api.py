@@ -13,19 +13,21 @@ import wdmmg.lib.aggregator as aggregator
 log = logging.getLogger(__name__)
 
 class ApiController(BaseController):
-    @classmethod
-    def to_datetime(self, s):
-        '''
-        Parses `s` as a date in the format yyyy-mm-dd, and returns it as a 
-        datetime. If `s` is `None`, does not attempt to parse it, but instead
-        returns `None`.
-        '''
-        if not s: return s
-        return datetime.strptime(s, '%Y-%m-%d') # FIXME: Nicer error message needed.
+#    @classmethod
+#    def to_datetime(self, s):
+#        '''
+#        Parses `s` as a date in the format yyyy-mm-dd, and returns it as a 
+#        datetime. If `s` is `None`, does not attempt to parse it, but instead
+#        returns `None`.
+#        '''
+#        if not s: return s
+#        return datetime.strptime(s, '%Y-%m-%d') # FIXME: Nicer error message needed.
 
     def index(self):
+        # Construct query string by hand to keep the parameters in an instructive order.
         c.aggregate_url = url(controller='api', action='aggregate') + \
-        '?slice=cra&exclude-spender=yes&include-function=7&breakdown-dept=yes&breakdown-region=yes&start_date=2004-01-01&end_date=2005-01-01'
+        '?slice=cra&exclude-spender=yes&include-cofog1=07&breakdown-dept=yes&breakdown-region=yes&start_date=2004-05&end_date=2004-05'
+        # FIXME: Dates are now unicode strings.
         return render('home/api.html')
 
     @jsonify
@@ -33,10 +35,9 @@ class ApiController(BaseController):
         slice_ = (model.Session.query(model.Slice)
             .filter_by(name=request.params.get('slice'))
             ).one() # FIXME: Nicer error message needed.
-        start_date = ApiController.to_datetime(
-            request.params.get('start_date', '1000-01-01'))
-        end_date = ApiController.to_datetime(
-            request.params.get('end_date', '3000-01-01'))
+        # FIXME: Dates are unicode strings.
+        start_date = unicode(request.params.get('start_date', '1000'))
+        end_date = unicode(request.params.get('end_date', '3000'))
         # Retrieve request parameters of the form "verb-key=value"
         include, exclude, axes = [], [], []
         for param, value in request.params.items():
@@ -56,10 +57,16 @@ class ApiController(BaseController):
                     ).one() # FIXME: Nicer error message needed.
                 axes.append(key) # Value ignored (e.g. "yes").
             # TODO: Other verbs: "per", ...
+            elif param in ('slice', 'start_date', 'end_date'):
+                pass # Already processed.
+            else:
+                abort(status_code=400, detail='Unknown request parameter: %s'%param)
 #        print slice_
 #        print exclude
 #        print include
 #        print axes
+#        print start_date
+#        print end_date
         dates, axes, matrix = aggregator.aggregate(
             slice_,
             exclude,
@@ -79,19 +86,3 @@ class ApiController(BaseController):
             'results': matrix,
         }
 
-# TODO: Move JSON structure into this controller. Useful code follows...
-'''
-    return {
-        'metadata': {
-            'exclude': dict([(key.name, value) for key, value in exclude]),
-            'include': dict([(key.name, value) for key, value in exclude]),
-            'axes': [key.name for key in breakdown_keys]
-            'start_date': 
-            'end_date':
-        },
-        'results': [
-            (row['amount'], tuple([row[i] for i, _ in enumerate(axes)]))
-            for row in results
-        ]
-    }
-'''
