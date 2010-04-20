@@ -1,0 +1,16 @@
+cofog_map.json
+--------------
+
+This is a mapping from the "function" and "subfunction" values in the published CRA spreadsheet to the most appropriate COFOG code. In theory CRA should be entirely classified by COFOG, but in practice this data is corrupted in various ways. This mapping partially corrects for the corruption.
+
+Constructed by William Waites based on the official COFOG list and the CRA data.
+
+nuts1_population_2006.csv
+-------------------------
+
+Population data for NUTS regions, from 2006. Only NUTS1 region totals are included, because the CRA spending data is only localised down to NUTS1 regions.
+
+Constructed by Alistair Turnbull based on the data here:
+
+    http://www.statistics.gov.uk/statbase/Expodata/Spreadsheets/D9664.xls
+
