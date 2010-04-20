@@ -25,7 +25,7 @@ class ApiController(BaseController):
 
     def index(self):
         c.aggregate_url = url(controller='api', action='aggregate') + \
-        'slice=cra&exclude-spender=yes&include-function=7&breakdown-dept=yes&breakdown-region=yes&start_date=2004-01-01&end_date=2005-01-01'
+        '?slice=cra&exclude-spender=yes&include-function=7&breakdown-dept=yes&breakdown-region=yes&start_date=2004-01-01&end_date=2005-01-01'
         return render('home/api.html')
 
     @jsonify
