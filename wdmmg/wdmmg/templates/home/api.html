@@ -23,19 +23,19 @@
       example, 'cra' is the name of the Country Regional Analysis data
       set.</li>
       <li>exclude-{key}={value} (optional, repeatable) - omit postings whose {key}
-        matches {value} (prefix search). In the above example, this is used to
+        matches {value}. In the above example, this is used to
         exclude postings on the central government account, whose "spender"
         attribute is "yes".</li>
       <li>include-{key}={value} (optional, repeatable) - omit postings whose {key}
-        does not match {value} (prefix search). In the above example, this is
-        used to examine only accounts whose 'function' begins with '7' (meaning
-        'Health').</li>
+        does not match {value}. In the above example, this is
+        used to examine only accounts whose 'cofog1' (meaning the first level
+        function) begins with '07' (meaning 'Health').</li>
       <li>breakdown-{key}={value} (optional, repeatable) - Makes an axis with {key}
       as its coordinate. {value} is ignored.</li>
-      <li>start_date (optional, default='1000-01-01') - Tranactions before this date 
-      are ignored.</li>
-      <li>end_date (optional, default='3000-01-01') - Transactions on or after this 
-      date are ignored.</li>
+      <li>start_date (optional, default='1000') - Tranactions before this date 
+      (string comparison) are ignored.</li>
+      <li>end_date (optional, default='3000') - Transactions after this date
+      (string comparison) are ignored. </li>
     </ul>
   </div>
 
