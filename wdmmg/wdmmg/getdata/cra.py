@@ -170,13 +170,43 @@ class CRALoader(object):
         if commit_every:
             model.Session.commit()
 
+def load_population(fileobj):
+    '''
+    Adds population data to the EnumerationValues that represent regions.
+    The annotations are added in the form of KeyValues, using a Key named
+    `key_name`.
+    '''
+    key_region = model.Session.query(model.Key).filter_by(name=u'region').one()
+    key_population = model.Key(
+        name=u'population2006',
+        notes=u'''\
+This data comes from the "All ages" column of the document "Table 8 Mid-2006 Population Estimates: Selected age groups for local authorities in the United Kingdom; estimated resident population" which is available here:
+
+    http://www.statistics.gov.uk/statbase/Expodata/Spreadsheets/D9664.xls
+'''
+    )
+    reader = csv.reader(fileobj)
+    header = reader.next()
+    for row in reader:
+        if row:
+            name, population = row
+            ev = (model.Session.query(model.EnumerationValue)
+                .filter_by(key=key_region)
+                .filter_by(name=unicode(name))
+                ).first()
+            if ev:
+                assert str(int(population)) == population, population
+                ev.keyvalues[key_population] = unicode(population)
+            else:
+                print 'Population data for region %r ignored.' % name
+
 def drop():
     '''
     Drops from the database all records associated with slice 'cra'.
     '''
     # Delete only the keys we created ourselves.
     # TODO: Move as many as possible of these into separate data packages.
-    for name in [u'dept', u'pog', u'cap_or_cur', u'region']:
+    for name in [u'dept', u'pog', u'cap_or_cur', u'region', u'population2006']:
         key = (model.Session.query(model.Key)
             .filter_by(name=name)
             ).first()
@@ -220,15 +250,17 @@ def load():
     Downloads the CRA, and loads it into the database with slice name 'cra'.
     '''
     # Get the CRA data package.
-    indexpath = config['getdata_cache']
-    pkgname = 'ukgov_finance_cra'
-    # could just use pkg path ...
-    pkgspec = 'file://%s' % os.path.join(indexpath, pkgname)
+    pkgspec = 'file://%s' % os.path.join(config['getdata_cache'], 'ukgov_finance_cra')
     pkg = datapkg.load_package(pkgspec)
     # Make a CofogMapper.
     cofog_mapper = CofogMapper(json.load(pkg.stream('cofog_map.json')))
     # Load the data.
+    # TODO: Move NUTS codes into a separate data package.
+    # TODO: Move POG codes into a separate data package.
     CRALoader.load(pkg.stream('cra_2009_db.csv'), cofog_mapper, commit_every=1000)
+    # Add population data.
+    # TODO: Move population data into a separate data package. After NUTS.
+    load_population(pkg.stream('nuts1_population_2006.csv'))
     model.Session.commit()
     model.Session.remove()
 

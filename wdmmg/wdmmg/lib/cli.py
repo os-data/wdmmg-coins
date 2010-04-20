@@ -87,13 +87,13 @@ class Fixtures(WdmmgCommand):
         from wdmmg import model
         import pkg_resources, json
         from wdmmg.getdata import cofog
-        from wdmmg.getdata.cra import CRALoader, CofogMapper
+        from wdmmg.getdata.cra import CRALoader, CofogMapper, load_population
         model.repo.delete_all()
         model.Session.remove()
         cofog.load_file(pkg_resources.resource_stream('wdmmg', 'tests/COFOG_english_structure_short.txt'))
         cofog_mapper = CofogMapper(json.load(pkg_resources.resource_stream('wdmmg', 'tests/cofog_map_short.json')))
-        fileobj = pkg_resources.resource_stream('wdmmg', 'tests/cra_2009_db_short.csv')
-        CRALoader.load(fileobj, cofog_mapper)
+        CRALoader.load(pkg_resources.resource_stream('wdmmg', 'tests/cra_2009_db_short.csv'), cofog_mapper)
+        load_population(pkg_resources.resource_stream('wdmmg', 'tests/nuts1_population_2006.csv'))
         model.Session.commit()
         model.Session.remove()
         self.slice_ = (model.Session.query(model.Slice)
