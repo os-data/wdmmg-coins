@@ -56,13 +56,13 @@ class ApiController(BaseController):
                     ).one() # FIXME: Nicer error message needed.
                 axes.append(key) # Value ignored (e.g. "yes").
             elif param.startswith('per-'):
-                key = (model.Session.query(model.Key)
+                statistic = (model.Session.query(model.Key)
                     .filter_by(name=unicode(param[4:]))
                     ).one() # FIXME: Nicer error message needed.
-                statistic = (model.Session.query(model.Key)
+                axis = (model.Session.query(model.Key)
                     .filter_by(name=unicode(value))
                     ).one() # FIXME: Nicer error message needed.
-                per.append((key, statistic))
+                per.append((axis, statistic))
             # TODO: Other verbs?
             elif param in ('slice', 'start_date', 'end_date'):
                 pass # Already processed.

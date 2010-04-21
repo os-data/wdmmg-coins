@@ -20,8 +20,8 @@
     <p>Parameters:</p>
     <ul>
       <li>slice={value} - the name of the data set to retrieve. In the above
-      example, 'cra' is the name of the Country Regional Analysis data
-      set.</li>
+        example, 'cra' is the name of the Country Regional Analysis data
+        set.</li>
       <li>exclude-{key}={value} (optional, repeatable) - omit postings whose {key}
         matches {value}. In the above example, this is used to
         exclude postings on the central government account, whose "spender"
@@ -31,11 +31,15 @@
         used to examine only accounts whose 'cofog1' (meaning the first level
         function) begins with '07' (meaning 'Health').</li>
       <li>breakdown-{key}={value} (optional, repeatable) - Makes an axis with {key}
-      as its coordinate. {value} is ignored.</li>
+        as its coordinate. {value} is ignored.</li>
+      <li>per-{statistic}={key} (optional, repeatable) - Divides the results by
+        a {statistic} that depends on {key}. The motivating example is
+        "per-population2006=region", to work out per-capita spending, but the
+        mechanism is general.</li>
       <li>start_date (optional, default='1000') - Tranactions before this date 
-      (string comparison) are ignored.</li>
+        (string comparison) are ignored.</li>
       <li>end_date (optional, default='3000') - Transactions after this date
-      (string comparison) are ignored. </li>
+        (string comparison) are ignored. </li>
     </ul>
   </div>
 

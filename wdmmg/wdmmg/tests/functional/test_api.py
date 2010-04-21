@@ -46,7 +46,7 @@ class TestApiController(TestController):
         u = url(controller='api', action='aggregate', **{
             'slice': 'cra',
             'breakdown-region': 'yes',
-            'per-region': 'population2006'
+            'per-population2006': 'region'
         })
         print u
         response = self.app.get(u)
