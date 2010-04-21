@@ -4,6 +4,7 @@ from datetime import datetime
 from pylons import request, response, session, tmpl_context as c, url
 from pylons.controllers.util import abort, redirect
 from pylons.decorators import jsonify
+from pylons.decorators.cache import beaker_cache
 
 from wdmmg.lib.base import BaseController, render
 
@@ -30,6 +31,7 @@ class ApiController(BaseController):
         # FIXME: Dates are now unicode strings.
         return render('home/api.html')
 
+    @beaker_cache(expire=86400, type='dbm', query_args=True)
     @jsonify
     def aggregate(self):
         slice_ = (model.Session.query(model.Slice)
