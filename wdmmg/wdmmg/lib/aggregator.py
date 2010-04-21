@@ -87,6 +87,7 @@ class Results:
                     if divisor and amounts[i] is not None: amounts[i] /= divisor
                     else: amounts[i] = None
         else:
+            # FIXME: Does not work for hierarchical keys.
             divisor = sum(index.values())
             for coordinates, amounts in self.matrix.items():
                 for i in range(len(self.dates)):
