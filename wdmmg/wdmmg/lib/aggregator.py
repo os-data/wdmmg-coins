@@ -6,6 +6,98 @@ from sqlalchemy.sql.expression import and_
 
 import wdmmg.model as model
 
+class Results:
+    '''
+    Represents the result of a call to `aggregate()`. This class has the
+    following fields:
+    
+    dates - a list of the distinct transaction dates. These are unicode strings,
+        and they are returned in sorted order.
+    
+    axes - a list of key names.
+    
+    matrix - a sparse matrix. This takes the form of a list of (coordinates,
+        time series) pairs. The "coordinates" are a list giving the values of
+        the Keys in the same order as they appear in `axes`. If no KeyValue
+        exists for a given Key, the value `None` is supplied. The "time series"
+        is a list of spending totals, one for each date in `dates`. If there
+        was no spending on a given date, then `0.0` is supplied.
+    '''
+    
+    def __init__(self, dates, axes, matrix=None):
+        '''
+        Do not construct a Results directly - call `aggregate()` instead.
+        
+        dates - a sorted list of unicode strings, representing all the distinct
+            transaction dates needed.
+        
+        axes - a list of unicode strings, representing Key names.
+        '''
+        self.dates = dates
+        self.date_index = dict([(date, index)
+            for index, date in enumerate(self.dates)])
+        self.axes = axes
+        self.axis_index = dict([(axis, i) for i, axis in enumerate(axes)])
+        self.matrix = matrix or {}
+    
+    def _add_spending(self, coordinates, amount, timestamp):
+        '''
+        For use by `aggregate()`.
+        '''
+        if coordinates not in self.matrix:
+            self.matrix[coordinates] = [0.0] * len(self.dates)
+        self.matrix[coordinates][self.date_index[timestamp]] += amount
+    
+    def divide_by_statistic(axis, statistic):
+        '''
+        Divides spending by a property of a coordinate. This is useful for
+        computing statistics such as per-capita spending.
+        
+        axis - a Key, representing the coordinate to use, e.g. region.
+        
+        statistic - a Key, representing the statistic to use, e.g. population.
+        
+        The Key `axis` selects a property of Accounts (e.g. geographical
+        region). The value of that property (e.g. 'NORTHERN IRELAND') is
+        retrieved for each Account. Then, the Key `statistic` selects a
+        property of those values (e.g. population). Finally, the aggregated
+        spending is divided by the aggregated statistic. There are two cases,
+        depending on whether `axis` is in `self.axes`:
+        
+         - If it is, then each spending item is divided by e.g. the population
+        of its own region.
+        
+         - If it is not, then each spending item is divided by e.g. the total
+        population of all regions.
+        '''
+        def to_float(x):
+            try: return float(x)
+            except ValueError: return None
+        index = dict([
+            (ev.name, to_float(ev.keyvalues.get(statistic)))
+            for ev in model.Session.query(model.EnumerationValue).filter_by(key=axis)
+        ])
+        if axis in self.axes:
+            n = self.axis_index[axis] # Which coordinate?
+            for coordinates, amounts in self.matrix.items():
+                divisor = index[coordinates[n]]
+                for i in range(len(self.dates)):
+                    amounts[i] /= divisor
+        else:
+            divisor = sum(index.values())
+            for coordinates, amounts in self.matrix.items():
+                for i in range(len(self.dates)):
+                    amounts[i] /= divisor
+
+    def __str__(self):
+        return repr(self)
+    
+    def __repr__(self):
+        return (
+            'Results(\n\t%r,\n\t%r,\n\tmatrix=%r)' %
+            (self.dates, self.axes, self.matrix)
+        )
+
 def aggregate(
     slice_,
     exclude=[], # list((Key, unicode))
@@ -52,14 +144,7 @@ def aggregate(
     Note that the timestamp that matters is the one on the Transaction object; 
     the timestamps of the individual Postings are ignored.
     
-    Returns a (dates, axes, sparse matrix) tuple. The "dates" are a list of
-    unicode strings in sorted order. The "axes" are a list of Key names. The
-    sparse matrix takes the form of a list of (coordinates, time series) pairs.
-    The "coordinates" are a list giving the values of the
-    Keys in the same order as they appear in `axes`. If no KeyValue exists for
-    a given Key, the value `None` is supplied. The "time series" is a list of
-    spending totals, one for each date in `dates`. If there was no spending on
-    a given date, then `0.0` is supplied.
+    Returns a Results object.
     '''
     assert isinstance(start_date, unicode), start_date
     assert isinstance(end_date, unicode), end_date
@@ -76,14 +161,14 @@ def aggregate(
 #        print k, v
     results = list(model.Session.execute(query, params))
     dates = sorted(set([row.timestamp for row in results]))
-    date_index = dict([(date, index) for index, date in enumerate(dates)])
-    matrix = {}
+    ans = Results(dates, [key.name for key in axes])
     for row in results:
-        coordinates = tuple([row[i] for i in range(len(axes))])
-        if coordinates not in matrix:
-            matrix[coordinates] = [0.0] * len(dates)
-        matrix[coordinates][date_index[row['timestamp']]] = row['amount']
-    return (dates, [key.name for key in axes], matrix.items())
+        ans._add_spending(
+            tuple([row[i] for i in range(len(axes))]),
+            row['amount'],
+            row['timestamp'],
+        )
+    return ans
 
 def _make_aggregate_query(
     slice_,

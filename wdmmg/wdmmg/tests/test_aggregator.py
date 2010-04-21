@@ -25,10 +25,8 @@ class TestAggregator(object):
                 # Omit Fixtures.pog, Fixtures.region,
             ])
         print ans
-        assert ans, ans
-        dates, axes, matrix = ans
-        assert axes == [u'dept', u'cofog1'], axes
-        index = dict([(coords, sum(amount)) for (coords, amount) in matrix])
+        assert ans.axes == [u'dept', u'cofog1'], ans.axes
+        index = dict([(coords, sum(amount)) for (coords, amount) in ans.matrix.items()])
         for k, v in index.items():
             print k, v
         assert len(index) == 3, index
@@ -53,10 +51,8 @@ class TestAggregator(object):
             start_date=u'2009-10',
             end_date=u'2009-10'
         )
-        assert ans, ans
-        dates, axes, matrix = ans
-        assert axes == [u'dept', u'cofog1'], axes
-        index = dict([(coords, amounts[0]) for (coords, amounts) in matrix])
+        assert ans.axes == [u'dept', u'cofog1'], ans.axes
+        index = dict([(coords, amounts[0]) for (coords, amounts) in ans.matrix.items()])
         for k, v in index.items():
             print k, v
         assert len(index) == 3, index

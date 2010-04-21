@@ -35,7 +35,6 @@ class ApiController(BaseController):
         slice_ = (model.Session.query(model.Slice)
             .filter_by(name=request.params.get('slice'))
             ).one() # FIXME: Nicer error message needed.
-        # FIXME: Dates are unicode strings.
         start_date = unicode(request.params.get('start_date', '1000'))
         end_date = unicode(request.params.get('end_date', '3000'))
         # Retrieve request parameters of the form "verb-key=value"
@@ -67,7 +66,7 @@ class ApiController(BaseController):
 #        print axes
 #        print start_date
 #        print end_date
-        dates, axes, matrix = aggregator.aggregate(
+        ans = aggregator.aggregate(
             slice_,
             exclude,
             include,
@@ -75,14 +74,16 @@ class ApiController(BaseController):
             start_date,
             end_date
         )
-        return {
+        ans = {
             'metadata': {
                 'slice': slice_.name,
                 'exclude': [(k.name, v) for (k, v) in exclude],
                 'include': [(k.name, v) for (k, v) in include],
-                'dates': [unicode(d) for d in dates],
-                'axes': axes,
+                'dates': [unicode(d) for d in ans.dates],
+                'axes': ans.axes,
             },
-            'results': matrix,
+            'results': ans.matrix.items(),
         }
+#        print ans
+        return ans
 
