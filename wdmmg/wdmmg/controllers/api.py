@@ -38,7 +38,7 @@ class ApiController(BaseController):
         start_date = unicode(request.params.get('start_date', '1000'))
         end_date = unicode(request.params.get('end_date', '3000'))
         # Retrieve request parameters of the form "verb-key=value"
-        include, exclude, axes = [], [], []
+        include, exclude, axes, per = [], [], [], []
         for param, value in request.params.items():
             if param.startswith('exclude-'):
                 key = (model.Session.query(model.Key)
@@ -55,7 +55,15 @@ class ApiController(BaseController):
                     .filter_by(name=unicode(param[10:]))
                     ).one() # FIXME: Nicer error message needed.
                 axes.append(key) # Value ignored (e.g. "yes").
-            # TODO: Other verbs: "per", ...
+            elif param.startswith('per-'):
+                key = (model.Session.query(model.Key)
+                    .filter_by(name=unicode(param[4:]))
+                    ).one() # FIXME: Nicer error message needed.
+                statistic = (model.Session.query(model.Key)
+                    .filter_by(name=unicode(value))
+                    ).one() # FIXME: Nicer error message needed.
+                per.append((key, statistic))
+            # TODO: Other verbs?
             elif param in ('slice', 'start_date', 'end_date'):
                 pass # Already processed.
             else:
@@ -66,7 +74,7 @@ class ApiController(BaseController):
 #        print axes
 #        print start_date
 #        print end_date
-        ans = aggregator.aggregate(
+        results = aggregator.aggregate(
             slice_,
             exclude,
             include,
@@ -74,15 +82,18 @@ class ApiController(BaseController):
             start_date,
             end_date
         )
+        for axis, statistic in per:
+#            print axis, statistic
+            results.divide_by_statistic(axis, statistic)
         ans = {
             'metadata': {
                 'slice': slice_.name,
                 'exclude': [(k.name, v) for (k, v) in exclude],
                 'include': [(k.name, v) for (k, v) in include],
-                'dates': [unicode(d) for d in ans.dates],
-                'axes': ans.axes,
+                'dates': [unicode(d) for d in results.dates],
+                'axes': results.axes,
             },
-            'results': ans.matrix.items(),
+            'results': results.matrix.items(),
         }
 #        print ans
         return ans

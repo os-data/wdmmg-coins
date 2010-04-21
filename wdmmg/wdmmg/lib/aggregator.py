@@ -48,7 +48,7 @@ class Results:
             self.matrix[coordinates] = [0.0] * len(self.dates)
         self.matrix[coordinates][self.date_index[timestamp]] += amount
     
-    def divide_by_statistic(axis, statistic):
+    def divide_by_statistic(self, axis, statistic):
         '''
         Divides spending by a property of a coordinate. This is useful for
         computing statistics such as per-capita spending.
@@ -74,20 +74,25 @@ class Results:
             try: return float(x)
             except ValueError: return None
         index = dict([
-            (ev.name, to_float(ev.keyvalues.get(statistic)))
+            (ev.name, to_float(ev.keyvalues[statistic]))
             for ev in model.Session.query(model.EnumerationValue).filter_by(key=axis)
+            if statistic in ev.keyvalues
         ])
-        if axis in self.axes:
-            n = self.axis_index[axis] # Which coordinate?
+        if axis.name in self.axes:
+            n = self.axis_index[axis.name] # Which coordinate?
             for coordinates, amounts in self.matrix.items():
-                divisor = index[coordinates[n]]
+                divisor = index.get(coordinates[n])
                 for i in range(len(self.dates)):
-                    amounts[i] /= divisor
+#                    print "Dividing %r by %r" % (amounts[i], divisor)
+                    if divisor and amounts[i] is not None: amounts[i] /= divisor
+                    else: amounts[i] = None
         else:
             divisor = sum(index.values())
             for coordinates, amounts in self.matrix.items():
                 for i in range(len(self.dates)):
-                    amounts[i] /= divisor
+#                    print "Dividing %r by total %r" % (amounts[i], divisor)
+                    if divisor and amounts[i] is not None: amounts[i] /= divisor
+                    else: amounts[i] = None
 
     def __str__(self):
         return repr(self)
