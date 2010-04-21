@@ -31,13 +31,13 @@ class TestAggregator(object):
             print k, v
         assert len(index) == 3, index
         for amount, coords in [
-            (-608.90, (u'999', u'06')),
-            (70.70, (u'Dept022', u'10')),
-            (0.50, (u'Dept047', u'03')),
+            (-608900000, (u'999', u'06')),
+            (70700000, (u'Dept022', u'10')),
+            (500000, (u'Dept047', u'03')),
         ]:
             assert index.has_key(coords), coords
             # Tolerate rounding errors.
-            assert abs(index[coords] - amount) < 0.01, (coords, amount)
+            assert abs(index[coords] - amount) < 1, (coords, amount)
     
     def test_aggregate_dates(self):
         ans = aggregator.aggregate(
@@ -57,13 +57,13 @@ class TestAggregator(object):
             print k, v
         assert len(index) == 3, index
         for amount, coords in [
-            (15.8, (u'Dept022', u'10')),
-            (-25.0, (u'999', u'06')),
-            (0.10, (u'Dept047', u'03')),
+            (15800000, (u'Dept022', u'10')),
+            (-25000000, (u'999', u'06')),
+            (100000, (u'Dept047', u'03')),
         ]:
             assert index.has_key(coords), coords
             # Tolerate rounding errors.
-            assert abs(index[coords] - amount) < 0.01, (coords, amount)
+            assert abs(index[coords] - amount) < 1, (coords, amount)
 
     def test_make_aggregate_query(self):
         query, params = aggregator._make_aggregate_query(
@@ -120,17 +120,17 @@ ORDER BY t.timestamp, axis_0, axis_1''', query
             print k, v
         assert len(index) == 7, index
         for amount, coords in [
-            (2.365e-6, (u'Dept032', u'SCOTLAND')),
-            (5.795e-6, (u'Dept032', u'ENGLAND_West Midlands')),
-            (0.106e-6, (u'Dept004', u'ENGLAND_London')),
-            (3.083e-6, (u'Dept022', u'ENGLAND_South West')),
-            (0.020e-6, (u'Dept047', u'ENGLAND_South West')),
-            (4.356e-6, (u'Dept004', u'ENGLAND_Yorkshire and The Humber')),
-            (-4.879e-6, (u'999', u'ENGLAND_South West')),
+            (2.365, (u'Dept032', u'SCOTLAND')),
+            (5.795, (u'Dept032', u'ENGLAND_West Midlands')),
+            (0.106, (u'Dept004', u'ENGLAND_London')),
+            (3.083, (u'Dept022', u'ENGLAND_South West')),
+            (0.020, (u'Dept047', u'ENGLAND_South West')),
+            (4.356, (u'Dept004', u'ENGLAND_Yorkshire and The Humber')),
+            (-4.879, (u'999', u'ENGLAND_South West')),
         ]:
             assert index.has_key(coords), coords
             # Tolerate rounding errors.
-            assert abs(index[coords] - amount) < 1e-9, (coords, amount)
+            assert abs(index[coords] - amount) < 1e-3, (coords, amount)
 
 # TODO: Test filtering on slice.
 # TODO: Test with some breakdown KeyValues missing (i.e. coordinate is NULL).

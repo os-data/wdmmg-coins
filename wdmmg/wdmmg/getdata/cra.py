@@ -129,7 +129,7 @@ class CRALoader(object):
             pog_alias = row[5] # Verbose form of `pog`.
             cap_or_cur = row[7]
             region = row[9]
-            expenditures = [to_float(x) for x in row[year_col_start:]]
+            expenditures = [round(1e6*to_float(x)) for x in row[year_col_start:]]
             if not [ x for x in expenditures if x ]:
                 # Skip row whose expenditures are all zero.
                 continue
