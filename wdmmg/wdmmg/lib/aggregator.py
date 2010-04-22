@@ -74,7 +74,7 @@ class Results:
             try: return float(x)
             except ValueError: return None
         index = dict([
-            (ev.name, to_float(ev.keyvalues[statistic]))
+            (ev.code, to_float(ev.keyvalues[statistic]))
             for ev in model.Session.query(model.EnumerationValue).filter_by(key=axis)
             if statistic in ev.keyvalues
         ])

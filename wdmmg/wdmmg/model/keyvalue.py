@@ -67,6 +67,7 @@ table_key = Table('key', meta.metadata,
 table_enumeration_value = Table('enumeration_value', meta.metadata,
     Column('id', UnicodeText(), primary_key=True, default=make_uuid),
     Column('key_id', UnicodeText(), ForeignKey('key.id')),
+    Column('code', UnicodeText()),
     Column('name', UnicodeText()),
     Column('notes', UnicodeText()),
     )
@@ -90,7 +91,7 @@ mapper(EnumerationValue, table_enumeration_value, properties={
             cascade='all, delete, delete-orphan'
         )),
     },
-    order_by=[table_enumeration_value.c.key_id,table_enumeration_value.c.name]
+    order_by=[table_enumeration_value.c.key_id,table_enumeration_value.c.code]
     )
 
 mapper(KeyValue, table_key_value, properties={
@@ -99,9 +100,9 @@ mapper(KeyValue, table_key_value, properties={
             EnumerationValue,
             primaryjoin=and_(
                 table_key_value.c.key_id == table_enumeration_value.c.key_id,
-                table_key_value.c.value == table_enumeration_value.c.name
+                table_key_value.c.value == table_enumeration_value.c.code
             ),
-            foreign_keys=[table_enumeration_value.c.key_id, table_enumeration_value.c.name],
+            foreign_keys=[table_enumeration_value.c.key_id, table_enumeration_value.c.code],
             uselist=False
         ),
         # Relations on `object_id` can be created by `add_keyvalues()`.

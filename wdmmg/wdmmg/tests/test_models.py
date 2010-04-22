@@ -50,19 +50,19 @@ class TestAccountBasics(object):
         pog = model.Key(name=u'pog', notes=u'Programme Object Group')
         randomkey = model.Key(name=u'randomkey')
 
-        northwest = model.EnumerationValue(name=u'Northwest', key=region)
-        northeast = model.EnumerationValue(name=u'Northeast', key=region)
-        pog1 = model.EnumerationValue(name=u'surestart', key=pog)
-        pog2 = model.EnumerationValue(name=u'anotherstart', key=pog)
+        northwest = model.EnumerationValue(code=u'Northwest', name=u'North west', key=region)
+        northeast = model.EnumerationValue(code=u'Northeast', name=u'North east', key=region)
+        pog1 = model.EnumerationValue(code=u'surestart', name=u'Sure start', key=pog)
+        pog2 = model.EnumerationValue(code=u'surestart2', name=u'Another start', key=pog)
 
         kv1 = model.KeyValue(ns=u'account', ns_account=acc_src, key=region,
-                value=northwest.name)
-        acc_src.keyvalues[region] = northeast.name # This should overwrite the KeyValue explicitly constructed above.
+                value=northwest.code)
+        acc_src.keyvalues[region] = northeast.code # This should overwrite the KeyValue explicitly constructed above.
         acc_src.keyvalues[randomkey]= u'annakarenina' # This should create a new KeyValue.
 
         kv2 = model.KeyValue(ns=u'account', ns_account=acc_dest, key=randomkey,
                 value=u'orangesarenottheonlyfruit') # This one should not get overwritten.
-        acc_dest.keyvalues[region] = northwest.name # This should create a new KeyValue.
+        acc_dest.keyvalues[region] = northwest.code # This should create a new KeyValue.
 
         model.Session.add_all([region, pog, randomkey, kv1, kv2])
         model.Session.commit()
@@ -88,12 +88,12 @@ class TestAccountBasics(object):
         acc_dest = model.Session.query(model.Account).filter_by(name=self.accdest).one()
         assert acc_dest
         
-        northeast = model.Session.query(model.EnumerationValue).filter_by(key=region).filter_by(name=u'Northeast').one()
+        northeast = model.Session.query(model.EnumerationValue).filter_by(key=region).filter_by(code=u'Northeast').one()
         assert northeast.key == region, northest.key
-        assert northeast.name == u'Northeast', northeast.name
+        assert northeast.code == u'Northeast', northeast.code
         
         acc_src_region_kv = model.Session.query(model.KeyValue).filter_by(ns_account=acc_src).filter_by(key=region).one()
-        assert acc_src_region_kv.value == u'Northeast'
+        assert acc_src_region_kv.value == u'Northeast', acc_src_region_kv.value
         assert acc_src_region_kv.enumeration_value == northeast, acc_src_region_kv.enumeration_value
         assert acc_src._keyvalues[region] == acc_src_region_kv
         assert acc_src.keyvalues[region] == u'Northeast'

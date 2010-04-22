@@ -98,10 +98,11 @@ class CRALoader(object):
                     slice_=slice_, name=name, notes=u'')
             return index[disambiguators]
         # Utility function for creating EnumerationValues.
-        def get_or_create_value(key, name, notes=None, index={}):
-            if name not in index:
-                index[name] = model.EnumerationValue(key=key, name=name, notes=notes)
-            return index[name]
+        def get_or_create_value(key, code, name=None, notes=u'', index={}):
+            if code not in index:
+                index[code] = model.EnumerationValue(
+                    key=key, code=code, name=name or code, notes=notes)
+            return index[code]
         # Utility function for parsing numbers.
         def to_float(s):
             if not s: return 0.0
@@ -189,16 +190,16 @@ This data comes from the "All ages" column of the document "Table 8 Mid-2006 Pop
     header = reader.next()
     for row in reader:
         if row:
-            name, population = row
+            code, population = row
             ev = (model.Session.query(model.EnumerationValue)
                 .filter_by(key=key_region)
-                .filter_by(name=unicode(name))
+                .filter_by(code=unicode(code))
                 ).first()
             if ev:
                 assert str(int(population)) == population, population
                 ev.keyvalues[key_population] = unicode(population)
             else:
-                print 'Population data for region %r ignored.' % name
+                print 'Population data for region %r ignored.' % code
 
 def drop():
     '''

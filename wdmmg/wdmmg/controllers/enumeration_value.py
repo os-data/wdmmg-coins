@@ -11,10 +11,10 @@ log = logging.getLogger(__name__)
 
 class EnumerationValueController(BaseController):
 
-    def view(self, key_id=None, name=None):
+    def view(self, key_id=None, code=None):
         c.row = (model.Session.query(model.EnumerationValue)
             .filter_by(key_id=key_id)
-            .filter_by(name=name)
+            .filter_by(code=code)
             ).one()
         c.key = c.row.key
         return render('enumeration_value/view.html')

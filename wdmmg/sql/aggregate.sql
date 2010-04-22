@@ -29,7 +29,7 @@ ORDER BY t.timestamp, axis_0, axis_1
 
 -- Population
 
-SELECT ev.name, kv.value
+SELECT ev.code, kv.value
 FROM enumeration_value ev, key_value kv
 WHERE ev.key_id = '8dc888de-27a7-41f3-ba80-c4c65a46f286'
 AND kv.key_id = '18608816-2079-48cb-9ccc-97577710164f'

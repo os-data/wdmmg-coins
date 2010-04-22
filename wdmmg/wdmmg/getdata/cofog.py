@@ -74,16 +74,16 @@ def load_file(fileobj):
         print parents
         if len(parents)==1:
             print 'Creating level 1 code', parents[0]
-            ev = model.EnumerationValue(key=key_cofog1, name=parents[0], notes=description)
+            ev = model.EnumerationValue(key=key_cofog1, code=parents[0], name=description, notes=u'')
             model.Session.add(ev)
         elif len(parents)==2:
             print 'Creating level 2 code', parents[1]
-            ev = model.EnumerationValue(key=key_cofog2, name=parents[1], notes=description)
+            ev = model.EnumerationValue(key=key_cofog2, code=parents[1], name=description, notes=u'')
             ev.keyvalues[key_parent] = parents[0]
             model.Session.add(ev)
         elif len(parents)==3:
             print 'Creating level 3 code', parents[2]
-            ev = model.EnumerationValue(key=key_cofog3, name=parents[2], notes=description)
+            ev = model.EnumerationValue(key=key_cofog3, code=parents[2], name=description, notes=u'')
             ev.keyvalues[key_parent] = parents[1]
             model.Session.add(ev)
         else:
