@@ -35,7 +35,7 @@ class Account(PublishedDomainObject):
     def as_big_dict(self):
         return {
             'id': self.id,
-            'slice': self.slice.as_dict(),
+            'slice': self.slice_.as_dict(),
             'name': self.name,
             'notes': self.notes,
             'keyvalues': dict([(key.name, value)
@@ -72,8 +72,8 @@ class Transaction(PublishedDomainObject):
     def as_big_dict(self):
         return {
             'id': self.id,
-            'slice': self.slice.as_dict(),
-            'name': self.name,
+            'slice': self.slice_.as_dict(),
+            'timestamp': self.timestamp,
             'notes': self.notes,
             'postings': [{
                 'timestamp': p.timestamp,
