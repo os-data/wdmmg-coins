@@ -15,20 +15,44 @@ class DomainObject(object):
         repr = u'<%s' % self.__class__.__name__
         table = class_mapper(self.__class__).mapped_table
         for col in table.c:
-            repr += u' %s=%s' % (col.name, getattr(self, col.name))
+            repr += u' %s=%r' % (col.name, getattr(self, col.name))
         repr += '>'
         return repr
 
     def __str__(self):
         return self.__unicode__().encode('utf8')
+
+class PublishedDomainObject(DomainObject):
+    def __repr__(self):
+        fields = u', '.join(self.as_dict().items())
+        return u'%s(%s, ...)' % (self.__class__.name, fields)
     
-    def to_dict(self):
+    def as_dict(self):
         '''
         Returns a summary of this DomainObject suitable for inclusion in a
-        JSON list of search results.
+        JSON list of search results. The summary should include most fields
+        of the domain object, but may omit potentially large fields such as
+        `notes`. Foreign keys should be included as ids only.
+        
+        Link tables may be treated as part of one of the tables that they link.
+        In particular, KeyValues attached to this DomainObject may be
+        considered part of it, and therefore included in the result returned by
+        this method.
+        
+        The default implementation returns a dict with only the key 'id'.
         '''
-        raise NotImplementedError
-
+        return {'id': self.id}
+    
+    def as_big_dict(self):
+        '''
+        Returns detailed information about this DomainObject in a form suitable
+        for converting to JSON. All fields should be included, and foreign keys
+        should generally be replaced by the `as_dict()` representation of their
+        referrent.
+        
+        The default implementation returns `self.as_dict()`.
+        '''
+        return self.as_dict()
 
 class JsonType(types.TypeDecorator):
     '''Store data as JSON serializing on save and unserializing on use.
@@ -50,5 +74,4 @@ class JsonType(types.TypeDecorator):
 
     def copy(self):
         return JsonType(self.impl.length)
-
 

@@ -5,13 +5,43 @@ from sqlalchemy.types import *
 from sqlalchemy.orm import mapper, relation, backref, class_mapper
 
 import meta
-from base import DomainObject, JsonType
+from base import PublishedDomainObject, DomainObject
 
-class Key(DomainObject):
-    pass
+class Key(PublishedDomainObject):
+    def as_dict(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+        }
+    
+    def as_big_dict(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'notes': self.notes,
+        }
 
-class EnumerationValue(DomainObject):
-    pass
+class EnumerationValue(PublishedDomainObject):
+    def as_dict(self):
+        return {
+            'id': self.id,
+            'key_id': self.key_id,
+            'code': self.code,
+            'name': self.name,
+            'keyvalues': dict([(key.name, value)
+                for key, value in self.keyvalues.items()]),
+        }
+    
+    def as_big_dict(self):
+        return {
+            'id': self.id,
+            'key': self.key.as_dict(),
+            'code': self.code,
+            'name': self.name,
+            'notes': self.notes,
+            'keyvalues': dict([(key.name, value)
+                for key, value in self.keyvalues.items()]),
+        }
 
 class KeyValue(DomainObject):
     pass

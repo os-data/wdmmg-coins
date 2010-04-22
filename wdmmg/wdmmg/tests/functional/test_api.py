@@ -52,5 +52,5 @@ class TestApiController(TestController):
         response = self.app.get(u)
         assert '"axes": ["region"]' in response, response
         assert '"ENGLAND_London"' in response, response
-        assert 'e-06' in response, response
+        assert '0.1' in response, response
 
