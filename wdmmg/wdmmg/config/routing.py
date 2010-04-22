@@ -39,8 +39,8 @@ def make_map():
     map.connect('/key/{id_}', controller='key', action='view')
     map.connect('/key/{id_}/{action}', controller='key')
 
-    map.connect('/enumeration_value/{key_id}/{code}', controller='enumeration_value', action='view')
-    map.connect('/enumeration_value/{key_id}/{code}/{action}', controller='enumeration_value')
+    map.connect('/enumeration_value/{id_}', controller='enumeration_value', action='view')
+    map.connect('/enumeration_value/{id_}/{action}', controller='enumeration_value')
 
     map.connect('/api', controller='api', action='index')
     map.connect('/api/{action}', controller='api')

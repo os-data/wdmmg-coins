@@ -23,6 +23,10 @@ class KeyController(BaseController):
             .filter_by(key=c.row)
             .filter_by(ns=u'account')
             ).count()
+        c.num_enumeration_values = (model.Session.query(model.KeyValue)
+            .filter_by(key=c.row)
+            .filter_by(ns=u'enumeration_value')
+            ).count()
         query = model.Session.query(model.EnumerationValue).filter_by(key_id=c.row.id)
         c.page = Page(
             collection=query,

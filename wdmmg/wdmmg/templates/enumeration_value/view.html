@@ -12,8 +12,20 @@
     <dl>
       <dt>Code:</dt>
       <dd>${c.row.code}</dd>
+
       <dt>Name:</dt>
       <dd>${c.row.name}</dd>
+
+      <dt>Keys and values:</dt>
+      <dd>
+        <dl>
+          <py:for each="key, value in c.row.keyvalues.items()">
+            <dt><a href="/key/${key.id}">${key.name}</a></dt>
+            <dd>${value}</dd> <!-- href? -->
+          </py:for>
+        </dl>
+      </dd>
+
       <py:if test="c.row.notes">
         <dt>Notes:</dt>
         <dd>${c.row.notes}</dd> <!-- TODO: Markdown -->
