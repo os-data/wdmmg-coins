@@ -12,6 +12,8 @@ class Key(PublishedDomainObject):
         return {
             'id': self.id,
             'name': self.name,
+            'keyvalues': dict([(key.name, value)
+                for key, value in self.keyvalues.items()]),
         }
     
     def as_big_dict(self):
@@ -19,6 +21,10 @@ class Key(PublishedDomainObject):
             'id': self.id,
             'name': self.name,
             'notes': self.notes,
+            'enumeration_values': dict([(ev.code, ev.as_dict())
+                for ev in self.enumeration_values]),
+            'keyvalues': dict([(key.name, value)
+                for key, value in self.keyvalues.items()]),
         }
 
 class EnumerationValue(PublishedDomainObject):
