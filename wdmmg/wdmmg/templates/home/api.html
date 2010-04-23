@@ -5,12 +5,21 @@
 
   <div py:def="content">
     <h2>The Store API</h2>
-    <p>This controller responds to the following requests:</p>
+    <p>The store responds to the following requests:</p>
+
+    <h3>REST</h3>
+
+    <p>A family of calls for navigating the store's data. For details, see:</p>
+
+    <p>
+        <a href="${c.rest_url}">${c.rest_url}</a>
+    </p>
 
     <h3>Aggregate</h3>
 
     <p>Retrieves a slice, specifying axes of interest. The data will be
     aggregated over all other axes.</p>
+
     <p>Example:</p>
 
     <p>

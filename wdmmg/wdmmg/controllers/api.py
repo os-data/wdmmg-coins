@@ -27,8 +27,8 @@ class ApiController(BaseController):
     def index(self):
         # Construct query string by hand to keep the parameters in an instructive order.
         c.aggregate_url = url(controller='api', action='aggregate') + \
-        '?slice=cra&exclude-spender=yes&include-cofog1=07&breakdown-dept=yes&breakdown-region=yes&start_date=2004-05&end_date=2004-05'
-        # FIXME: Dates are now unicode strings.
+            '?slice=cra&exclude-spender=yes&include-cofog1=07&breakdown-dept=yes&breakdown-region=yes&start_date=2004-05&end_date=2004-05'
+        c.rest_url = url(controller='rest', action='index')
         return render('home/api.html')
 
     @beaker_cache(expire=86400, type='dbm', query_args=True)

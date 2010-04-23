@@ -1,0 +1,26 @@
+<html xmlns:py="http://genshi.edgewall.org/"
+  xmlns:xi="http://www.w3.org/2001/XInclude">
+
+  <py:def function="page_title">REST API</py:def>
+
+  <div py:def="content">
+    <h2>The Store's REST API</h2>
+    
+    <p>This API returns JSON versions of the store's domain objects.
+    The URLs are generally the same as the URLs used by the web interface for
+    the same objects, but with "/api/rest" prepended.
+    Here are some examples:</p>
+
+    <ul>
+      <li py:for="u in c.urls.values()">
+        <a href="${u}">${u}</a>
+      </li>
+    </ul>
+    
+    <p>The JSON response generally contains the same information as the
+    corresponding web page, but in more detail.</p>
+  </div>
+
+  <xi:include href="../layout.html" />
+</html>
+

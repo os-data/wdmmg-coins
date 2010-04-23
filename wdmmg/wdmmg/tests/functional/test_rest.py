@@ -10,6 +10,11 @@ class TestRestController(TestController):
     def teardown_class(self):
         Fixtures.teardown()
     
+    def test_index(self):
+        response = self.app.get(url(controller='rest', action='index'))
+        for word in ['slice', 'account', 'transaction', 'key', 'enumeration_value']:
+            assert word in response, response
+    
     def test_slice(self):
         response = self.app.get(url(controller='rest', action='slice',
             id_=Fixtures.slice_.id))
