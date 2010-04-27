@@ -56,7 +56,8 @@ class AccountController(BaseController):
             collection=query,
             page=int(request.params.get('page', 1)),
             items_per_page=c.items_per_page,
-            item_count=query.count()
+            item_count=query.count(),
+            q=c.q, # Preserve `q` when the user clicks 'next' or 'previous'.
         )
         return render('account/results.html')
 
