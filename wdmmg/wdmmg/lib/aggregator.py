@@ -129,7 +129,7 @@ class Results:
         divisors = [statistic.get(date, None) for date in self.dates]
         for coordinates, amounts in self.matrix.items():
             for i in range(len(self.dates)):
-                print "Dividing %r by total %r" % (amounts[i], divisors[i])
+#                print "Dividing %r by total %r" % (amounts[i], divisors[i])
                 if divisors[i] and amounts[i]: amounts[i] /= divisors[i]
                 else: amounts[i] = None
 

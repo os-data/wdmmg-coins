@@ -40,7 +40,7 @@ class ApiController(BaseController):
         start_date = unicode(request.params.get('start_date', '1000'))
         end_date = unicode(request.params.get('end_date', '3000'))
         # Retrieve request parameters of the form "verb-key=value"
-        include, exclude, axes, per = [], [], [], []
+        include, exclude, axes, per, per_time = [], [], [], [], []
         for param, value in request.params.items():
             if param.startswith('exclude-'):
                 key = (model.Session.query(model.Key)
@@ -58,13 +58,18 @@ class ApiController(BaseController):
                     ).one() # FIXME: Nicer error message needed.
                 axes.append(key) # Value ignored (e.g. "yes").
             elif param.startswith('per-'):
-                statistic = (model.Session.query(model.Key)
-                    .filter_by(name=unicode(param[4:]))
-                    ).one() # FIXME: Nicer error message needed.
-                axis = (model.Session.query(model.Key)
-                    .filter_by(name=unicode(value))
-                    ).one() # FIXME: Nicer error message needed.
-                per.append((axis, statistic))
+                if value:
+                    statistic = (model.Session.query(model.Key)
+                        .filter_by(name=unicode(param[4:]))
+                        ).one() # FIXME: Nicer error message needed.
+                    axis = (model.Session.query(model.Key)
+                        .filter_by(name=unicode(value))
+                        ).one() # FIXME: Nicer error message needed.
+                    per.append((axis, statistic))
+                else:
+                    name = param[4:]
+                    assert name in aggregator.time_series, value # FIXME: Nicer error message needed.
+                    per_time.append(name)
             # TODO: Other verbs?
             elif param in ('slice', 'start_date', 'end_date'):
                 pass # Already processed.
@@ -87,6 +92,8 @@ class ApiController(BaseController):
         for axis, statistic in per:
 #            print axis, statistic
             results.divide_by_statistic(axis, statistic)
+        for statistic_name in per_time:
+            results.divide_by_time_statistic(statistic_name)
         ans = {
             'metadata': {
                 'slice': slice_.name,
@@ -94,6 +101,8 @@ class ApiController(BaseController):
                 'include': [(k.name, v) for (k, v) in include],
                 'dates': [unicode(d) for d in results.dates],
                 'axes': results.axes,
+                'per': [(a.name, s.name) for a, s in per],
+                'per_time': per_time
             },
             'results': results.matrix.items(),
         }

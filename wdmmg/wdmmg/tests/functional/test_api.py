@@ -54,3 +54,15 @@ class TestApiController(TestController):
         assert '"ENGLAND_London"' in response, response
         assert '0.1' in response, response
 
+    def test_aggregate_with_per_time(self):
+        u = url(controller='api', action='aggregate', **{
+            'slice': 'cra',
+            'exclude-spender': 'yes',
+            'per-gdp_deflator2006': ''
+        })
+        print u
+        response = self.app.get(u)
+        assert '"axes": []' in response, response
+        assert '"2006-07"' in response, response
+        assert '18445770.0' in response, response
+

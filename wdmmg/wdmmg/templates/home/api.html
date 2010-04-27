@@ -45,6 +45,10 @@
         a {statistic} that depends on {key}. The motivating example is
         "per-population2006=region", to work out per-capita spending, but the
         mechanism is general.</li>
+      <li>per-{statistic}= (optional, repeatable) - Divides the results by
+        a {statistic} that depends on time. The motivating example is
+        "per-gdp_deflator2006=", to work out spending in real terms, but the
+        mechanism is general.</li>
       <li>start_date (optional, default='1000') - Tranactions before this date 
         (string comparison) are ignored.</li>
       <li>end_date (optional, default='3000') - Transactions after this date
