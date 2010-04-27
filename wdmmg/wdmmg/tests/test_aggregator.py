@@ -132,6 +132,21 @@ ORDER BY t.timestamp, axis_0, axis_1''', query
             # Tolerate rounding errors.
             assert abs(index[coords] - amount) < 1e-3, (coords, amount)
 
+    def test_aggregate_per_time(self):
+        ans = aggregator.aggregate(
+            Fixtures.slice_,
+            exclude=[(Fixtures.spender, u'yes')],
+            axes=[],
+        )
+        print ans
+        ans.divide_by_time_statistic('gdp_deflator2006')
+        print ans
+        data = ans.matrix[()]
+        assert len(data) == 8, data
+        for i, amount in enumerate([
+            -180.8, -122.5, -88.0, -82.4, -19.6, 21.9, 52.4, 18.4]):
+            assert abs(data[i] - amount*1e6) < 1e5, (i, amount)
+
 # TODO: Test filtering on slice.
 # TODO: Test with some breakdown KeyValues missing (i.e. coordinate is NULL).
 # TODO: Test per without breakdown.

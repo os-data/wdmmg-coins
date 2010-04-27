@@ -6,6 +6,28 @@ from sqlalchemy.sql.expression import and_
 
 import wdmmg.model as model
 
+# This is the deflator used in PESA. It is normalised to 2006-07 using a
+# measure of inflation suitable for measuring GDP. A value of 'x' in year 'y'
+# means that 1 pound from year 2006 was worth 'x' pounds from year 'y'.
+# The figures were reverse-engineered from the PESA 2008-09 report, by dividing
+# table 1.2 by table 1.1.
+gdp_deflator2006 = {
+  '2002-03': 1.0/1.1098,
+  '2003-04': 1.0/1.0786,
+  '2004-05': 1.0/1.0496,
+  '2005-06': 1.0/1.0274,
+  '2006-07': 1.0/1.0000,
+  '2007-08': 1.0/0.9690,
+  '2008-09': 1.0/0.9399,
+  '2009-10': 1.0/0.9150,
+  '2010-11': 1.0/0.8911
+}
+
+# Time-series data is hard-wired for now.
+time_series = {
+  'gdp_deflator2006': gdp_deflator2006
+}
+
 class Results:
     '''
     Represents the result of a call to `aggregate()`. This class has the
@@ -94,6 +116,22 @@ class Results:
 #                    print "Dividing %r by total %r" % (amounts[i], divisor)
                     if divisor and amounts[i] is not None: amounts[i] /= divisor
                     else: amounts[i] = None
+    
+    def divide_by_time_statistic(self, statistic_name):
+        '''
+        Divides spending by a property of a coordinate. This is useful for
+        computing statistics such as spending in real terms.
+        
+        statistic_name - the name of a time-dependent statistic. The supported
+            statistics are: 'gdp_deflator2006'.
+        '''
+        statistic = time_series.get(statistic_name, {})
+        divisors = [statistic.get(date, None) for date in self.dates]
+        for coordinates, amounts in self.matrix.items():
+            for i in range(len(self.dates)):
+                print "Dividing %r by total %r" % (amounts[i], divisors[i])
+                if divisors[i] and amounts[i]: amounts[i] /= divisors[i]
+                else: amounts[i] = None
 
     def __str__(self):
         return repr(self)
