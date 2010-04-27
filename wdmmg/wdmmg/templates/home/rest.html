@@ -12,7 +12,7 @@
     Here are some examples:</p>
 
     <ul>
-      <li py:for="u in c.urls.values()">
+      <li py:for="u in sorted(c.urls.values())">
         <a href="${u}">${u}</a>
       </li>
     </ul>

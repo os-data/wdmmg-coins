@@ -18,21 +18,25 @@ class RestController(BaseController):
     def index(self):
         c.urls = {
             'slice': url(controller='rest', action='slice',
-                id_=model.Session.query(model.Slice).first().id),
+                id_or_name=model.Session.query(model.Slice).first().id),
+            'slice-name': url(controller='rest', action='slice',
+                id_or_name=model.Session.query(model.Slice).first().name),
             'account': url(controller='rest', action='account',
                 id_=model.Session.query(model.Account).first().id),
             'transaction': url(controller='rest', action='transaction',
                 id_=model.Session.query(model.Transaction).first().id),
             'key': url(controller='rest', action='key',
-                id_=model.Session.query(model.Key).first().id),
+                id_or_name=model.Session.query(model.Key).first().id),
+            'key-name': url(controller='rest', action='key',
+                id_or_name=model.Session.query(model.Key).first().name),
             'enumeration_value': url(controller='rest', action='enumeration_value',
                 id_=model.Session.query(model.EnumerationValue).first().id),
         }
         return render('home/rest.html')
     
     @jsonify
-    def slice(self, id_=None):
-        return self._domain_object(model.Slice, id_)
+    def slice(self, id_or_name=None):
+        return self._domain_object(model.Slice, id_or_name, allow_name=True)
         
     @jsonify
     def account(self, id_=None):
@@ -43,16 +47,19 @@ class RestController(BaseController):
         return self._domain_object(model.Transaction, id_)
         
     @jsonify
-    def key(self, id_=None):
-        return self._domain_object(model.Key, id_)
+    def key(self, id_or_name=None):
+        return self._domain_object(model.Key, id_or_name, allow_name=True)
         
     @jsonify
     def enumeration_value(self, id_=None):
         return self._domain_object(model.EnumerationValue, id_)
         
-    def _domain_object(self, domain_class, id_):
+    def _domain_object(self, domain_class, id_or_name, allow_name=False):
+        domain_object = model.Session.query(domain_class).filter_by(id=id_or_name).first()
+        if not domain_object and allow_name:
+            domain_object = model.Session.query(domain_class).filter_by(name=id_or_name).first()
         # FIXME: Nicer error message if object not found.
-        domain_object = model.Session.query(domain_class).filter_by(id=id_).one()
+        assert domain_object, id_or_name
         self._check_access(domain_object, READ)
         return domain_object.as_big_dict()
 

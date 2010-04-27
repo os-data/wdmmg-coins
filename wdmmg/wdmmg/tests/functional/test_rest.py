@@ -17,7 +17,7 @@ class TestRestController(TestController):
     
     def test_slice(self):
         response = self.app.get(url(controller='rest', action='slice',
-            id_=Fixtures.slice_.id))
+            id_or_name=Fixtures.slice_.id))
         assert '"id":' in response, response
         assert '"name": "cra"' in response, response
     
@@ -39,7 +39,7 @@ class TestRestController(TestController):
 
     def test_key(self):
         response = self.app.get(url(controller='rest', action='key',
-            id_=Fixtures.cofog2.id))
+            id_or_name=Fixtures.cofog2.id))
         assert '"id":' in response, response
         assert '"enumeration_values":' in response, response
         assert '"04.5":' in response, response
