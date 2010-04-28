@@ -15,18 +15,14 @@ class AccountController(BaseController):
         return self.search()
 
     def view(self, id_=None):
-        c.row = (model.Session.query(model.Account)
-            .filter_by(id=id_)
-            ).one()
+        c.row = self.get_by_id(model.Account, id_)
         c.num_postings = (model.Session.query(model.Posting)
             .filter_by(account=c.row)
             ).count()
         return render('account/view.html')
 
     def postings(self, id_=None):
-        c.row = (model.Session.query(model.Account)
-            .filter_by(id=id_)
-            ).one()
+        c.row = self.get_by_id(model.Account, id_)
         query = (model.Session.query(model.Posting)
             .filter_by(account=c.row)
             .order_by('timestamp'))

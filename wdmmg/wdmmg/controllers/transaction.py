@@ -14,8 +14,6 @@ class TransactionController(BaseController):
         return render('transaction/index.html')
 
     def view(self, id_=None):
-        c.row = (model.Session.query(model.Transaction)
-            .filter_by(id=id_)
-            ).one()
+        c.row = self.get_by_id(model.Transaction, id_)
         return render('transaction/view.html')
 

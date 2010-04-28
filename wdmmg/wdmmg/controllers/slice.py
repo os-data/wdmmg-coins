@@ -17,13 +17,7 @@ class SliceController(BaseController):
         return render('slice/index.html')
 
     def view(self, id_or_name=None):
-        c.row = (model.Session.query(model.Slice)
-            .filter_by(id=id_or_name)
-            ).first()
-        if not c.row:
-            c.row = (model.Session.query(model.Slice)
-                .filter_by(name=id_or_name)
-                ).first()
+        c.row = self.get_by_id_or_name(model.Slice, id_or_name)
         c.num_accounts = (model.Session.query(model.Account)
             .filter_by(slice_=c.row)
             ).count()
@@ -34,13 +28,7 @@ class SliceController(BaseController):
 
     def accounts(self, id_or_name=None):
         c.items_per_page = int(request.params.get('items_per_page', 50))
-        c.slice_ = (model.Session.query(model.Slice)
-            .filter_by(id=id_or_name)
-            ).first()
-        if not c.slice_:
-            c.slice_ = (model.Session.query(model.Slice)
-                .filter_by(name=id_or_name)
-                ).first()
+        c.slice_ = self.get_by_id_or_name(model.Slice, id_or_name)
         query = model.Session.query(model.Account).filter_by(slice_=c.slice_)
         c.page = Page(
             collection=query,
@@ -51,13 +39,7 @@ class SliceController(BaseController):
         return render('slice/accounts.html')
 
     def transactions(self, id_or_name=None):
-        c.slice_ = (model.Session.query(model.Slice)
-            .filter_by(id=id_or_name)
-            ).first()
-        if not c.slice_:
-            c.slice_ = (model.Session.query(model.Slice)
-                .filter_by(name=id_or_name)
-                ).first()
+        c.slice_ = self.get_by_id_or_name(model.Slice, id_or_name)
         query = model.Session.query(model.Transaction).filter_by(slice_=c.slice_)
         c.page = Page(
             collection=query,

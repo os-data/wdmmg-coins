@@ -36,30 +36,25 @@ class RestController(BaseController):
     
     @jsonify
     def slice(self, id_or_name=None):
-        return self._domain_object(model.Slice, id_or_name, allow_name=True)
+        return self._domain_object(self.get_by_id_or_name(model.Slice, id_or_name))
         
     @jsonify
     def account(self, id_=None):
-        return self._domain_object(model.Account, id_)
+        return self._domain_object(self.get_by_id(model.Account, id_))
         
     @jsonify
     def transaction(self, id_=None):
-        return self._domain_object(model.Transaction, id_)
+        return self._domain_object(self.get_by_id(model.Transaction, id_))
         
     @jsonify
     def key(self, id_or_name=None):
-        return self._domain_object(model.Key, id_or_name, allow_name=True)
+        return self._domain_object(self.get_by_id_or_name(model.Key, id_or_name))
         
     @jsonify
     def enumeration_value(self, id_=None):
-        return self._domain_object(model.EnumerationValue, id_)
+        return self._domain_object(self.get_by_id(model.EnumerationValue, id_))
         
-    def _domain_object(self, domain_class, id_or_name, allow_name=False):
-        domain_object = model.Session.query(domain_class).filter_by(id=id_or_name).first()
-        if not domain_object and allow_name:
-            domain_object = model.Session.query(domain_class).filter_by(name=id_or_name).first()
-        # FIXME: Nicer error message if object not found.
-        assert domain_object, id_or_name
+    def _domain_object(self, domain_object):
         self._check_access(domain_object, READ)
         return domain_object.as_big_dict()
 

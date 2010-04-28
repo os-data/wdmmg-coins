@@ -16,14 +16,7 @@ class KeyController(BaseController):
         return render('key/index.html')
 
     def view(self, id_or_name=None):
-        c.row = (model.Session.query(model.Key)
-            .filter_by(id=id_or_name)
-            ).first()
-        if not c.row:
-            c.row = (model.Session.query(model.Key)
-                .filter_by(name=id_or_name)
-                ).first()
-        assert c.row, id_or_name # FIXME: Better error message needed.
+        c.row = self.get_by_id_or_name(model.Key, id_or_name)
         c.num_accounts = (model.Session.query(model.KeyValue)
             .filter_by(key=c.row)
             .filter_by(ns=u'account')
@@ -42,13 +35,7 @@ class KeyController(BaseController):
         return render('key/view.html')
 
     def accounts(self, id_or_name=None):
-        c.row = (model.Session.query(model.Key)
-            .filter_by(id=id_or_name)
-            ).first()
-        if not c.row:
-            c.row = (model.Session.query(model.Key)
-                .filter_by(name=id_or_name)
-                ).first()
+        c.row = self.get_by_id_or_name(model.Key, id_or_name)
         query = (model.Session.query(model.Account)
             .join((model.KeyValue, model.Account.id==model.KeyValue.object_id))
             .filter_by(key=c.row)
