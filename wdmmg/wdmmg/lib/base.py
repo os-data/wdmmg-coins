@@ -7,6 +7,7 @@ from pylons.templating import render_genshi as render
 from pylons import tmpl_context as c, request, config
 
 import wdmmg
+from wdmmg import model
 from wdmmg.model import meta
 
 class BaseController(WSGIController):
@@ -25,4 +26,20 @@ class BaseController(WSGIController):
         c.__version__ = wdmmg.__version__
         c.site_title = config.get('site_title', 'Where Does My Money Go? Store')
         c.items_per_page = int(request.params.get('items_per_page', 20))
+
+    def get_by_id(self, domain_class, id_):
+        ans = model.Session.query(domain_class).get(id_)
+        if not ans:
+            abort(404, 'No record with id %r'%id_)
+        return ans
+    
+    def get_by_id_or_name(self, domain_class, id_or_name):
+        ans = model.Session.query(domain_class).get(id_or_name)
+        if not ans:
+            ans = (model.Session.query(domain_class)
+                .filter_by(name=id_or_name)
+                ).first()
+        if not ans:
+            abort(404, 'No record with id %r'%id_)
+        return ans
 
