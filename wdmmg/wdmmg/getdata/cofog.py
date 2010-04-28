@@ -1,7 +1,10 @@
 from datetime import date
 from zipfile import ZipFile
 from StringIO import StringIO
-import csv
+import os, csv
+
+import datapkg
+from pylons import config
 
 import wdmmg.model as model
 
@@ -35,22 +38,19 @@ def load():
     Downloads the COFOG list, and loads it into the database with key names
     'cofog1', 'cofog2' and 'cofog3'.
     '''
-    import swiss
-    cache = swiss.Cache(path='/tmp/')
-    filename = cache.retrieve('http://unstats.un.org/unsd/cr/registry/regdntransfer.asp?f=4')
-    zipfile = ZipFile(filename, 'r')
-    fileobj = StringIO(zipfile.read('COFOG_english_structure.txt'))
+    # Get the COFOG data package.
+    pkgspec = 'file://%s' % os.path.join(config['getdata_cache'], 'cofog')
+    pkg = datapkg.load_package(pkgspec)
+    fileobj = pkg.stream('cofog.csv') # FIXME: Something.csv
     load_file(fileobj)
-    zipfile.close()
 
 def load_file(fileobj):
     '''
     Loads the specified COFOG-like file into the database with key names
     'cofog1', 'cofog2' and 'cofog3'.
     '''
-    headings = fileobj.readline()
     # Semaphore to avoid creating multiple copies.
-    assert not model.Session.query(model.Key).filter_by(name=u'cofog1').first()
+    assert not model.Session.query(model.Key).filter_by(name=u'cofog1').first(), "COFOG already loaded"
     # Create the 'parent' Key if necessary.
     key_parent = model.Session.query(model.Key).filter_by(name=u'parent').first()
     if not key_parent:
@@ -64,26 +64,28 @@ def load_file(fileobj):
     key_cofog2.keyvalues[key_parent] = key_cofog1.name
     key_cofog3.keyvalues[key_parent] = key_cofog2.name
     model.Session.commit()
-    # Create the enumeration values.
-    for line in fileobj.readlines():
-        print line
-        words = line.split()
-        code, description = unicode(words[0]), u' '.join(words[1:])
+    # For each row in the file...
+    reader = csv.reader(fileobj)
+    header = reader.next() # Code, Title, Details, Change date.
+    for row_index, cells in enumerate(reader):
+        code, title, details, change_date = [unicode(x, 'UTF-8') for x in cells]
+        # Create the enumeration values.
+        print '%r, %r' % (code, title)
         parts = code.split('.')
         parents = [u'.'.join(parts[:i+1]) for i, _ in enumerate(parts)]
         print parents
         if len(parents)==1:
             print 'Creating level 1 code', parents[0]
-            ev = model.EnumerationValue(key=key_cofog1, code=parents[0], name=description, notes=u'')
+            ev = model.EnumerationValue(key=key_cofog1, code=parents[0], name=title, notes=details)
             model.Session.add(ev)
         elif len(parents)==2:
             print 'Creating level 2 code', parents[1]
-            ev = model.EnumerationValue(key=key_cofog2, code=parents[1], name=description, notes=u'')
+            ev = model.EnumerationValue(key=key_cofog2, code=parents[1], name=title, notes=details)
             ev.keyvalues[key_parent] = parents[0]
             model.Session.add(ev)
         elif len(parents)==3:
             print 'Creating level 3 code', parents[2]
-            ev = model.EnumerationValue(key=key_cofog3, code=parents[2], name=description, notes=u'')
+            ev = model.EnumerationValue(key=key_cofog3, code=parents[2], name=title, notes=details)
             ev.keyvalues[key_parent] = parents[1]
             model.Session.add(ev)
         else:
