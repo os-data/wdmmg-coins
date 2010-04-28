@@ -9,3 +9,7 @@ cache/*
 *.egg-info
 *.db
 
+# pylons
+pylons_data/*
+development.ini
+
