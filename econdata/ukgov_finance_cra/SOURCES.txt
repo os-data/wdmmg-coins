@@ -3,7 +3,11 @@ cofog_map.json
 
 This is a mapping from the "function" and "subfunction" values in the published CRA spreadsheet to the most appropriate COFOG code. In theory CRA should be entirely classified by COFOG, but in practice this data is corrupted in various ways. This mapping partially corrects for the corruption.
 
-Constructed by William Waites based on the official COFOG list and the CRA data.
+Originally constructed by William Waites based on the official COFOG list and the CRA data. Cross-checked with a similar mapping constructed by Dave Boyce. Further changes and fixes based on HMT's recommendations here:
+
+    http://epp.eurostat.ec.europa.eu/cache/ITY_OFFPUB/KS-RA-07-022/EN/KS-RA-07-022-EN.PDF
+
+See cofog-controversy.txt for more details.
 
 nuts1_population_2006.csv
 -------------------------
