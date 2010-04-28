@@ -36,8 +36,8 @@ def make_map():
     map.connect('/transaction/{id_}/{action}', controller='transaction')
 
     map.connect('/key', controller='key', action='index')
-    map.connect('/key/{id_}', controller='key', action='view')
-    map.connect('/key/{id_}/{action}', controller='key')
+    map.connect('/key/{id_or_name}', controller='key', action='view')
+    map.connect('/key/{id_or_name}/{action}', controller='key')
 
     map.connect('/enumeration_value/{id_}', controller='enumeration_value', action='view')
     map.connect('/enumeration_value/{id_}/{action}', controller='enumeration_value')
@@ -46,10 +46,10 @@ def make_map():
     map.connect('/api/aggregate', controller='api', action='aggregate')
 
     map.connect('/api/rest', controller='rest', action='index')
-    map.connect('/api/rest/slice/{id_}', controller='rest', action='slice')
+    map.connect('/api/rest/slice/{id_or_name}', controller='rest', action='slice')
     map.connect('/api/rest/account/{id_}', controller='rest', action='account')
     map.connect('/api/rest/transaction/{id_}', controller='rest', action='transaction')
-    map.connect('/api/rest/key/{id_}', controller='rest', action='key')
+    map.connect('/api/rest/key/{id_or_name}', controller='rest', action='key')
     map.connect('/api/rest/enumeration_value/{id_}', controller='rest', action='enumeration_value')
 
     return map

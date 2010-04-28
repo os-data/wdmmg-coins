@@ -7,7 +7,7 @@
     <p>The database contains the following keys:</p>
     <ul>
       <li py:for="row in c.results">
-        <a href="${url(controller='key', action='view', id_=row.id)}">${row.name}</a>
+        <a href="${url(controller='key', action='view', id_or_name=row.id)}">${row.name}</a>
       </li>
     </ul>
   </div>
