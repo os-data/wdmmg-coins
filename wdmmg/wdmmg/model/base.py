@@ -11,22 +11,6 @@ class DomainObject(object):
         for k,v in kwargs.items():
             setattr(self, k, v)
     
-    def __unicode__(self):
-        repr = u'<%s' % self.__class__.__name__
-        table = class_mapper(self.__class__).mapped_table
-        for col in table.c:
-            repr += u' %s=%r' % (col.name, getattr(self, col.name))
-        repr += '>'
-        return repr
-
-    def __str__(self):
-        return self.__unicode__().encode('utf8')
-
-class PublishedDomainObject(DomainObject):
-    def __repr__(self):
-        fields = u', '.join(self.as_dict().items())
-        return u'%s(%s, ...)' % (self.__class__.name, fields)
-    
     def as_dict(self):
         '''
         Returns a summary of this DomainObject suitable for inclusion in a
@@ -42,7 +26,20 @@ class PublishedDomainObject(DomainObject):
         The default implementation returns a dict with only the key 'id'.
         '''
         return {'id': self.id}
+
+    def __repr__(self):
+        print self.as_dict().items()
+        fields = u', '.join([unicode(x) for x in self.as_dict().values()])
+        return u'%s(%s, ...)' % (self.__class__.__name__, fields)
     
+    def __unicode__(self):
+        return repr(self)
+
+    def __str__(self):
+        return self.__unicode__().encode('utf8')
+
+
+class PublishedDomainObject(DomainObject):
     def as_big_dict(self):
         '''
         Returns detailed information about this DomainObject in a form suitable
@@ -53,6 +50,7 @@ class PublishedDomainObject(DomainObject):
         The default implementation returns `self.as_dict()`.
         '''
         return self.as_dict()
+
 
 class JsonType(types.TypeDecorator):
     '''Store data as JSON serializing on save and unserializing on use.
