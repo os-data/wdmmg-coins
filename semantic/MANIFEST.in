@@ -1,3 +1,0 @@
-include semantic/config/deployment.ini_tmpl
-recursive-include semantic/public *
-recursive-include semantic/templates *
