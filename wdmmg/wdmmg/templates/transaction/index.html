@@ -5,6 +5,22 @@
   
   <div py:def="content">
     <h2>Transaction Index</h2>
+    <p>Transactions record the transfer of monies between accounts. A given
+    transaction may involve many 'postings' (credits or debits between
+    different accounts) and the sum of such postings should equal zero.</p>
+
+    <p>There are <strong>${c.page.item_count} transactions</strong> in the
+    store.</p>
+    ${c.page.pager(items_per_page=c.items_per_page)}
+    <ul>
+      <li py:for="row in c.page.items">
+        <a href="${url(controller='transaction', action='view',
+          id_=row.id)}">${row.timestamp} - ${len(row.postings)} Postings -
+          ${row.postings[0].account.name}</a>
+      </li>
+    </ul>
+    ${c.page.pager(items_per_page=c.items_per_page)}
+
   </div>
 
   <xi:include href="../layout.html" />
