@@ -5,6 +5,8 @@
   xmlns:xi="http://www.w3.org/2001/XInclude"
   >
 
+<xi:include href="_util.html" />
+
 <head>
   <title>${c.site_title} - ${page_title()}</title>
 
@@ -92,6 +94,7 @@
         <li><a href="${url(controller='slice', action='index')}">Slices</a></li>
         <li><a href="${url(controller='account', action='index')}">Accounts</a></li>
         <li><a href="${url(controller='transaction', action='index')}">Transactions</a></li>
+        <li><a href="${url(controller='key', action='index')}">Keys</a></li>
         <li><a href="${url(controller='api', action='index')}">API</a></li>
       </ul>
     </div>

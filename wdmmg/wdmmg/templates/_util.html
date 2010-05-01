@@ -1,0 +1,15 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:py="http://genshi.edgewall.org/"
+  xmlns:xi="http://www.w3.org/2001/XInclude"
+  py:strip=""
+  >
+
+  <!--! Herein can be found generic helper methods for a whole bunch of common
+        templating issues -->
+
+  <div py:def="render_key(key)" class="key-desc" style="display: inline;">
+    <a href="${url(controller='key', action='view', id_or_name=key.id)}">${key.name}</a> &ndash; ${' '.join(key.notes.split()[:20]) + ' ...'}
+  </div>
+
+</html>
