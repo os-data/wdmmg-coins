@@ -5,6 +5,7 @@ Provides the BaseController class for subclassing.
 from pylons.controllers import WSGIController
 from pylons.templating import render_genshi as render
 from pylons import tmpl_context as c, request, config
+from pylons.controllers.util import abort
 
 import wdmmg
 from wdmmg import model
@@ -40,6 +41,6 @@ class BaseController(WSGIController):
                 .filter_by(name=id_or_name)
                 ).first()
         if not ans:
-            abort(404, 'No record with id %r'%id_)
+            abort(404, 'No record with id %r' % id_or_name)
         return ans
 
