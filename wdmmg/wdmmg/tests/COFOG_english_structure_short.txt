@@ -1,12 +1,21 @@
-Code          Description
-03            Public order and safety
-03.3          Law courts
-04            Economic affairs
-04.1          General economic, commercial and labour affairs
-04.5          Transport
-04.5.3        Railway transport  (CS)
-06            Housing and community amenities
-07            Health
-10            Social protection
-10.1          Sickness and disability
-10.4          Family and children
+Code,Description,ExplanatoryNote,Change_date
+"03","Public order and safety","",""
+"03.3","Law courts","",""
+"04","Economic affairs","",""
+"04.1","General economic, commercial and labour affairs","",""
+"04.5","Transport","",""
+"04.5.3","Railway transport  (CS)","- Administration of affairs and services concerning operation, use, construction or maintenance of railway transport systems and facilities (railway roadbeds, terminals, tunnels, bridges, embankments, cuttings, etc.);
+- supervision and regulation of railway users (rolling stock condition, roadbed stability, passenger safety, security of freight, etc.), of railway transport system operations (granting of franchises, approval of freight tariffs and passenger fares and of hours and frequency of service, etc.) and of railway construction and maintenance;
+- construction or operation of non-enterprise-type railway transport systems and facilities;
+- production and dissemination of general information, technical documentation and statistics on railway transport system operations and on railway construction activities;
+- grants, loans or subsidies to support the operation, construction, maintenance or upgrading of railway transport systems and facilities.
+Includes:  long-line and interurban railway transport systems, urban rapid transit railway transport systems and street railway transport systems;  acquisition and maintenance of rolling stock.
+Excludes:  grants, loans and subsidies to rolling stock manufacturers (04.4.2);  construction of noise embankments, hedges and other anti-noise facilities including the resurfacing of sections of railways with noise reducing surfaces (05.3.0).",""
+"06","Housing and community amenities","",""
+"07","Health","Government outlays on health include expenditures on services provided to individual persons and services provided on a collective basis.  Expenditures on individual services are allocated to groups (07.1) through (07.4);  expenditures on collective services are assigned to groups (07.5) and (07.6).
+Collective health services are concerned with matters such as formulation and administration of government policy;  setting and enforcement of standards for medical and paramedical personnel and for hospitals, clinics, surgeries, etc.;  regulation and licensing of providers of health services;  and applied research and experimental development into medical and health-related matters.  However, overhead expenses connected with administration or functioning of a group of hospitals, clinics, surgeries, etc. are considered to be individual expenditures and are classified to groups (07.1) through (07.4) as appropriate.",""
+"10","Social protection","Government outlays on social protection include expenditures on services and transfers provided to individual persons and households and expenditures on services provided on a collective basis.  Expenditures on individual services and transfers are allocated to groups (10.1) through (10.7);  expenditures on collective services are assigned to groups (10.8) and (10.9).
+Collective social protection services are concerned with matters such as formulation and administration of government policy;  formulation and enforcement of legislation and standards for providing social protection;  and applied research and experimental development into social protection affairs and services.
+The social protection functions and their definitions are based on the 1996 European System of integrated Social Protection Statistics (ESSPROS) of the Statistical Office of the European Communities (Eurostat).
+In ESSPROS, social protection includes health care, but this division does not include health care.  Health care is covered by Division 07.  Hence, medical goods and services provided to persons who receive the cash benefits and benefits in kind specified in groups (10.1) through (10.7) are classified under (07.1), (07.2) or (07.3) as appropriate.",""
+"10.4","Family and children","",""
