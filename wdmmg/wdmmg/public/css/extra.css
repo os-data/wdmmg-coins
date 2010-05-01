@@ -1,57 +1,13 @@
-/* ============== */
-/* = Pagination = */
-/* ============== */
+/* ===================== */
+/* = Fixes to Core CSS = */
+/* ===================== */
 
-.pager {
-	width: 100%;
-	text-align: center;
-	margin: 0 0 1.2em 0;
-	clear: both;
+.hidden {
+  display: none;
 }
 
-.pager span, .pager a {
-	text-decoration: none;
-	margin: 0em;
-	border: none;
-	padding: 0.3em 0.1em;
-}
-
-.pager a:hover, .pager a:active {
-	color: #fff;
-	background-color: #c22;
-}
-
-.pager span.pager_dotdot {
-	color: #aaa;
-}
-
-.pager span.pager_curpage {
-	font-weight: bold;
-	border: 1px solid #ddd;
-}
-
-.credit {
-}
-
-.debit {
-  color: #600
-}
-
-/* ======================= */
-/* = Fixes to KForge CSS = */
-/* ======================= */
-
-#top h1 a:hover {
-	background: transparent;
-}
-
-#top {
-	margin: 0.3em 0 0 0;
-}
-
-#top-bar img {
-	margin: -5px 0 0 0;
-	vertical-align: middle;
+#navbar {
+  display: none;
 }
 
 #subnav li.intro {
@@ -64,11 +20,55 @@
 	height: 0;
 }
 
-#primary {
-	margin-top: 15px;
+/* move this up as common to all block stuff */
+#sidebar .block p {
+  font-size:13px;
+  padding:2px 0 2px 15px;
 }
 
-#main {
-  margin-top: 15px;
+
+/* ================== */
+/* = Store Specific = */
+/* ================== */
+
+dd {
+  margin-left: 30px;
 }
 
+.credit {
+}
+
+.debit {
+  color: #600
+}
+
+
+table 
+{
+  margin: 0 0 1.2em 0;
+  padding: 0;
+  font-size: 95%;
+  background: #fff;
+  border: 0.3em solid #f5f5f5;
+}    
+
+td, th 
+{
+  margin: 0;
+  padding: 1px 3px;
+  border: 1px solid #fff;
+  background: #eee;
+}
+
+th 
+{
+  background: #fdd;
+  text-align: left;
+}
+
+tr 
+{
+  margin: 0;
+  padding: 0;
+  text-align: left;
+}
