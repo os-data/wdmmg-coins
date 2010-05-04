@@ -12,7 +12,7 @@ log = logging.getLogger(__name__)
 class KeyController(BaseController):
 
     def index(self):
-        c.results = (model.Session.query(model.Key)).all()
+        c.results = sorted(model.Session.query(model.Key), key=lambda k: k.name)
         return render('key/index.html')
 
     def view(self, id_or_name=None):
