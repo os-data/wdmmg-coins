@@ -6,8 +6,13 @@
   <div py:def="content">
     <p>The database contains the following keys:</p>
     <ul>
-      <li py:for="row in c.results">
-        ${render_key(row)}
+      <li py:for="parent, children in sorted(c.by_parent.items())">
+        ${render_key(c.by_name[parent])}
+        <ul py:if="children">
+          <li py:for="child in sorted(children)">
+            ${render_key(c.by_name[child])}
+          </li>
+        </ul>
       </li>
     </ul>
   </div>
