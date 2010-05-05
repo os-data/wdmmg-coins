@@ -12,7 +12,7 @@
           <py:if test="c.num_accounts">
             <dt>Number of accounts:</dt>
             <dd>
-              <a href="${url(controller='key', action='accounts', id_or_name=c.row.id)}">${c.num_accounts}</a>
+              <a href="${url(controller='key', action='accounts', name_or_id=c.row.name)}">${c.num_accounts}</a>
             </dd>
           </py:if>
           <py:if test="c.num_enumeration_values">

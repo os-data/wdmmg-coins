@@ -34,13 +34,13 @@ class BaseController(WSGIController):
             abort(404, 'No record with id %r'%id_)
         return ans
     
-    def get_by_id_or_name(self, domain_class, id_or_name):
-        ans = model.Session.query(domain_class).get(id_or_name)
+    def get_by_name_or_id(self, domain_class, name_or_id):
+        ans = (model.Session.query(domain_class)
+            .filter_by(name=name_or_id)
+            ).first()
         if not ans:
-            ans = (model.Session.query(domain_class)
-                .filter_by(name=id_or_name)
-                ).first()
+            ans = model.Session.query(domain_class).get(name_or_id)
         if not ans:
-            abort(404, 'No record with id %r' % id_or_name)
+            abort(404, 'No record with name or id %r' % name_or_id)
         return ans
 

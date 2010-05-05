@@ -7,7 +7,7 @@
     <p>The database contains the following slices:</p>
     <ul>
       <li py:for="row in c.results">
-        <a href="${url(controller='slice', action='view', id_or_name=row.id)}">${row.name}</a>
+        <a href="${url(controller='slice', action='view', name_or_id=row.name)}">${row.name}</a>
       </li>
     </ul>
     <p py:if="len(c.results)>=c.limit">Only the first ${c.limit} results are shown.</p>

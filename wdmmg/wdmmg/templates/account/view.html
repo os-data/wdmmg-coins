@@ -18,7 +18,7 @@
       <dd>
         <dl>
           <py:for each="key, value in c.row.keyvalues.items()">
-            <dt><a href="/key/${key.id}">${key.name}</a></dt>
+            <dt><a href="${url(controller='key', action='view', name_or_id=key.name)}">${key.name}</a></dt>
             <dd>${value}</dd> <!-- href? -->
           </py:for>
         </dl>

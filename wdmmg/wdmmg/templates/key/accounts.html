@@ -6,7 +6,7 @@
   <div py:def="content">
     <p>
       The following accounts are described using key
-      '<a href="${url(controller='key', action='view', id_or_name=c.row.id)}">${c.row.name}</a>':
+      '<a href="${url(controller='key', action='view', name_or_id=c.row.name)}">${c.row.name}</a>':
     </p>
 
     ${c.page.pager(items_per_page=c.items_per_page)}

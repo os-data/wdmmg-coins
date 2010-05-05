@@ -15,8 +15,8 @@ class KeyController(BaseController):
         c.results = sorted(model.Session.query(model.Key), key=lambda k: k.name)
         return render('key/index.html')
 
-    def view(self, id_or_name=None):
-        c.row = self.get_by_id_or_name(model.Key, id_or_name)
+    def view(self, name_or_id=None):
+        c.row = self.get_by_name_or_id(model.Key, name_or_id)
         c.num_accounts = (model.Session.query(model.KeyValue)
             .filter_by(key=c.row)
             .filter_by(ns=u'account')
@@ -34,8 +34,8 @@ class KeyController(BaseController):
         )
         return render('key/view.html')
 
-    def accounts(self, id_or_name=None):
-        c.row = self.get_by_id_or_name(model.Key, id_or_name)
+    def accounts(self, name_or_id=None):
+        c.row = self.get_by_name_or_id(model.Key, name_or_id)
         query = (model.Session.query(model.Account)
             .join((model.KeyValue, model.Account.id==model.KeyValue.object_id))
             .filter_by(key=c.row)

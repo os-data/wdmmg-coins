@@ -18,25 +18,25 @@ class RestController(BaseController):
     def index(self):
         c.urls = {
             'slice': url(controller='rest', action='slice',
-                id_or_name=model.Session.query(model.Slice).first().id),
-            'slice-name': url(controller='rest', action='slice',
-                id_or_name=model.Session.query(model.Slice).first().name),
+                name_or_id=model.Session.query(model.Slice).first().name),
+            'slice-id': url(controller='rest', action='slice',
+                name_or_id=model.Session.query(model.Slice).first().id),
             'account': url(controller='rest', action='account',
                 id_=model.Session.query(model.Account).first().id),
             'transaction': url(controller='rest', action='transaction',
                 id_=model.Session.query(model.Transaction).first().id),
             'key': url(controller='rest', action='key',
-                id_or_name=model.Session.query(model.Key).first().id),
-            'key-name': url(controller='rest', action='key',
-                id_or_name=model.Session.query(model.Key).first().name),
+                name_or_id=model.Session.query(model.Key).first().name),
+            'key-id': url(controller='rest', action='key',
+                name_or_id=model.Session.query(model.Key).first().id),
             'enumeration_value': url(controller='rest', action='enumeration_value',
                 id_=model.Session.query(model.EnumerationValue).first().id),
         }
         return render('home/rest.html')
     
     @jsonify
-    def slice(self, id_or_name=None):
-        return self._domain_object(self.get_by_id_or_name(model.Slice, id_or_name))
+    def slice(self, name_or_id=None):
+        return self._domain_object(self.get_by_name_or_id(model.Slice, name_or_id))
         
     @jsonify
     def account(self, id_=None):
@@ -47,8 +47,8 @@ class RestController(BaseController):
         return self._domain_object(self.get_by_id(model.Transaction, id_))
         
     @jsonify
-    def key(self, id_or_name=None):
-        return self._domain_object(self.get_by_id_or_name(model.Key, id_or_name))
+    def key(self, name_or_id=None):
+        return self._domain_object(self.get_by_name_or_id(model.Key, name_or_id))
         
     @jsonify
     def enumeration_value(self, id_=None):
