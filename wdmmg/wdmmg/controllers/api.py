@@ -34,9 +34,8 @@ class ApiController(BaseController):
     @beaker_cache(expire=86400, type='dbm', query_args=True)
     @jsonify
     def aggregate(self):
-        slice_ = (model.Session.query(model.Slice)
-            .filter_by(name=request.params.get('slice'))
-            ).one() # FIXME: Nicer error message needed.
+        slice_ = self.get_by_name_or_id(model.Slice,
+            name_or_id=request.params.get('slice'))
         start_date = unicode(request.params.get('start_date', '1000'))
         end_date = unicode(request.params.get('end_date', '3000'))
         # Retrieve request parameters of the form "verb-key=value"

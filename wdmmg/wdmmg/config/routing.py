@@ -21,6 +21,8 @@ def make_map():
     # CUSTOM ROUTES HERE
 
     map.connect('home', '/', controller='home', action='index')
+    
+    map.connect('/aggregate', controller='aggregate', action='view')
 
     map.connect('/slice', controller='slice', action='index')
     map.connect('/slice/{name_or_id}', controller='slice', action='view')
