@@ -11,5 +11,6 @@ cache/*
 
 # pylons
 pylons_data/*
+data/*
 development.ini
 
