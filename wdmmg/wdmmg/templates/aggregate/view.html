@@ -6,7 +6,7 @@
   <div py:def="content">
     <form action="${url(controller='aggregate', action='view')}" method="get">
       <p py:if="c.filters">
-        Only include spending where:
+        Only show spending where:
         <ul>
           <li py:for="key, value in sorted(c.filter_labels.items())">
             Key '${key}' has value '${value}'.
@@ -14,6 +14,9 @@
             <input type="hidden" name="include-${key}" value="${value}"/>
           </li>
         </ul>
+      </p>
+      <p py:if="not c.filters">
+        Show all spending.
       </p>
 
       <p>
@@ -26,19 +29,18 @@
         )}
         <input type="submit" value="Update"/>
       </p>
+    </form>
 
-      <py:def function="money_td(amount)">
-        <!-- TODO: Express in millions -->
-        <td class="credit" py:if="amount &gt;= 0">${'%.1f' % (amount/1e6)}</td>
-        <td class="debit" py:if="amount &lt; 0">${'(%.1f)' % (amount/1e6)}</td>
-      </py:def>
-
+    <py:def function="money_td(amount)">
+      <td class="credit" py:if="amount &gt;= 0">${'%.1f' % (amount/1e6)}</td>
+      <td class="debit" py:if="amount &lt; 0">${'(%.1f)' % (amount/1e6)}</td>
+    </py:def>
+    <div style="overflow:auto">
       <table>
         <tr>
           <td py:if="c.axis" scope="col">£m</td>
           <th py:for="date in c.results.dates" scope="col">${date}</th>
         </tr>
-
         <tr py:for="coordinates, amounts in sorted(c.results.matrix.items())">
           <th py:if="c.axis" scope="row">
             <a href="${c.axis_links[coordinates[0]]}">
@@ -53,7 +55,7 @@
           <py:for each="amount in c.totals">${money_td(amount)}</py:for>
         </tr>
       </table>
-    </form>
+    </div>
   </div>
 
   <xi:include href="../layout.html" />

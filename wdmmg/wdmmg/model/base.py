@@ -27,13 +27,9 @@ class DomainObject(object):
         '''
         return {'id': self.id}
 
-    def __repr__(self):
-        print self.as_dict().items()
-        fields = u', '.join([unicode(x) for x in self.as_dict().values()])
-        return u'%s(%s, ...)' % (self.__class__.__name__, fields)
-    
     def __unicode__(self):
-        return repr(self)
+        fields = u', '.join([u'%s=%r' % (k, v) for k, v in self.as_dict().items()])
+        return u'%s(%s, ...)' % (self.__class__.__name__, fields)
 
     def __str__(self):
         return self.__unicode__().encode('utf8')

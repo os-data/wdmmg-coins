@@ -10,6 +10,7 @@ import wdmmg.model as model
 log = logging.getLogger(__name__)
 
 class AggregateController(BaseController):
+    @beaker_cache(expire=86400, type='dbm', query_args=True)
     def view(self):
         # Read request parameters.
         slice_cra = self.get_by_name_or_id(model.Slice,
