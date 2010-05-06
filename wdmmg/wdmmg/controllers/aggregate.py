@@ -2,6 +2,7 @@ import logging
 
 from pylons import request, response, session, tmpl_context as c, url
 from pylons.controllers.util import abort, redirect
+from pylons.decorators.cache import beaker_cache
 
 from wdmmg.lib.base import BaseController, render
 from wdmmg.lib import aggregator
