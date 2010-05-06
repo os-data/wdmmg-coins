@@ -8,21 +8,25 @@
       <p py:if="c.filters">
         Only include spending where:
         <ul>
-          <li py:for="key in sorted(c.filters, key=lambda x: x.name)">
-            Key '${key.name}' has value '${c.filters[key]}'.
-            <input type="submit" name="remove-${key.name}" value="Remove"/>
+          <li py:for="key, value in sorted(c.filter_labels.items())">
+            Key '${key}' has value '${value}'.
+            <a href="${c.filter_links[key]}">(remove)</a>
+            <input type="hidden" name="include-${key}" value="${value}"/>
           </li>
         </ul>
       </p>
 
       <p>
         <label for="breakdown">Breakdown by</label>
-        ${h.select("breakdown", c.axis.name, sorted([key.name for key in c.bd_keys]),
-            prompt=u'(no breakdown)')}
+        ${h.select(
+            "breakdown",
+            c.axis.name if c.axis else '',
+            sorted([key.name for key in c.bd_keys]),
+            prompt=u'(no breakdown)'
+        )}
         <input type="submit" value="Update"/>
       </p>
 
-      <!-- A utility for formatting amounts of money. -->
       <py:def function="money_td(amount)">
         <!-- TODO: Express in millions -->
         <td class="credit" py:if="amount &gt;= 0">${'%.1f' % (amount/1e6)}</td>
@@ -35,9 +39,13 @@
           <th py:for="date in c.results.dates" scope="col">${date}</th>
         </tr>
 
-        <tr py:for="coordinates, data in sorted(c.results.matrix.items())">
-          <th py:if="c.axis" scope="row">${coordinates[0]}</th>
-          <py:for each="amount in data">${money_td(amount)}</py:for>
+        <tr py:for="coordinates, amounts in sorted(c.results.matrix.items())">
+          <th py:if="c.axis" scope="row">
+            <a href="${c.axis_links[coordinates[0]]}">
+              ${c.axis_labels.get(coordinates[0], coordinates[0])}
+            </a>
+          </th>
+          <py:for each="amount in amounts">${money_td(amount)}</py:for>
         </tr>
         
         <tr py:if="c.axis">
