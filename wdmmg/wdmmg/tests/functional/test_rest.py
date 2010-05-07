@@ -12,7 +12,7 @@ class TestRestController(TestController):
     
     def test_index(self):
         response = self.app.get(url(controller='rest', action='index'))
-        for word in ['slice', 'account', 'transaction', 'key', 'enumeration_value']:
+        for word in ['slice', 'account', 'transaction', 'key', 'value']:
             assert word in response, response
     
     def test_slice(self):
@@ -50,7 +50,7 @@ class TestRestController(TestController):
             .filter_by(key=Fixtures.region)
             ).first()
         response = self.app.get(url(controller='rest', action='enumeration_value',
-            id_=example.id))
+            name_or_id=Fixtures.region.name, code=example.code))
         assert '"id":' in response, response
         assert '"code":' in response, response
         assert '"population2006":' in response, response

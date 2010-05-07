@@ -33,8 +33,8 @@
         ${c.page.pager(items_per_page=c.items_per_page)}
         <ul>
           <li py:for="v in c.page.items">
-            <a href="${url(controller='enumeration_value', action='view', id_=v.id)}">${v.code}</a>
-            (${v.name})
+            <a href="${url(controller='enumeration_value', action='view',
+                name_or_id=c.row.name, code=v.code)}">${v.code}</a> (${v.name})
           </li>
         </ul>
       </dd>

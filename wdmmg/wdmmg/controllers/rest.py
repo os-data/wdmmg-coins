@@ -16,22 +16,21 @@ READ = u'READ'
 class RestController(BaseController):
 
     def index(self):
-        c.urls = {
-            'slice': url(controller='rest', action='slice',
-                name_or_id=model.Session.query(model.Slice).first().name),
-            'slice-id': url(controller='rest', action='slice',
-                name_or_id=model.Session.query(model.Slice).first().id),
-            'account': url(controller='rest', action='account',
+        slice_ = model.Session.query(model.Slice).first()
+        enumeration_value = model.Session.query(model.EnumerationValue).first()
+        key = enumeration_value.key
+        c.urls = [
+            url(controller='rest', action='slice', name_or_id=slice_.name),
+            url(controller='rest', action='slice', name_or_id=slice_.id),
+            url(controller='rest', action='account',
                 id_=model.Session.query(model.Account).first().id),
-            'transaction': url(controller='rest', action='transaction',
+            url(controller='rest', action='transaction',
                 id_=model.Session.query(model.Transaction).first().id),
-            'key': url(controller='rest', action='key',
-                name_or_id=model.Session.query(model.Key).first().name),
-            'key-id': url(controller='rest', action='key',
-                name_or_id=model.Session.query(model.Key).first().id),
-            'enumeration_value': url(controller='rest', action='enumeration_value',
-                id_=model.Session.query(model.EnumerationValue).first().id),
-        }
+            url(controller='rest', action='key', name_or_id=key.name),
+            url(controller='rest', action='key', name_or_id=key.id),
+            url(controller='rest', action='enumeration_value',
+                name_or_id=enumeration_value.key.name, code=enumeration_value.code),
+        ]
         return render('home/rest.html')
     
     @jsonify
@@ -51,9 +50,23 @@ class RestController(BaseController):
         return self._domain_object(self.get_by_name_or_id(model.Key, name_or_id))
         
     @jsonify
-    def enumeration_value(self, id_=None):
+    def enumeration_value_id(self, id_=None):
+        '''Deprecated'''
         return self._domain_object(self.get_by_id(model.EnumerationValue, id_))
         
+    @jsonify
+    def enumeration_value(self, name_or_id=None, code=None):
+        '''
+        name_or_id - a `Key.name or a `Key.id`.
+        code - an `EnumerationValue.code`.
+        '''
+        key = self.get_by_name_or_id(model.Key, name_or_id)
+        ev = (model.Session.query(model.EnumerationValue)
+            .filter_by(key=key)
+            .filter_by(code=code)
+            ).first()
+        return self._domain_object(ev)
+
     def _domain_object(self, domain_object):
         self._check_access(domain_object, READ)
         return domain_object.as_big_dict()
