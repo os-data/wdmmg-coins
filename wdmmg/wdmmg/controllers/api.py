@@ -10,6 +10,7 @@ from wdmmg.lib.base import BaseController, render
 
 import wdmmg.model as model
 import wdmmg.lib.aggregator as aggregator
+import wdmmg.lib.calculator as calculator
 
 log = logging.getLogger(__name__)
 
@@ -25,10 +26,12 @@ class ApiController(BaseController):
 #        return datetime.strptime(s, '%Y-%m-%d') # FIXME: Nicer error message needed.
 
     def index(self):
-        # Construct query string by hand to keep the parameters in an instructive order.
+        c.rest_url = url(controller='rest', action='index')
+        # Construct query strings by hand to keep the parameters in an instructive order.
         c.aggregate_url = url(controller='api', action='aggregate') + \
             '?slice=cra&exclude-spender=yes&include-cofog1=07&breakdown-dept=yes&breakdown-region=yes&start_date=2004-05&end_date=2004-05'
-        c.rest_url = url(controller='rest', action='index')
+        c.tax_share_url = url(controller='api', action='tax_share') + \
+            '?income=20000&spending=10000&smoker=yes&driver=yes'
         return render('home/api.html')
 
     @beaker_cache(expire=86400, type='dbm', query_args=True)
@@ -107,4 +110,33 @@ class ApiController(BaseController):
         }
 #        print ans
         return ans
+
+    @jsonify
+    def tax_share(self):
+        def float_param(name, required=False):
+            if name not in request.params:
+                if required:
+                    abort(status_code=400, detail='parameter %s is missing'%name)
+                return None
+            ans = request.params[name]
+            try:
+                return float(ans)
+            except ValueError:
+                abort(status_code=400, detail='%r is not a number'%ans)
+        def bool_param(name, required=False):
+            if name not in request.params:
+                if required:
+                    abort(status_code=400, detail='parameter %s is missing'%name)
+                return None
+            ans = request.params[name].lower()
+            if ans=='yes': return True
+            elif ans=='no': return False
+            else: abort(status_code=400, detail='%r is not %r or %r'%(ans, 'yes', 'no'))
+        tax, explanation = calculator.tax_share(
+            float_param('income', required=True),
+            float_param('spending'),
+            bool_param('smoker'),
+            bool_param('driver')
+        )
+        return {'tax': tax, 'explanation': explanation}
 

@@ -47,47 +47,107 @@ tobacco_population = population * 0.21
 def tax_share(
     income,
     spending = None,
-    is_smoker = False,
-    is_driver = False
+    is_smoker = None,
+    is_driver = None
 ):
     '''
     Estimates a person's tax contribution based on the following information:
     
     income - Total personal income. This is used to estimate income tax paid.
     spending - Household expenditure. This is used to estimate VAT paid.
-    is_smoker - `True` if the person smokes. This adds a share of tobacco duty.
-    is_driver - `True` if the person drives a car. This adds a share of fuel duty.
+    is_smoker - `True` if the person smokes, or `False` if not. If specified,
+      this adds or removes a share of tobacco duty.
+    is_driver - `True` if the person drives a car, or `False` if not. If
+      specified, this adds or removes a share of fuel duty.
+    
+    Returns a pair `(tax, explanation)`. The `explanation` is a list of strings
+    describing the steps of the calculation.
     '''
-    tax = 0.0
+    tax, explanation = 0.0, []
     # Income tax: Calculate which income range the income falls in.
     lower = (0.0, 0.0)
     for upper in income_table:
         if upper[0] >= income:
             # Found the right band. Use linear interpolation.
+            for band in [lower, upper]:
+                explanation.append('''\
+There is an income band in which the national average income is %.2f and the \
+national average income tax paid is %.2f.''' % band)
             income_tax = lower[1] + (income-lower[0]) * (upper[1]-lower[1]) / (upper[0]-lower[0])
             break
         else:
             lower = upper
     else:
         # Above all the bands. Use constant tax rate.
+        explanation.append('''\
+For very high earners, the national average fraction of income paid as income \
+tax is %.1f%%.''' % (income_top_rate*100))
         income_tax = income * income_top_rate
+    explanation.append('''\
+Therefore, a person with an income of %.2f pays roughly %.2f in income tax.\
+''' % (income, income_tax))
     tax += income_tax
     # NI contributions are divided equally across the population.
-    tax += ni_total / population
-    # VAT: Multiply spending by `vat_rate`.
+    ni = ni_total / population
+    explanation.append('''\
+The total National Insurance paid by the whole population is %.0f. This is very \
+roughly equally shared between %d people. Each person's share is %.2f.\
+''' % (ni_total, population, ni))
+    tax += ni
+    # VAT.
     if spending is None:
-        # Estimate based on income.
         spending = income * 0.8
-    tax += spending * vat_rate
+        explanation.append('''\
+A person with an income of %.2f probably spends about %.2f on goods and \
+services.''' % (income, spending))
+    vat = spending * vat_rate
+    explanation.append('''\
+A person with expenditure of %.2f probably pays about %.2f in VAT.\
+''' % (spending, vat))
+    tax += vat
     # Corporation tax is divided equally across the population.
-    tax += ct_total / population
-    # Fuel duty: if a driver, fuel duty is divided equally across drivers.
-    if is_driver:
-        tax += fuel_total / fuel_population
-    # Tobacco duty: if a smoker, tobacco duty is divided equally across smokers.
-    if is_smoker:
-        tax += tobacco_total / tobacco_population
-    return tax
+    ct = ct_total / population
+    explanation.append('''\
+The total Corporation Tax paid by all UK companies is %.0f. It is difficult to \
+define a person's individual share. The simplest approach is to share it \
+equally between %d people. Each person's share is then %.2f.\
+''' % (ct_total, population, ct))
+    tax += ct
+    # Fuel duty.
+    if is_driver is None:
+        fuel_duty = fuel_total / population
+        explanation.append('''\
+The total Fuel Duty paid by the whole population is %f. Without knowing who is \
+a driver, the best approach is to share it equally between all %d people. Each \
+person's share is %.2f.\
+''' % (fuel_total, population, fuel_duty))
+    elif is_driver:
+        fuel_duty = fuel_total / fuel_population
+        explanation.append('''\
+The total Fuel Duty paid by the whole population is %f. This is very \
+roughly equally shared between %d drivers. Each driver's share is %.2f.\
+''' % (fuel_total, fuel_population, fuel_duty))
+    else:
+        fuel_duty = 0
+    tax += fuel_duty
+    # Tobacco duty.
+    if is_smoker is None:
+        tobacco_duty = tobacco_total / population
+        explanation.append('''\
+The total Tobacco Duty paid by the whole population is %f. Without knowing who \
+is a smoker, the best approach is to share it equally between all %d people. \
+Each person's share is %.2f.\
+''' % (fuel_total, population, fuel_duty))
+    elif is_smoker:
+        tobacco_duty = tobacco_total / tobacco_population
+        explanation.append('''\
+The total Tobacco Duty paid by the whole population is %f. This is very \
+roughly equally shared between %d smokers. Each smoker's share is %.2f.\
+''' % (tobacco_total, tobacco_population, tobacco_duty))
+    else:
+        tobacco_duty = 0
+    tax += tobacco_duty
+    return tax, explanation
 
 spending_table = {
     'social_protection': 301e9,

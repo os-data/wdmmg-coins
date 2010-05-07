@@ -54,6 +54,30 @@
       <li>end_date (optional, default='3000') - Transactions after this date
         (string comparison) are ignored. </li>
     </ul>
+
+    <h3>Tax share</h3>
+
+    <p>Estimates a person's tax contribution based on simple proxy data. The
+    estimate allows for Income Tax, National Insurance, VAT, Corporation Tax,
+    and Tobacco and Fuel duty.</p>
+
+    <p>Example:</p>
+
+    <p>
+      <a href="${c.tax_share_url}">${c.tax_share_url}</a>
+    </p>
+
+    <p>Parameters:</p>
+    <ul>
+      <li>income - Total personal income. This is used to estimate
+        income tax paid.</li>
+      <li>spending (optional, default=80% of income) -  Personal expenditure.
+        This is used to estimate VAT paid.</li>
+      <li>smoker={yes or no} (optional) - 'yes' if the person smokes. This
+        adds or removes a share of tobacco duty.</li>
+      <li>driver={yes or no} (optional) - 'yes' if the person drives a car.
+        This adds or removes a share of fuel duty.</li>
+    </ul>
   </div>
 
   <xi:include href="../layout.html" />
