@@ -27,6 +27,7 @@ class BaseController(WSGIController):
         c.__version__ = wdmmg.__version__
         c.site_title = config.get('site_title', 'Where Does My Money Go? Store')
         c.items_per_page = int(request.params.get('items_per_page', 20))
+        c.default_slice = config.get('default_slice', u'cra')
 
     def get_by_id(self, domain_class, id_):
         ans = model.Session.query(domain_class).get(id_)

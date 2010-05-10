@@ -29,7 +29,8 @@ class ApiController(BaseController):
         c.rest_url = url(controller='rest', action='index')
         # Construct query strings by hand to keep the parameters in an instructive order.
         c.aggregate_url = url(controller='api', action='aggregate') + \
-            '?slice=cra&exclude-spender=yes&include-cofog1=07&breakdown-dept=yes&breakdown-region=yes&start_date=2004-05&end_date=2004-05'
+            '?slice=%s' % c.default_slice + \
+            '&exclude-spender=yes&include-cofog1=07&breakdown-dept=yes&breakdown-region=yes&start_date=2004-05&end_date=2004-05'
         c.tax_share_url = url(controller='api', action='tax_share') + \
             '?income=20000&spending=10000&smoker=yes&driver=yes'
         return render('home/api.html')

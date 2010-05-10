@@ -14,8 +14,8 @@ class AggregateController(BaseController):
     @beaker_cache(expire=86400, type='dbm', query_args=True)
     def view(self):
         # Read request parameters.
-        slice_cra = self.get_by_name_or_id(model.Slice,
-            name_or_id=request.params.get('slice', u'cra'))
+        slice_ = self.get_by_name_or_id(model.Slice,
+            name_or_id=request.params.get('slice', c.default_slice))
         c.filters = {}
         for param, value in request.params.items():
             if param.startswith('include-'):
@@ -28,7 +28,7 @@ class AggregateController(BaseController):
         key_spender = self.get_by_name_or_id(model.Key, name_or_id=u'spender')
         # Do the aggregation.
         c.results = aggregator.aggregate(
-            slice_=slice_cra,
+            slice_=slice_,
             exclude=[(key_spender, u'yes')],
             include=c.filters.items(),
             axes=[c.axis] if c.axis else [],
