@@ -1,29 +1,29 @@
-from wdmmg.lib import calculator
+import wdmmg.lib.calculator
 
-constant_tax = (calculator.ni_total + calculator.ct_total) / calculator.population
+calculator = wdmmg.lib.calculator.TaxCalculator2010()
 
 def test_income_tax():
     def test(i, t):
-        ans = calculator.tax_share(i, spending=0) - constant_tax
-        assert abs(ans - t) < 1, ans
+        esttax, explanation = calculator.total_tax(i, spending=0)
+        assert abs(esttax - t) < 1, (esttax, t, explanation)
     # Low incomes
-    test(0, 0)
-    test(5225, 0)
+    test(0, 2818)
+    test(5225, 2818)
     # High incomes
-    test(2264285.71, 823000)
-    test(10e6, 3634700)
+    test(2264285.71, 825818)
+    test(10e6, 3637517)
     # Mid incomes, requiring interpolation.
-    test(25837.04, 3994)
+    test(25837.04, 6812)
 
 def test_vat():
-    ans = calculator.tax_share(0, spending=100) - constant_tax
+    ans = calculator.vat(spending=100)
     assert abs(ans - 17.5) < 1, ans
-    ans = calculator.tax_share(100) - constant_tax
+    ans = calculator.vat(80)
     assert abs(ans - 14) < 1, ans
 
 def test_spending_share():
     test_tax = 5000
-    ans = calculator.spending_share(test_tax)
+    ans = wdmmg.lib.calculator.spending_share(test_tax)
     assert 'health' in ans
     assert abs(sum(ans.values()) - test_tax) < 0.01
 
