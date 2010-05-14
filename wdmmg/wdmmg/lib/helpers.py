@@ -7,6 +7,9 @@ available to Controllers. This module is available to templates as 'h'.
 from webhelpers.html import escape, HTML, literal, url_escape
 from webhelpers.html.tags import *
 from webhelpers import paginate
+from webhelpers.markdown import markdown as _markdown
+def markdown(*args, **kwargs):
+    return literal(_markdown(*args, **kwargs))
 
 class Page(paginate.Page):
     '''Follow ckan setup.'''
