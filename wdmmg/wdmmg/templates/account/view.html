@@ -17,9 +17,9 @@
       <dt>Keys and values:</dt>
       <dd>
         <dl>
-          <py:for each="key, value in c.row.keyvalues.items()">
+          <py:for each="key, keyvalue in c.row._keyvalues.items()">
             <dt><a href="${url(controller='key', action='view', name_or_id=key.name)}">${key.name}</a></dt>
-            <dd>${value}</dd> <!-- href? -->
+            <dd>${h.render_value(keyvalue)}</dd>
           </py:for>
         </dl>
       </dd>

@@ -22,3 +22,18 @@ class Page(paginate.Page):
             symbol_previous='« Prev', symbol_next='Next »'
         )
         return super(Page, self).pager(*args, **kwargs)
+
+
+import wdmmg.model as model
+from pylons import url
+def render_value(keyvalue):
+    enumval = keyvalue.enumeration_value
+    if enumval:
+        return link_to('%s (%s)' % (enumval.name, enumval.code),
+                url(controller='enumeration_value',
+                    name_or_id=keyvalue.key.name,
+                    action='view', code=enumval.code)
+                )
+    else:
+        return keyvalue.value
+
