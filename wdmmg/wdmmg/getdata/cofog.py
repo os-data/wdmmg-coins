@@ -86,6 +86,36 @@ the official name using this key.''')
     model.Session.commit()
     model.Session.remove()
 
+def promote_notes():
+    '''
+    Where a level 2 COFOG code has exactly one level 3 sub-code, there is
+    often no detailed description for the level 2 code. This method will
+    supply the missing description by copying it from the level 3 sub-code.
+    '''
+    key_cofog2 = model.Session.query(model.Key).filter_by(name=u'cofog2').one()
+    key_cofog3 = model.Session.query(model.Key).filter_by(name=u'cofog3').one()
+    key_parent = model.Session.query(model.Key).filter_by(name=u'parent').one()
+    all_cofog2s = (model.Session.query(model.EnumerationValue)
+        .filter_by(key=key_cofog2)
+        ).all()
+    for ev in all_cofog2s:
+        if ev.notes:
+            continue
+        children = (model.Session.query(model.EnumerationValue)
+            .filter_by(key=key_cofog3)
+            .join((model.KeyValue, model.KeyValue.object_id==model.EnumerationValue.id))
+            .filter(model.KeyValue.key == key_parent)
+            .filter(model.KeyValue.value == ev.code)
+            ).all()
+        if len(children)==1 and children[0].notes:
+            # Copy `notes` from child to parent.
+            print "Copying notes from %s to %s" % (children[0].code, ev.code)
+            print "Old notes = ", ev.notes
+            ev.notes = children[0].notes
+            print "New notes = ", ev.notes
+    model.Session.commit()
+    model.Session.remove()
+
 def load_file(fileobj):
     '''
     Loads the specified COFOG-like file into the database with key names
