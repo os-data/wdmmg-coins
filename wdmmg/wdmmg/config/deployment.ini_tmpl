@@ -33,6 +33,10 @@ app_instance_uuid = ${app_instance_uuid}
 # (wdmmg) directory for storing downloaded data and the like
 getdata_cache = %(cache_dir)s/getdata
 
+# Credentials for retrieving data from Google Documents.
+gdocs_username = my_username
+gdocs_password = my_password
+
 # SQLAlchemy database URL
 sqlalchemy.url = sqlite:///production.db
 
