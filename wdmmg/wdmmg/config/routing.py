@@ -48,7 +48,7 @@ def make_map():
 
     map.connect('/api', controller='api', action='index')
     map.connect('/api/aggregate', controller='api', action='aggregate')
-    map.connect('/api/mytax', controller='api', action='tax_share')
+    map.connect('/api/mytax', controller='api', action='mytax')
 
     map.connect('/api/rest', controller='rest', action='index')
     map.connect('/api/rest/slice/{name_or_id}', controller='rest', action='slice')

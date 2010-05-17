@@ -15,6 +15,8 @@ host = 0.0.0.0
 port = 5000
 
 [app:main]
+## ======================
+## Standard pylons config
 use = egg:wdmmg
 full_stack = true
 static_files = true
@@ -24,11 +26,13 @@ beaker.session.key = wdmmg
 beaker.session.secret = ${app_instance_secret}
 app_instance_uuid = ${app_instance_uuid}
 
-# If you'd like to fine-tune the individual locations of the cache data dirs
-# for the Cache data, or the Session saves, un-comment the desired settings
-# here:
-#beaker.cache.data_dir = %(here)s/data/cache
-#beaker.session.data_dir = %(here)s/data/sessions
+# WARNING: *THE LINE BELOW MUST BE UNCOMMENTED ON A PRODUCTION ENVIRONMENT*
+# Debug mode will enable the interactive debugging tool, allowing ANYONE to
+# execute malicious code after an exception is raised.
+set debug = false
+
+## ======================
+## WDMMG config
 
 # (wdmmg) directory for storing downloaded data and the like
 getdata_cache = %(cache_dir)s/getdata
@@ -37,13 +41,14 @@ getdata_cache = %(cache_dir)s/getdata
 gdocs_username = my_username
 gdocs_password = my_password
 
+# default data 'slice' to use
+default_slice = cra
+
 # SQLAlchemy database URL
 sqlalchemy.url = sqlite:///production.db
 
-# WARNING: *THE LINE BELOW MUST BE UNCOMMENTED ON A PRODUCTION ENVIRONMENT*
-# Debug mode will enable the interactive debugging tool, allowing ANYONE to
-# execute malicious code after an exception is raised.
-set debug = false
+
+
 
 
 # Logging configuration

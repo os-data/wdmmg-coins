@@ -66,8 +66,8 @@ class TestApiController(TestController):
         assert '"2006-07"' in response, response
         assert '18445770.0' in response, response
 
-    def test_tax_share(self):
-        u = url(controller='api', action='tax_share', income=20000)
+    def test_mytax(self):
+        u = url(controller='api', action='mytax', income=20000)
         print u
         response = self.app.get(u)
         assert '"tax": ' in response, response

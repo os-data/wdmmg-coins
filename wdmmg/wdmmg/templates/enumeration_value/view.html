@@ -28,7 +28,7 @@
 
       <py:if test="c.row.notes">
         <dt>Notes:</dt>
-        <dd>${c.row.notes}</dd> <!-- TODO: Markdown -->
+        <dd>${h.markdown(c.row.notes)}</dd>
       </py:if>
     </dl>
   </div>

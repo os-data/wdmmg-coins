@@ -29,8 +29,9 @@ class ApiController(BaseController):
         c.rest_url = url(controller='rest', action='index')
         # Construct query strings by hand to keep the parameters in an instructive order.
         c.aggregate_url = url(controller='api', action='aggregate') + \
-            '?slice=cra&exclude-spender=yes&include-cofog1=07&breakdown-dept=yes&breakdown-region=yes&start_date=2004-05&end_date=2004-05'
-        c.tax_share_url = url(controller='api', action='tax_share') + \
+            '?slice=%s' % c.default_slice + \
+            '&exclude-spender=yes&include-cofog1=07&breakdown-dept=yes&breakdown-region=yes&start_date=2004-05&end_date=2004-05'
+        c.mytax_url = url(controller='api', action='mytax') + \
             '?income=20000&spending=10000&smoker=yes&driver=yes'
         return render('home/api.html')
 
@@ -112,7 +113,7 @@ class ApiController(BaseController):
         return ans
 
     @jsonify
-    def tax_share(self):
+    def mytax(self):
         def float_param(name, required=False):
             if name not in request.params:
                 if required:
@@ -132,7 +133,7 @@ class ApiController(BaseController):
             if ans=='yes': return True
             elif ans=='no': return False
             else: abort(status_code=400, detail='%r is not %r or %r'%(ans, 'yes', 'no'))
-        tax, explanation = calculator.tax_share(
+        tax, explanation = calculator.TaxCalculator2010().total_tax(
             float_param('income', required=True),
             float_param('spending'),
             bool_param('smoker'),
