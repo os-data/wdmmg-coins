@@ -74,8 +74,8 @@ class TaxCalculator2010(object):
         if spending is None:
             spending = income * 0.8
             self.explanation.append('''\
-    A person with an income of %.2f probably spends about %.2f on goods and \
-    services.''' % (income, spending))
+A person with an income of %.2f probably spends about %.2f on goods and \
+services.''' % (income, spending))
 
         self.tax += self.income_tax(income)
         self.tax += self.national_insurance(income)
@@ -95,8 +95,8 @@ class TaxCalculator2010(object):
                 # Found the right band. Use linear interpolation.
                 for band in [lower, upper]:
                     self.explanation.append('''\
-    There is an income band in which the national average income is %.2f and the \
-    national average income tax paid is %.2f.''' % band)
+There is an income band in which the national average income is %.2f and the \
+national average income tax paid is %.2f.''' % band)
                 income_tax = lower[1] + (income-lower[0]) * (upper[1]-lower[1]) / (upper[0]-lower[0])
                 break
             else:
@@ -104,12 +104,12 @@ class TaxCalculator2010(object):
         else:
             # Above all the bands. Use constant tax rate.
             self.explanation.append('''\
-    For very high earners, the national average fraction of income paid as income \
-    tax is %.1f%%.''' % (income_top_rate*100))
+For very high earners, the national average fraction of income paid as income \
+tax is %.1f%%.''' % (income_top_rate*100))
             income_tax = income * income_top_rate
         self.explanation.append('''\
-    Therefore, a person with an income of %.2f pays roughly %.2f in income tax.\
-    ''' % (income, income_tax))
+Therefore, a person with an income of %.2f pays roughly %.2f in income tax.\
+''' % (income, income_tax))
         return income_tax
 
     def national_insurance(self, income):
@@ -121,9 +121,9 @@ class TaxCalculator2010(object):
         '''
         ni = ni_total / population
         self.explanation.append('''\
-    The total National Insurance paid by the whole population is %.0f. This is very \
-    roughly equally shared between %d people. Each person's share is %.2f.\
-    ''' % (ni_total, population, ni))
+The total National Insurance paid by the whole population is %.0f. This is very \
+roughly equally shared between %d people. Each person's share is %.2f.\
+''' % (ni_total, population, ni))
         return ni
 
     def vat(self, spending):
@@ -140,10 +140,10 @@ class TaxCalculator2010(object):
         '''
         ct = ct_total / population
         self.explanation.append('''\
-    The total Corporation Tax paid by all UK companies is %.0f. It is difficult to \
-    define a person's individual share. The simplest approach is to share it \
-    equally between %d people. Each person's share is then %.2f.\
-    ''' % (ct_total, population, ct))
+The total Corporation Tax paid by all UK companies is %.0f. It is difficult to \
+define a person's individual share. The simplest approach is to share it \
+equally between %d people. Each person's share is then %.2f.\
+''' % (ct_total, population, ct))
         return ct
 
     def fuel_duty(self, is_driver):
@@ -151,16 +151,16 @@ class TaxCalculator2010(object):
         if is_driver is None:
             fuel_duty = fuel_total / population
             self.explanation.append('''\
-    The total Fuel Duty paid by the whole population is %f. Without knowing who is \
-    a driver, the best approach is to share it equally between all %d people. Each \
-    person's share is %.2f.\
-    ''' % (fuel_total, population, fuel_duty))
+The total Fuel Duty paid by the whole population is %f. Without knowing who is \
+a driver, the best approach is to share it equally between all %d people. Each \
+person's share is %.2f.\
+''' % (fuel_total, population, fuel_duty))
         elif is_driver:
             fuel_duty = fuel_total / fuel_population
             self.explanation.append('''\
-    The total Fuel Duty paid by the whole population is %f. This is very \
-    roughly equally shared between %d drivers. Each driver's share is %.2f.\
-    ''' % (fuel_total, fuel_population, fuel_duty))
+The total Fuel Duty paid by the whole population is %f. This is very \
+roughly equally shared between %d drivers. Each driver's share is %.2f.\
+''' % (fuel_total, fuel_population, fuel_duty))
         else:
             fuel_duty = 0
         return fuel_duty
@@ -174,16 +174,16 @@ class TaxCalculator2010(object):
         if is_smoker is None:
             tobacco_duty = tobacco_total / population
             self.explanation.append('''\
-    The total Tobacco Duty paid by the whole population is %f. Without knowing who \
-    is a smoker, the best approach is to share it equally between all %d people. \
-    Each person's share is %.2f.\
-    ''' % (tobacco_total, population, tobacco_duty))
+The total Tobacco Duty paid by the whole population is %f. Without knowing who \
+is a smoker, the best approach is to share it equally between all %d people. \
+Each person's share is %.2f.\
+''' % (tobacco_total, population, tobacco_duty))
         elif is_smoker:
             tobacco_duty = tobacco_total / tobacco_population
             self.explanation.append('''\
-    The total Tobacco Duty paid by the whole population is %f. This is very \
-    roughly equally shared between %d smokers. Each smoker's share is %.2f.\
-    ''' % (tobacco_total, tobacco_population, tobacco_duty))
+The total Tobacco Duty paid by the whole population is %f. This is very \
+roughly equally shared between %d smokers. Each smoker's share is %.2f.\
+''' % (tobacco_total, tobacco_population, tobacco_duty))
         else:
             tobacco_duty = 0
         return tobacco_duty
