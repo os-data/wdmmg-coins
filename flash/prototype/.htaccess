@@ -1,0 +1,5 @@
+# AuthType basic
+# AuthName "Password required"
+# AuthUserFile /home/okfn/htpasswd
+# AuthGroupFile /dev/null
+# Require valid-user
