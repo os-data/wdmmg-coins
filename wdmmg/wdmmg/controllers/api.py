@@ -35,7 +35,10 @@ class ApiController(BaseController):
             '?income=20000&spending=10000&smoker=yes&driver=yes'
         return render('home/api.html')
 
-    @beaker_cache(expire=86400, type='dbm', query_args=True)
+    @beaker_cache(type='dbm', query_args=True,
+        invalidate_on_startup=True, # So we can still develop.
+        expire=864000, # 10 days.
+    )
     @jsonify
     def aggregate(self):
         slice_ = self.get_by_name_or_id(model.Slice,
