@@ -35,7 +35,7 @@
       <td class="credit" py:if="amount &gt;= 0">${'%.1f' % (amount/1e6)}</td>
       <td class="debit" py:if="amount &lt; 0">${'(%.1f)' % (amount/1e6)}</td>
     </py:def>
-    <div style="overflow:auto">
+    <div style="overflow:auto; font-size:60%">
       <table>
         <tr>
           <td py:if="c.axis" scope="col">£m</td>
@@ -43,9 +43,10 @@
         </tr>
         <tr py:for="coordinates, amounts in sorted(c.results.matrix.items())">
           <th py:if="c.axis" scope="row">
-            <a href="${c.axis_links[coordinates[0]]}">
+            <a py:if="coordinates[0]" href="${c.axis_links[coordinates[0]]}">
               ${c.axis_labels.get(coordinates[0], coordinates[0])}
             </a>
+            <py:if test="not coordinates[0]">Not classified by this key</py:if>
           </th>
           <py:for each="amount in amounts">${money_td(amount)}</py:for>
         </tr>
