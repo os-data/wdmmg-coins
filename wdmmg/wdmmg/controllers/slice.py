@@ -29,7 +29,7 @@ class SliceController(BaseController):
     def accounts(self, name_or_id=None):
         c.items_per_page = int(request.params.get('items_per_page', 50))
         c.slice_ = self.get_by_name_or_id(model.Slice, name_or_id)
-        query = model.Session.query(model.Account).filter_by(slice_=c.slice_)
+        query = model.Session.query(model.Account).filter_by(slice_=c.slice_).order_by(model.Account.name)
         c.page = Page(
             collection=query,
             page=int(request.params.get('page', 1)),
