@@ -53,7 +53,7 @@
         <!--</topbar>-->
       </div><!-- /top-bar -->
     <div id="logo">
-      <h2>Analyzing and visualizing UK public spending - An <img src="http://m.okfn.org/gfx/logo/okf_logo_white_and_green.png" style="height: 18px; margin-bottom: -2px;" alt=""/> <a href="http://www.okfn.org/">Open Knowledge Foundation project</a></h2>
+      <h2>Analyzing and visualizing UK public spending</h2>
       <h1>
         <a href="${url('home')}" title="${c.site_title} Home">${c.site_title}</a><sup>v${c.__version__}</sup>
       </h1>
@@ -91,17 +91,25 @@
     <div class="block">
       <ul id="navigation">
         <li><a href="${url('home')}">Home</a></li>
+        <li><a href="${url(controller='aggregate', action='view')}">Aggregator</a></li>
+        <li><a href="${url(controller='key', action='index')}">Keys</a></li>
+        <li><a href="${url(controller='api', action='index')}">API</a></li>
         <li><a href="${url(controller='slice', action='index')}">Slices</a></li>
         <li><a href="${url(controller='account', action='index')}">Accounts</a></li>
         <li><a href="${url(controller='transaction', action='index')}">Transactions</a></li>
-        <li><a href="${url(controller='key', action='index')}">Keys</a></li>
-        <li><a href="${url(controller='api', action='index')}">API</a></li>
       </ul>
     </div>
 
     <py:if test="defined('primary_sidebar_extras')">
       ${primary_sidebar_extras()}
     </py:if>
+
+    <div class="block">
+      <h3>Hashtag: #WDMMG</h3>
+      <a href="http://www.okfn.org">
+        <img src="http://m.okfn.org/images/logo/logo_fullname_medium.png" alt="An Open Knowledge Foundation Project" />
+      </a>
+    </div>
 
     <div class="block">
       <h3>Get in Touch</h3>
@@ -122,9 +130,11 @@
     </p>
     <p>
       <img style="height: 18px; margin-bottom: -4px;" src="http://m.okfn.org/gfx/logo/okf_logo_white_and_green.png" /> An <a href="http://www.okfn.org/">Open Knowledge Foundation</a> Project
+      |
+      (c) Open Knowledge Foundation
     </p>
     <p>
-      (c) Open Knowledge Foundation
+      <a href="http://www.wheredoesmymoneygo.org/legal/">Legal/Privacy Policy</a>
       | Most material available under an <a rel="license" href="http://www.opendefinition.org/">open license</a>
       | <a href="http://www.opendefinition.org/1.0/"><img
           style="border: none; margin-bottom: -4px;"
