@@ -9,7 +9,11 @@
         templating issues -->
 
   <div py:def="render_key(key)" class="key-desc" style="display: inline;">
-    <a href="${url(controller='key', action='view', name_or_id=key.name)}">${key.name}</a> &ndash; ${' '.join(key.notes.split()[:20]) + ' ...'}
+    <a href="${url(controller='key', action='view', name_or_id=key.name)}">${key.name}</a>
+    <py:if test="key.notes">
+    &ndash; 
+    ${' '.join(key.notes.split()[:20]) + ' ...'}
+    </py:if>
   </div>
 
 </html>
