@@ -49,6 +49,25 @@ class TestApiController(TestController):
         assert '"axes": ["region"]' in response, response
         assert '"ENGLAND_London"' in response, response
 
+    def test_jsonp(self):
+        """Copied from test_aggregate_with_breakdown."""
+        # Create a random name for the callback function.
+        import random
+        import string
+        randomcallback = 'cb' + ''.join(random.choice(string.letters) for
+          _ in range(6))
+        u = url(controller='api',
+            jsoncallback=randomcallback, action='aggregate', **{
+            'slice': 'cra',
+            'breakdown-region': 'yes',
+        })
+        print u
+        response = self.app.get(u)
+        assert '"axes": ["region"]' in response, response
+        assert '"ENGLAND_London"' in response, response
+        assert response.startswith(randomcallback + '(')
+        assert response.endswith(')')
+
     def test_aggregate_with_per(self):
         u = url(controller='api', action='aggregate', **{
             'slice': 'cra',
