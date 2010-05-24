@@ -63,10 +63,11 @@ class TestApiController(TestController):
         })
         print u
         response = self.app.get(u)
+        print response, str(response)
         assert '"axes": ["region"]' in response, response
         assert '"ENGLAND_London"' in response, response
-        assert response.startswith(randomcallback + '(')
-        assert response.endswith(')')
+        assert (randomcallback + '(') in response, response
+        assert str(response)[-2:] == ');' or str(response)[-1] == ')'
 
     def test_aggregate_with_per(self):
         u = url(controller='api', action='aggregate', **{
