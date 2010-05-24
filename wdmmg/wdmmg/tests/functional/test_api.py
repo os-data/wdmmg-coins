@@ -57,7 +57,7 @@ class TestApiController(TestController):
         randomcallback = 'cb' + ''.join(random.choice(string.letters) for
           _ in range(6))
         u = url(controller='api',
-            jsoncallback=randomcallback, action='aggregate', **{
+            callback=randomcallback, action='aggregate', **{
             'slice': 'cra',
             'breakdown-region': 'yes',
         })
