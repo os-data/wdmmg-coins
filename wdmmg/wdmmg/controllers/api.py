@@ -96,12 +96,6 @@ class ApiController(BaseController):
             elif param not in ('slice', 'start_date', 'end_date', 'callback'):
                 abort(status_code=400,
                   detail='Unknown request parameter: %s'%param)
-#        print slice_
-#        print exclude
-#        print include
-#        print axes
-#        print start_date
-#        print end_date
         results = aggregator.aggregate(
             slice_,
             exclude,
@@ -111,7 +105,6 @@ class ApiController(BaseController):
             end_date
         )
         for axis, statistic in per:
-#            print axis, statistic
             results.divide_by_statistic(axis, statistic)
         for statistic_name in per_time:
             results.divide_by_time_statistic(statistic_name)
@@ -127,7 +120,6 @@ class ApiController(BaseController):
             },
             'results': results.matrix.items(),
         }
-#        print ans
         if 'callback' in request.params:
             return self._jsonpify(ans)
         else:
