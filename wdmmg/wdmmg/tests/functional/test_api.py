@@ -50,7 +50,7 @@ class TestApiController(TestController):
         assert '"ENGLAND_London"' in response, response
 
     def test_jsonp_aggregate(self):
-        """Copied from test_aggregate_with_breakdown."""
+        # Copied from test_aggregate_with_breakdown.
         callback = randomjsonpcallback()
         u = url(controller='api',
             callback=callback, action='aggregate', **{
@@ -96,7 +96,7 @@ class TestApiController(TestController):
         assert '"explanation": ' in response, response
 
     def test_jsonp_mytax(self):
-        """Copied from test_mytax."""
+        # Copied from test_mytax.
         callback = randomjsonpcallback()
         u = url(controller='api', action='mytax', income=20000,
           callback=callback)
