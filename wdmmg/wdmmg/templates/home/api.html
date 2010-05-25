@@ -5,6 +5,20 @@
 
   <div py:def="content">
     <h2>The Store API</h2>
+    <p>A <a href="http://www.json.org/">JSON</a> API for accessing data
+    programmatically.  Generally the result of a request is a JSON
+    object.
+    </p>
+
+    <h3>JSONP</h3>
+
+    <p>The /api/aggregate and /api/mytax requests support JSONP: Supply
+    a <em>callback</em> parameter, the JSON data will be wrapped with a
+    function call using the value of the callback parameter as its
+    name.</p>
+
+    <h2>Requests</h2>
+    
     <p>The store responds to the following requests:</p>
 
     <h3>REST</h3>
