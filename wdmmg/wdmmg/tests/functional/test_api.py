@@ -15,7 +15,7 @@ class TestApiController(TestController):
     # output of the JSON returned.  For example
     #     '"axes": []' in response
     # requires that there is no space between the key and the ":" and
-    # exactly one space between the ":" and the value.  For clarities
+    # exactly one space between the ":" and the value.  For clarity's
     # sake, that's probably okay.  But could break.
 
     def test_index(self):
