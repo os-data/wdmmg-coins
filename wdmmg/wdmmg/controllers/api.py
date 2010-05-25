@@ -125,7 +125,6 @@ class ApiController(BaseController):
         else:
             return self._jsonify(ans)
 
-    @jsonify
     def mytax(self):
         def float_param(name, required=False):
             if name not in request.params:
@@ -152,5 +151,9 @@ class ApiController(BaseController):
             bool_param('smoker'),
             bool_param('driver')
         )
-        return {'tax': tax, 'explanation': explanation}
+        result = {'tax': tax, 'explanation': explanation}
+        if 'callback' in request.params:
+            return self._jsonpify(result)
+        else:
+            return self._jsonify(result)
 
