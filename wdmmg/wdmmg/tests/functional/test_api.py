@@ -49,15 +49,11 @@ class TestApiController(TestController):
         assert '"axes": ["region"]' in response, response
         assert '"ENGLAND_London"' in response, response
 
-    def test_jsonp(self):
+    def test_jsonp_aggregate(self):
         """Copied from test_aggregate_with_breakdown."""
-        # Create a random name for the callback function.
-        import random
-        import string
-        randomcallback = 'cb' + ''.join(random.choice(string.letters) for
-          _ in range(6))
+        callback = randomjsonpcallback()
         u = url(controller='api',
-            callback=randomcallback, action='aggregate', **{
+            callback=callback, action='aggregate', **{
             'slice': 'cra',
             'breakdown-region': 'yes',
         })
@@ -66,8 +62,7 @@ class TestApiController(TestController):
         print response, str(response)
         assert '"axes": ["region"]' in response, response
         assert '"ENGLAND_London"' in response, response
-        assert (randomcallback + '(') in response, response
-        assert str(response)[-2:] == ');' or str(response)[-1] == ')'
+        assert valid_jsonp(response, callback)
 
     def test_aggregate_with_per(self):
         u = url(controller='api', action='aggregate', **{
@@ -99,3 +94,34 @@ class TestApiController(TestController):
         response = self.app.get(u)
         assert '"tax": ' in response, response
         assert '"explanation": ' in response, response
+
+    def test_jsonp_mytax(self):
+        """Copied from test_mytax."""
+        callback = randomjsonpcallback()
+        u = url(controller='api', action='mytax', income=20000,
+          callback=callback)
+        print u
+        response = self.app.get(u)
+        assert '"tax": ' in response, response
+        assert '"explanation": ' in response, response
+        assert valid_jsonp(response, callback)
+
+def randomjsonpcallback(prefix='cb'):
+    """Generate a random identifier suitable, beginning with *prefix*,
+    for using as a JSONP callback name."""
+
+    import random
+    import string
+    return prefix + ''.join(random.choice(string.letters) for
+      _ in range(6))
+
+def valid_jsonp(response, callback):
+    """True if *response* is valid JSONP using *callback* as the
+    callback name.  Currently does not completely validate
+    everything."""
+
+    return (
+        ((callback + '(') in response, response) and
+        (str(response)[-2:] == ');' or str(response)[-1] == ')')
+           )
+
