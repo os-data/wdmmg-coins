@@ -1,0 +1,66 @@
+Design notes for Program Object Groups cleanser
+
+David Jones, Open Knowledge Foundation & Ravenbrook Limited
+
+INTRODUCTION
+
+This document records some design notes for the effort to clean the
+Program Object Group (POG) and Program Object (PO) data that has
+been made available from the HM Treasury via an FOI request.
+
+Open Knowledge Foundation wish to translate this data into machine
+readable format so that it can be used by Where Does My Money Go, and
+make it available to anyone else who wishes to use it.  We are intending
+to use a largely mechanical approach (that is, a computer program).
+
+The readership of this document is anyone wishing to understand the
+program.
+
+This document is not confidential.
+
+
+SOURCE
+
+The main source is the result of an FOI request.  This was delivered in
+paper form, and Lisa Evans has scanned and OCR'ed.  The results of the
+OCR are here: http://www.archive.org/details/PogAndPo_138
+
+See also trace ticket 360 (and to a lesser extent, 312):
+http://knowledgeforge.net/okfn/tasks/ticket/360
+
+The image files from the scan are not generally available, but a few
+images to illustrate the general nature of the original paper documents are
+referenced from the trac ticket.
+
+
+DATA DESCRIPTION
+
+Each POG is generally divided into a small number (dozen or so) of POs.
+POGs are aggregated but I'm not sure what what this level of aggregation
+is called (see the top of the first sheet: "P01 PO Department for
+Children, 5chools and Families"
+
+Each POG and PO has an identifier that typically looks like this:
+
+POG: P01 S100101
+PO: P0110001
+
+Hmm.  Or have I got this the wrong way round, is PO the grouping of
+POGs?
+
+POG codes are available in machine readable form in a spreadsheet
+reference from trac 360:
+http://spreadsheets.google.com/ccc?key=0AhkFVPcNaYlxdHRMTXo5VWdsRUp1OThlNFc2cnlUM0E&hl=en
+
+This can be used as a check on the parsed output: The POG codes should
+match.  Discrepencices investigated.
+
+
+SCANNING TACTICS
+
+Generally POG codes are "Pxx Sxxxxxx".  Scanning artefacts may mutate
+the S (into a 5), reduce the space.
+
+POG versus PO.  Ignoring the space, a POG code is 10 characters, a PO
+code is 8.  So it should be possible to use this to easily tell the
+differences between those two levels of the hierarchy
