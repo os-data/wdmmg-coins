@@ -45,22 +45,66 @@ Each POG and PO has an identifier that typically looks like this:
 POG: P01 S100101
 PO: P0110001
 
+POG codes do not always start P number number, page 220 has several that
+start PIX.
+
 Hmm.  Or have I got this the wrong way round, is PO the grouping of
-POGs?
+POGs? (No, Lisa says the Program Objects are contained within POGs).
 
 POG codes are available in machine readable form in a spreadsheet
 reference from trac 360:
 http://spreadsheets.google.com/ccc?key=0AhkFVPcNaYlxdHRMTXo5VWdsRUp1OThlNFc2cnlUM0E&hl=en
 
+Each POG begins with a short code shared by all POGs in a department,
+this is the Programme Object Prefix ([COINS 2010-02-23]).  This prefix
+code alse gets a line of its own.
+
+And sometimes there are intermediate groupings.  See "P08Main" on page
+43.
+
 This can be used as a check on the parsed output: The POG codes should
 match.  Discrepencices investigated.
 
 
+
 SCANNING TACTICS
 
-Generally POG codes are "Pxx Sxxxxxx".  Scanning artefacts may mutate
-the S (into a 5), reduce the space.
+
+Scanning artefacts:
+  - may mutate the S into a 5 (S100101 becomes 5100101);
+  - reduce the space (between the 3 character code and a subsequent 7
+    character code).
+
+Generally POG codes are "Pxx Sxxxxxx".  On Page 103 there is a POG of
+the form: P23IFFI2 (and P23IFFI on the previous page).
 
 POG versus PO.  Ignoring the space, a POG code is 10 characters, a PO
 code is 8.  So it should be possible to use this to easily tell the
-differences between those two levels of the hierarchy
+differences between those two levels of the hierarchy.
+
+Four .txt documents do not match r'^Code' for the first line:
+
+122.txt
+219.txt
+316.txt
+347.txt
+
+219.txt and 347.txt are totally borked (encoding error?).  219 and 347
+were scanned upside down (oops).
+
+Pages end with a page number (equal to filename).
+
+
+REDUNDANCIES AND CHECKS
+
+Lisa Evans says:
+
+POG Code always starts description (but PO Descriptions do not)
+
+Programme Object Prefixes always have a parent column which is PO (these
+are the descriptions). Except P01.
+
+REFERENCES
+
+[COINS 2010-02-23] "Coins Training and Basic Reports",
+  http://www.whatdotheyknow.com/request/programme_objects_from_the_coins#incoming-78133
