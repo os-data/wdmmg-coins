@@ -36,17 +36,27 @@ referenced from the trac ticket.
 DATA DESCRIPTION
 
 Each POG is generally divided into a small number (dozen or so) of POs.
-POGs are aggregated but I'm not sure what what this level of aggregation
-is called (see the top of the first sheet: "P01 PO Department for
-Children, 5chools and Families"
+POGs are aggregated; several POGs will share the same 3 character
+prefix, the Programme Object Prefix ([COINS 2010-02-23]).  Example:
+"P01 PO Department for Children, 5chools and Families".
+
+And sometimes there are intermediate groupings.  See "P08Main" on page
+43.
 
 Each POG and PO has an identifier that typically looks like this:
 
 POG: P01 S100101
 PO: P0110001
 
+PO has some oddball cases:
+P06FSS1 [7 chars]
+PCX600000 [9 chars]
+
 POG codes do not always start P number number, page 220 has several that
 start PIX.
+
+PO Prefixes all have a description that starts "PO", and all but one of
+them (the first one, P01) use "PO" as the parent.
 
 Hmm.  Or have I got this the wrong way round, is PO the grouping of
 POGs? (No, Lisa says the Program Objects are contained within POGs).
@@ -55,15 +65,9 @@ POG codes are available in machine readable form in a spreadsheet
 reference from trac 360:
 http://spreadsheets.google.com/ccc?key=0AhkFVPcNaYlxdHRMTXo5VWdsRUp1OThlNFc2cnlUM0E&hl=en
 
-Each POG begins with a short code shared by all POGs in a department,
-this is the Programme Object Prefix ([COINS 2010-02-23]).  This prefix
-code alse gets a line of its own.
-
-And sometimes there are intermediate groupings.  See "P08Main" on page
-43.
-
 This can be used as a check on the parsed output: The POG codes should
 match.  Discrepencices investigated.
+
 
 
 
@@ -93,6 +97,36 @@ Four .txt documents do not match r'^Code' for the first line:
 were scanned upside down (oops).
 
 Pages end with a page number (equal to filename).
+
+Spurious junk appears bottom of Page 8, top of page 13.
+
+Page 3 has a spurious . on its own before the line number.
+
+Page 15 appears to have been OCR'd twice with the results concatenated.
+
+Many files have short lines of junk: '.', '..', 'p'.
+
+Soem lines start with spurious junk: '.', 'to', ';'. "'.", "J'\"'", 'j'
+[coded] And more: '00'
+
+Several PO Prefixes on page 23 are "PO?", probably P07.  Also page 30,
+page 39. [coded]
+
+Note "O?" is probably "07"
+
+page 35. a few lines are completely junked.  Mysterious. Page 50.
+
+A '1' is quite frequently followed by a spurious space in the OCR.
+Currently severely affects page 71 and following. [coded]  Current code
+doesn't fix "PIXDP01 L" correctly (page 207).
+
+Spurious line break on Page 35 "P0711648".
+
+Lower case: page 282
+
+Some very special cases: IPWA4180F should be PWA4180F
+
+Bug? Why isn't the dot removed properly for ". PSXDFDF6". (page 227)?
 
 
 REDUNDANCIES AND CHECKS

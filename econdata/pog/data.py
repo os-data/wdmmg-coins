@@ -17,6 +17,10 @@ url = "http://www.archive.org/download/PogAndPo_138/POG-to-PO.zip"
 
 # Various regular expressions used by the parser.
 
+# RE for removing OCR dirt from the beginnings or ends of lines:
+# Extremely pragmatic.
+dirt = '(\w?[^\w]+|\w|to)'
+dirtre = '(^' + dirt + '($| +))|(\s+' + dirt + '$)'
 
 # Regular expression for 10 character code.  Example:
 # "P01 S100101"
@@ -25,11 +29,11 @@ code10re = r'P\w\w ?[S5]\w{6}'
 # RE for 8 character code.  Example:
 # "P0110001"
 # (These are PO codes, but again, we don't really care).
-code8re = r'P\w{7}'
+code8re = r'P\w{6}\s?\w'
 # RE for 3 character code.  Example:
 # P01
 # (These are PO Prefix codes)
-code3re = r'P\w\w'
+code3re = r'P\w\w(?=\sPO)'
 # Regular expression for header line.
 # These are generally of the form 
 # "Code Description Parent", but a couple of files have some junk first.
@@ -52,6 +56,18 @@ class Loader(object):
         result = dict(code3=[], code8=[], code10=[],
           nocat=[], head=[], lineno=[])
         for line in inp:
+            # Each line has some fairly dumb low level cleanup before we
+            # attempt to work out if it is PO, POG, etc.
+            # Remove dirt and other junk
+            line = re.sub(dirtre, '', line)
+            # Remove spurious OCR spaces following a 1.  We remove a
+            # space if it follows a 1 and is followed by a digit.
+            line = re.sub(r'(1) (?=\d)', r'\1', line)
+            # A "7" is often scanned as a "?".
+            # Replace any "?" that is either followed by or preceded by
+            # a number, with a '7'.
+            line = re.sub(r'((?<=\d)\?)|(\?(?=\d))', '7', line)
+
             for cat,rx in [
               ('code10', code10re),
               ('code8', code8re),
@@ -59,6 +75,7 @@ class Loader(object):
               ('code3', code3re),
               ('lineno', linenore),
               ]:
+
                 m = re.match(rx, line)
                 if m:
                     code = m.group()
@@ -71,9 +88,15 @@ class Loader(object):
                         code = code[:3] + ' ' + code[3:]
                     t = (code, rest)
                     result[cat].append(code)
+                    
+                    # We're not interested in printing out the
+                    # "Code/Description/Parent" lines all the time.
+                    if cat in ('head', 'lineno'):
+                        break
                     print t
                     break
             else:
+                print "NOCAT", inp.name, line
                 result['nocat'].append(line)
 
         print result
