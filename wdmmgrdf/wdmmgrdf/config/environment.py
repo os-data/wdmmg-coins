@@ -3,10 +3,12 @@ import os
 
 from genshi.template import TemplateLoader
 from pylons import config
+from ordf.handler import init_handler
 
 import wdmmgrdf.lib.app_globals as app_globals
 import wdmmgrdf.lib.helpers
 from wdmmgrdf.config.routing import make_map
+import wdmmgrdf.model as model
 
 def load_environment(global_conf, app_conf):
     """Configure the Pylons environment via the ``pylons.config``
@@ -32,3 +34,6 @@ def load_environment(global_conf, app_conf):
 
     # CONFIGURATION OPTIONS HERE (note: all config options will override
     # any Pylons config options)
+
+    model.handler = init_handler(config)
+

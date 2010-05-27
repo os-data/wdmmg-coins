@@ -1,0 +1,7 @@
+## ordf requirements (specified in requirements file but not in setup)
+rdflib==2.4.2
+carrot
+-e git+http://github.com/benosteen/pairtree.git#egg=Pairtree
+-e hg+http://knowledgeforge.net/pdw/ordf#egg=ordf
+## our project
+-e .
