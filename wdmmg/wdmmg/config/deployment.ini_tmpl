@@ -41,6 +41,9 @@ getdata_cache = %(cache_dir)s/getdata
 gdocs_username = my_username
 gdocs_password = my_password
 
+# Title of the web-site
+site_title = Where Does My Money Go? Data Store
+
 # default data 'slice' to use
 default_slice = cra
 
