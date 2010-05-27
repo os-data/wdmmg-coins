@@ -12,6 +12,16 @@
       <dt>Date:</dt>
       <dd>${c.row.timestamp}</dd>
       
+      <dt>Keys and values:</dt>
+      <dd>
+        <dl>
+          <py:for each="key, keyvalue in c.row._keyvalues.items()">
+            <dt><a href="${url(controller='key', action='view', name_or_id=key.name)}">${key.name}</a></dt>
+            <dd>${h.render_value(keyvalue)}</dd>
+          </py:for>
+        </dl>
+      </dd>
+
       <dt>Postings:</dt>
       <dd>
         <table>
