@@ -27,13 +27,16 @@
           colors: ["#ffcc33"]
       };
       var data = [
-        {label: "Amount ($)",
-          lines: {
+        {label: "Amount",
+          points: {
             fill: 1,
+            show: true
             },
         data: [ 
         <py:for each="timestamp,amount in sorted(c.amounts.items())">
+        <py:if test="timestamp[0] in '0123456789'">
         [ new Date(${int(timestamp[:4])}, 4, 5), ${amount} ],
+        </py:if>
         </py:for>
         ]}
       ];

@@ -14,6 +14,11 @@ import wdmmg.lib.calculator as calculator
 
 log = logging.getLogger(__name__)
 
+try:
+    import json
+except ImportError:
+    import simplejson as json
+
 class ApiController(BaseController):
 #    @classmethod
 #    def to_datetime(self, s):
@@ -35,11 +40,22 @@ class ApiController(BaseController):
             '?income=20000&spending=10000&smoker=yes&driver=yes'
         return render('home/api.html')
 
+    # Consider moving _jsonify and _jsonpify to superclass?
+    def _jsonify(self, result):
+        response.content_type = 'application/json'
+        out = json.dumps(result)
+        # Note: pylons will automatically convert to relevant charset.
+        return unicode(out)
+
+    def _jsonpify(self, result):
+        response.content_type = 'text/javascript'
+        return u'%s(%s);' % (request.params['callback'],
+                json.dumps(result))
+
     @beaker_cache(type='dbm', query_args=True,
         invalidate_on_startup=True, # So we can still develop.
         expire=864000, # 10 days.
     )
-    @jsonify
     def aggregate(self):
         slice_ = self.get_by_name_or_id(model.Slice,
             name_or_id=request.params.get('slice'))
@@ -77,16 +93,9 @@ class ApiController(BaseController):
                     assert name in aggregator.time_series, value # FIXME: Nicer error message needed.
                     per_time.append(name)
             # TODO: Other verbs?
-            elif param in ('slice', 'start_date', 'end_date'):
-                pass # Already processed.
-            else:
-                abort(status_code=400, detail='Unknown request parameter: %s'%param)
-#        print slice_
-#        print exclude
-#        print include
-#        print axes
-#        print start_date
-#        print end_date
+            elif param not in ('slice', 'start_date', 'end_date', 'callback'):
+                abort(status_code=400,
+                  detail='Unknown request parameter: %s'%param)
         results = aggregator.aggregate(
             slice_,
             exclude,
@@ -96,7 +105,6 @@ class ApiController(BaseController):
             end_date
         )
         for axis, statistic in per:
-#            print axis, statistic
             results.divide_by_statistic(axis, statistic)
         for statistic_name in per_time:
             results.divide_by_time_statistic(statistic_name)
@@ -112,10 +120,11 @@ class ApiController(BaseController):
             },
             'results': results.matrix.items(),
         }
-#        print ans
-        return ans
+        if 'callback' in request.params:
+            return self._jsonpify(ans)
+        else:
+            return self._jsonify(ans)
 
-    @jsonify
     def mytax(self):
         def float_param(name, required=False):
             if name not in request.params:
@@ -142,5 +151,9 @@ class ApiController(BaseController):
             bool_param('smoker'),
             bool_param('driver')
         )
-        return {'tax': tax, 'explanation': explanation}
+        result = {'tax': tax, 'explanation': explanation}
+        if 'callback' in request.params:
+            return self._jsonpify(result)
+        else:
+            return self._jsonify(result)
 
