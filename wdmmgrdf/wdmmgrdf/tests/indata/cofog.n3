@@ -1,0 +1,30 @@
+@prefix cofog: <http://cofog.eu/cofog#>.
+@prefix dc: <http://purl.org/dc/terms/>.
+@prefix foaf: <http://xmlns.com/foaf/0.1/>.
+@prefix owl: <http://www.w3.org/2002/07/owl#>.
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix skos: <http://www.w3.org/2004/02/skos/core#>.
+
+ cofog:Code a rdfs:Datatype;
+     rdfs:label "Function Code";
+     rdfs:isDefinedBy <http://cofog.eu/>. 
+
+ cofog:level a owl:DatatypeProperty;
+     rdfs:label "Function Level";
+     rdfs:domain cofog:Function;
+     rdfs:isDefinedBy <http://cofog.eu/>. 
+
+ <http://cofog.eu/cofog/1999/01/01/01> a cofog:Function;
+     rdfs:label "Executive and legislative organs  (CS)"@en;
+     cofog:level "3"^^<http://www.w3.org/2001/XMLSchema#integer>;
+     skos:broader <http://cofog.eu/cofog/1999/01/01>;
+     skos:definition "Executive and legislative organs  (CS)"@en;
+     skos:inScheme <http://cofog.eu/cofog/1999>;
+     skos:notation "01.1.1"^^<http://cofog.eu/cofog#Code>;
+     skos:prefLabel "Executive and legislative organs  (CS)"@en. 
+
+ cofog:Function a owl:Class;
+     rdfs:label "Function";
+     rdfs:isDefinedBy <http://cofog.eu/>;
+     rdfs:subClassOf skos:Concept. 

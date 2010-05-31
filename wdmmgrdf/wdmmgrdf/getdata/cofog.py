@@ -1,3 +1,4 @@
+import logging
 from datetime import date
 from zipfile import ZipFile
 from StringIO import StringIO
@@ -11,6 +12,8 @@ from ordf.graph import Graph
 from ordf.namespace import namespaces, Namespace, DC, RDF, FOAF, OWL, RDFS, SKOS
 from ordf.term import URIRef
 
+log = logging.getLogger(__name__)
+
 import wdmmgrdf.model as model
 
 def load():
@@ -23,13 +26,23 @@ def load():
     fileobj = pkg.stream('cofog.n3')
     load_file(fileobj)
 
+COFOG_IDENTIFIER = URIRef('http://cofog.eu/cofog/1999')
+
 def load_file(fileobj):
     '''Loads the specified COFOG-like file into the database with key names
     'cofog1', 'cofog2' and 'cofog3'.
     '''
     # TODO: replace with simple import of the cofog rdf data which already has
     # relevant structure
-    pass
+    from wdmmgrdf.model import handler
+    ctx = handler.context(u'importer', u'loading cofog')
+    g = Graph(identifier=COFOG_IDENTIFIER)
+    g.parse(fileobj, format='n3')
+    log.info('add %s' % g.identifier)
+    ctx.add(g)
+    log.info('commit changes')
+    cs = ctx.commit()
+
 
 def dejargonise():
     '''Downloads alternative names for the COFOG codes, chosen specially for WDMMG,

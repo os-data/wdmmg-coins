@@ -7,7 +7,8 @@ command.
 This module initializes the application via ``websetup`` (`paster
 setup-app`) and provides the base testing objects.
 """
-from unittest import TestCase
+import shutil
+import os
 
 from paste.deploy import loadapp
 from paste.script.appinstall import SetupCommand
@@ -17,14 +18,20 @@ from webtest import TestApp
 
 import pylons.test
 
-__all__ = ['environ', 'url', 'TestController']
+__all__ = ['environ', 'url', 'TestController','clean_pairtree']
 
 # Invoke websetup with the current config file
 SetupCommand('setup-app').run([config['__file__']])
 
+pairtree_dir = config['pairtree.args']
+def clean_pairtree():
+    if os.path.exists(pairtree_dir):
+        shutil.rmtree(pairtree_dir)
+clean_pairtree()
+
 environ = {}
 
-class TestController(TestCase):
+class TestController(object):
 
     def __init__(self, *args, **kwargs):
         if pylons.test.pylonsapp:
@@ -33,4 +40,4 @@ class TestController(TestCase):
             wsgiapp = loadapp('config:%s' % config['__file__'])
         self.app = TestApp(wsgiapp)
         url._push_object(URLGenerator(config['routes.map'], environ))
-        TestCase.__init__(self, *args, **kwargs)
+
