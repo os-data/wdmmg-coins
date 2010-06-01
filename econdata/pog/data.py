@@ -7,6 +7,8 @@ Scrapes the output of the OCR'd documents received from HM Treasury, and
 outputs machine readable POG data.
 """
 
+# http://docs.python.org/release/2.5.4/lib/module-csv.html
+import csv
 # http://docs.python.org/release/2.5.4/lib/module-re.html
 import re
 # okfn
@@ -42,21 +44,48 @@ headre = r'.{,6}Code'
 linenore = r'^\d+$'
 
 class Loader(object):
-    def retrieve(self, args):
-        '''Retrieve the POG data to cache (if not already there)'''
+    def retrieve(self, args_):
+        '''Retrieve the POG data to cache (if not already there).'''
         cache.retrieve(url)
+    
+    def parseall(self, args_):
+        '''Open all the .txt files in cache/POG-to-PO/*.txt and try and
+        parse them into one big pog.csv file.'''
+
+        # http://docs.python.org/release/2.5.4/lib/module-glob.html
+        import glob
+
+        out = open('pog.csv', 'wb')
+        acsv = csv.writer(out)
+        acsv.writerow(['Type', 'Code', 'Description', 'Parent'])
+
+        for n in glob.glob('cache/POG-to-PO/*.txt'):
+            print n
+            f = open(n)
+            self._parse1f(f, acsv)
+            
+        del acsv
+        out.close()
 
     def parse1(self, args):
         '''Parse one file from the cache.'''
         # http://docs.python.org/release/2.5.4/lib/module-os.path.html
         import os.path
-        # http://docs.python.org/release/2.5.4/lib/module-csv.html
-        import csv
         n = args[1]
         inp = open(os.path.join('cache', 'POG-to-PO', '%s.txt' % n), 'Ur')
 
-        out = open('pog.csv', 'w')
+        out = open('pog.csv', 'wb')
         acsv = csv.writer(out)
+        return self._parse1f(inp, acsv)
+        del acsv
+        out.close()
+        return
+
+    def _parse1f(self, inp, out):
+	"""Parse one input file to the output file, which should
+	be a csv object.  This is really same as `parse1` but takes
+	file objects as arguments.
+        """
 
         rxlist = [
               ('POG', code10re),
@@ -100,14 +129,12 @@ class Loader(object):
                     if cat in ('head', 'lineno'):
                         break
                     # Should be type, code, description, parent.
-                    acsv.writerow([cat, code, rest, ""])
+                    out.writerow([cat, code, rest, ""])
                     break
             else:
                 # Didn't match againgst any RE.
-                acsv.writerow(['unknown', line])
+                out.writerow(['unknown', line])
 
-        del acsv
-        out.close()
         return
 
 import optparse
