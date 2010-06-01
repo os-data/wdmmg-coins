@@ -32,6 +32,17 @@ class EnumerationValueController(BaseController):
             .filter_by(key=c.key)
             .filter_by(code=code)
             ).first()
+        q = model.Session.query(model.Account)
+        q = q.join((model.KeyValue,
+            model.KeyValue.object_id==model.Account.id))
+        q = q.join(model.Key)
+        q = q.join(model.EnumerationValue)
+        print q.filter(model.Key.name==c.key.name)
+
+        c.accounts = q.filter(model.EnumerationValue.id==c.row.id
+                ).filter(model.Key.name==c.key.name,
+                        ).distinct().all()
+        
         if not c.row:
             abort(404, 'No record with code %r'%code)
         return render('enumeration_value/view.html')

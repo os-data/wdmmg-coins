@@ -30,7 +30,14 @@
         <dt>Notes:</dt>
         <dd>${h.markdown(c.row.notes)}</dd>
       </py:if>
+
     </dl>
+    <h3>Classified Accounts</h3>
+      <ul>
+      <py:for each="acc in c.accounts">
+        <li>${render_account(acc)}</li>  
+      </py:for>
+      </ul>
   </div>
 
   <xi:include href="../layout.html" />

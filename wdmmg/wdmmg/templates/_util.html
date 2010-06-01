@@ -16,4 +16,12 @@
     </py:if>
   </div>
 
+  <div py:def="render_account(account)" class="account-desc" style="display: inline;">
+    <a href="${url(controller='account', action='view', id_=account.id)}">${account.name}</a>
+    <py:if test="account.notes">
+    &ndash; 
+    ${' '.join(account.notes.split()[:20]) + ' ...'}
+    </py:if>
+  </div>
+
 </html>
