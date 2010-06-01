@@ -52,6 +52,9 @@ PO has some oddball cases:
 P06FSS1 [7 chars]
 PCX600000 [9 chars]
 
+And so does POG:
+P04110302 [9 chars]
+
 POG codes do not always start P number number, page 220 has several that
 start PIX.
 

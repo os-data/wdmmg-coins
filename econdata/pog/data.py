@@ -50,11 +50,24 @@ class Loader(object):
         '''Parse one file from the cache.'''
         # http://docs.python.org/release/2.5.4/lib/module-os.path.html
         import os.path
+        # http://docs.python.org/release/2.5.4/lib/module-csv.html
+        import csv
         n = args[1]
         inp = open(os.path.join('cache', 'POG-to-PO', '%s.txt' % n), 'Ur')
 
-        result = dict(code3=[], code8=[], code10=[],
-          nocat=[], head=[], lineno=[])
+        out = open('pog.csv', 'w')
+        acsv = csv.writer(out)
+
+        rxlist = [
+              ('POG', code10re),
+              ('PO', code8re),
+              ('head', headre),
+              ('POPrefix', code3re),
+              ('lineno', linenore),
+              ]
+
+        result = dict(((cat,[]) for cat,_ in rxlist))
+        result['nocat'] = []
         for line in inp:
             # Each line has some fairly dumb low level cleanup before we
             # attempt to work out if it is PO, POG, etc.
@@ -68,14 +81,7 @@ class Loader(object):
             # a number, with a '7'.
             line = re.sub(r'((?<=\d)\?)|(\?(?=\d))', '7', line)
 
-            for cat,rx in [
-              ('code10', code10re),
-              ('code8', code8re),
-              ('head', headre),
-              ('code3', code3re),
-              ('lineno', linenore),
-              ]:
-
+            for cat,rx in rxlist:
                 m = re.match(rx, line)
                 if m:
                     code = m.group()
@@ -93,19 +99,16 @@ class Loader(object):
                     # "Code/Description/Parent" lines all the time.
                     if cat in ('head', 'lineno'):
                         break
-                    print t
+                    # Should be type, code, description, parent.
+                    acsv.writerow([cat, code, rest, ""])
                     break
             else:
-                print "NOCAT", inp.name, line
-                result['nocat'].append(line)
+                # Didn't match againgst any RE.
+                acsv.writerow(['unknown', line])
 
-        print result
+        del acsv
+        out.close()
         return
-        for key,value in result.items():
-            if key == 'nocat':
-                print key, len(value)
-            else:
-                print key, value
 
 import optparse
 import os
