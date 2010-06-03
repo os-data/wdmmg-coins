@@ -1,0 +1,47 @@
+<html xmlns:py="http://genshi.edgewall.org/"
+  xmlns:xi="http://www.w3.org/2001/XInclude">
+
+  <py:def function="page_title">Search for accounts</py:def>
+  <py:def function="optional_head">
+    <style type="text/css">
+      #sidebar { display: none; }
+      #content { width: 100%;
+        border-right: none;
+      }
+    </style>
+  </py:def>
+  
+  <div py:def="content">
+    <h2>Coins Search</h2>
+    
+    <form action="" method="get">
+      <input type="text" name="q" size="40" value="${c.q}" />
+      <input type="submit" value="Search accounts" />
+    </form>
+    <p class="desc">E.g. 'London', 'pensions', 'environment'.</p>
+
+    <p>${c.page.item_count} results.</p>
+    ${c.page.pager(items_per_page=c.items_per_page)}
+    <table py:with="keylist = ['department_description', 'value', 'programme_object_group_code', 'time', 'data_type']">
+      <thead>
+        <tr>
+          <th py:for="key in keylist">
+            ${key.capitalize()}
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+      <!-- do not user pager -->
+      <tr py:for="row in c.results">
+        <td py:for="key in keylist">
+          ${row.get(key, '')}
+        </td>
+      </tr>
+    </tbody>
+    </table>
+    ${c.page.pager(items_per_page=c.items_per_page)}
+  </div>
+
+  <xi:include href="../layout.html" />
+</html>
+

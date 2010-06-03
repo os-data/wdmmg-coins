@@ -58,4 +58,10 @@ def make_map():
     map.connect('/api/rest/key/{name_or_id}/value/{code}', controller='rest', action='enumeration_value')
     map.connect('/api/rest/enumeration_value/{id_}', controller='rest', action='enumeration_value_id')
 
+    map.connect('/coins', controller='coins', action='index')
+    map.connect('/coins/search', controller='coins', action='search')
+    map.connect('/coins/{id}', controller='coins', action='view')
+    map.connect('/coins/{id}/{action}', controller='coins')
+
+
     return map
