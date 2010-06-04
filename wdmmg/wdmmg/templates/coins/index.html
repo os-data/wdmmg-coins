@@ -8,6 +8,10 @@
       #content { width: 100%;
         border-right: none;
       }
+      #content table {
+        overflow:auto;
+        font-size:60%;
+      }
     </style>
   </py:def>
   
@@ -22,7 +26,7 @@
 
     <p>${c.page.item_count} results.</p>
     ${c.page.pager(items_per_page=c.items_per_page)}
-    <table py:with="keylist = ['department_description', 'value', 'programme_object_group_code', 'time', 'data_type']">
+    <table py:with="keylist = ['department_description', 'value', 'programme_object_group_code', 'programme_object_group_description', 'time', 'data_type']">
       <thead>
         <tr>
           <th py:for="key in keylist">

@@ -24,10 +24,9 @@ class CoinsController(BaseController):
         page=int(request.params.get('page', 1))
         if c.q:
             # textq = '/.*%s.*/i' % c.q
-            for chunk in c.q.split():
-                dbq = self.db.coins.find(
-                        {'search_field': chunk}
-                        )
+            dbq = self.db.coins.find(
+                    {'search_field':{'$all': c.q.split()}}
+                    )
         else:
             dbq = self.db.coins.find()
         c.results = [ x for x in
