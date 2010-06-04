@@ -3,6 +3,15 @@
 
   <py:def function="page_title">COINS - Entry - ${c.entry.srcid}</py:def>
   <py:def function="optional_head">
+    <style type="text/css">
+      #sidebar { display: none; }
+      #content { width: 100%;
+        border-right: none;
+      }
+      #content table {
+        overflow:auto;
+      }
+    </style>
   </py:def>
   
   <div py:def="content">

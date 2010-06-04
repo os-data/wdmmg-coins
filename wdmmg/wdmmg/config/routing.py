@@ -20,7 +20,8 @@ def make_map():
 
     # CUSTOM ROUTES HERE
 
-    map.connect('home', '/', controller='home', action='index')
+    # map.connect('home', '/', controller='home', action='index')
+    map.connect('home', '/', controller='coins', action='index')
     
     map.connect('/aggregate', controller='aggregate', action='view')
 

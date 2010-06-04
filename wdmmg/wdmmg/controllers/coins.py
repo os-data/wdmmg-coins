@@ -19,6 +19,7 @@ class CoinsController(BaseController):
         self.db = connection[dbname]
 
     def index(self):
+        from pymongo import ASCENDING, DESCENDING
         c.items_per_page = 100
         c.q = request.params.get('q', None)
         page=int(request.params.get('page', 1))
@@ -27,6 +28,7 @@ class CoinsController(BaseController):
             dbq = self.db.coins.find(
                     {'search_field':{'$all': c.q.split()}}
                     )
+            dbq.sort('value', DESCENDING)
         else:
             dbq = self.db.coins.find()
         c.results = [ x for x in
