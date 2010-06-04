@@ -26,12 +26,12 @@
 
     <p>${c.page.item_count} results.</p>
     ${c.page.pager(items_per_page=c.items_per_page)}
-    <table py:with="keylist = ['department_description', 'value', 'programme_object_group_code', 'programme_object_group_description', 'time', 'data_type']">
+    <table py:with="keylist = ['department_description', 'value', 'programme_object_group_description', 'account_description', 'budget_boundary', 'time', 'data_type']">
       <thead>
         <tr>
           <th>SRCID</th>
           <th py:for="key in keylist">
-            ${key.capitalize()}
+            ${key.replace('_',' ').capitalize()}
           </th>
         </tr>
       </thead>

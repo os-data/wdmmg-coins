@@ -10,13 +10,6 @@ from wdmmg.lib.helpers import Page
 log = logging.getLogger(__name__)
 
 class CoinsController(BaseController):
-    def __before__(self, action, **params):
-        super(CoinsController, self).__before__(action, **params)
-        import pymongo
-        connection = pymongo.Connection("localhost", 27017)
-        # dbname = 'coins'
-        dbname = 'coins'
-        self.db = connection[dbname]
 
     def index(self):
         from pymongo import ASCENDING, DESCENDING
@@ -25,12 +18,12 @@ class CoinsController(BaseController):
         page=int(request.params.get('page', 1))
         if c.q:
             # textq = '/.*%s.*/i' % c.q
-            dbq = self.db.coins.find(
+            dbq = self._db.coins.find(
                     {'search_field':{'$all': c.q.split()}}
                     )
             dbq.sort('value', DESCENDING)
         else:
-            dbq = self.db.coins.find()
+            dbq = self._db.coins.find().sort('value', DESCENDING)
         c.results = [ x for x in
                 dbq.limit(c.items_per_page).skip((page-1)*c.items_per_page)
         ]
@@ -44,7 +37,7 @@ class CoinsController(BaseController):
         return render('coins/index.html')
 
     def view(self, id):
-        c.entry= self.db.coins.find_one({'srcid': id})
+        c.entry= self._db.coins.find_one({'srcid': id})
         if not c.entry:
             abort(404)
         return render('coins/entry.html')

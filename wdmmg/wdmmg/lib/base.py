@@ -2,6 +2,7 @@
 
 Provides the BaseController class for subclassing.
 """
+import pylons
 from pylons.controllers import WSGIController
 from pylons.templating import render_genshi as render
 from pylons import tmpl_context as c, request, config
@@ -19,6 +20,7 @@ class BaseController(WSGIController):
         # the request is routed to. This routing information is
         # available in environ['pylons.routes_dict']
         try:
+            self._db = pylons.app_globals.db
             return WSGIController.__call__(self, environ, start_response)
         finally:
             meta.Session.remove()
