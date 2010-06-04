@@ -29,6 +29,7 @@
     <table py:with="keylist = ['department_description', 'value', 'programme_object_group_code', 'programme_object_group_description', 'time', 'data_type']">
       <thead>
         <tr>
+          <th>SRCID</th>
           <th py:for="key in keylist">
             ${key.capitalize()}
           </th>
@@ -37,6 +38,8 @@
       <tbody>
       <!-- do not user pager -->
       <tr py:for="row in c.results">
+        <td><a href="${url(controller='coins', action='view',
+            id=row['srcid'])}">${row['srcid'].split('.')[1]}</a></td>
         <td py:for="key in keylist">
           ${row.get(key, '')}
         </td>

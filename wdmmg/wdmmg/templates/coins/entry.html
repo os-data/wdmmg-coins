@@ -1,0 +1,33 @@
+<html xmlns:py="http://genshi.edgewall.org/"
+  xmlns:xi="http://www.w3.org/2001/XInclude">
+
+  <py:def function="page_title">COINS - Entry - ${c.entry.srcid}</py:def>
+  <py:def function="optional_head">
+  </py:def>
+  
+  <div py:def="content">
+    <h2>Coins Entry</h2>
+    <table>
+      <thead>
+        <tr><td>Key</td><td>Value</td></tr>
+      </thead>
+      <tbody>
+        <py:for each="key in sorted(c.entry.keys())">
+        <py:if test="key not in ['search_fields', '_id']">
+        <tr>
+          <th>
+            ${key.capitalize()}
+          </th>
+          <td>
+            ${c.entry.get(key, '')}
+          </td>
+        </tr>
+        </py:if>
+        </py:for>
+      </tbody>
+    </table>
+  </div>
+
+  <xi:include href="../layout.html" />
+</html>
+

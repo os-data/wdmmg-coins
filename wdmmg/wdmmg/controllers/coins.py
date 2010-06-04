@@ -41,3 +41,9 @@ class CoinsController(BaseController):
         )
         return render('coins/index.html')
 
+    def view(self, id):
+        c.entry= self.db.coins.find_one({'srcid': id})
+        if not c.entry:
+            abort(404)
+        return render('coins/entry.html')
+
