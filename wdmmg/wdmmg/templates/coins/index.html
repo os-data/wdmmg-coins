@@ -12,11 +12,14 @@
         overflow:auto;
         font-size:60%;
       }
+      .desc {
+        font-size: 80%;
+      }
     </style>
   </py:def>
   
   <div py:def="content">
-    <h2>Coins Search</h2>
+    <h2>COINS Search</h2>
     
     <form action="" method="get">
       <input type="text" name="q" size="40" value="${c.q}" />
@@ -24,7 +27,8 @@
     </form>
     <p class="desc">E.g. 'London', 'pensions', 'environment'.</p>
 
-    <p>${c.page.item_count} results.</p>
+    <p><strong>${c.page.item_count}</strong> results. <em>Spot an interesting item or query? Note it <a href="http://spreadsheets1.google.com/ccc?key=tjXlULZnawbO7p5VQpwJG8g">in this spreadsheet</a></em>.</p>
+
     ${c.page.pager(items_per_page=c.items_per_page)}
     <table py:with="keylist = ['department_description', 'value', 'programme_object_group_description', 'account_description', 'budget_boundary', 'time', 'data_type']">
       <thead>

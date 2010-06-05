@@ -14,13 +14,15 @@ class Globals(object):
 
         """
         # Populate basic app globals
+        ipaddr = config['mongodb.host']
+        pool_size = config['mongodb.pool_size']
         try:
             # conn = Connection(db_info['host'], db_info['port'],
             #                  pool_size=int(config['blog.database.pool']))
-            conn = Connection("localhost", 27017)
+            conn = Connection(ipaddr, 27017, pool_size=pool_size)
         except ConnectionFailure:
             raise Exception('Unable to connect to MongoDB')
-        dbname = config.get('mongodb.dbname', 'coins')
+        dbname = config.get('mongodb.db_name')
         self.db = conn[dbname]
         # auth = self.db.authenticate(db_info['username'], db_info['password'])
         # if not auth:
