@@ -1,0 +1,50 @@
+<html xmlns:py="http://genshi.edgewall.org/"
+  xmlns:xi="http://www.w3.org/2001/XInclude">
+
+  <py:def function="page_title">Search for accounts</py:def>
+  <py:def function="optional_head">
+    <style type="text/css">
+      #sidebar { display: none; }
+      #content { width: 100%;
+        border-right: none;
+      }
+      #content table {
+        overflow:auto;
+        font-size:60%;
+      }
+      .desc {
+        font-size: 80%;
+      }
+    </style>
+  </py:def>
+  
+  <div py:def="content">
+    <h2>Programme Object Groups</h2>
+    <p><strong>${c.page.item_count}</strong> results.</p>
+
+    ${c.page.pager(items_per_page=c.items_per_page)}
+    <table py:with="keylist = ['programme_object_group_code', 'programme_object_group_description', 'count']">
+      <thead>
+        <tr>
+          <th>Programme object group code</th>
+          <th>Programme object group description</th>
+          <th>Count</th>
+        </tr>
+      </thead>
+      <tbody>
+      <!-- do not user pager -->
+      <tr py:for="row in c.results">
+        <td><a href="${url(controller='coins', action='index', q='%s:%s' %
+            (c.name, row[0]))}">${row[0]}</a>
+        </td>
+        <td>${row[1]}</td>
+        <td>${row[2]}</td>
+      </tr>
+    </tbody>
+    </table>
+    ${c.page.pager(items_per_page=c.items_per_page)}
+  </div>
+
+  <xi:include href="../layout.html" />
+</html>
+
