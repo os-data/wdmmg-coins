@@ -1,6 +1,7 @@
 from pymongo.connection import Connection
 from pymongo.errors import ConnectionFailure
 from pylons import config
+from solr import SolrConnection
 
 class Globals(object):
     """Globals acts as a container for objects available throughout the
@@ -27,4 +28,8 @@ class Globals(object):
         # auth = self.db.authenticate(db_info['username'], db_info['password'])
         # if not auth:
         #    raise Exception('Authentication to MongoDB failed')
+        self.solr_url = config.get('solr.url', 'http://localhost:8080/solr')
+        self.solr = SolrConnection(self.solr_url)
+        # self.cache = CacheManager(**parse_cache_config_options(config))
+
 
