@@ -30,7 +30,11 @@ class PogController(BaseController):
                 return out[colname]
             else:
                 return None
-        c.results = [ [code,get_desc(code),code_count(code)] for code in
+        def get_link(code):
+          link = url(controller='coins', action='index', q='%s:%s' % 
+              (c.name, code))
+          return link
+        c.results = [ [code,get_link(code),get_desc(code),code_count(code)] for code in
                 c.codes ]
         c.page = Page(
             collection=c.results,

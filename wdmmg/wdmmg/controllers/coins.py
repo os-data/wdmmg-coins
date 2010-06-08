@@ -19,8 +19,8 @@ class CoinsController(BaseController):
         c.q = request.params.get('q', None)
         page=int(request.params.get('page', 1))
         if c.q:
-            ourq = ' AND '.join(c.q.split())
-            query = app_globals.solr.query(ourq, rows=c.items_per_page)
+            query = app_globals.solr.query(c.q, rows=c.items_per_page,
+            q_op='AND')
         else:
             query = app_globals.solr.query('*', sort='score desc, value desc', rows=c.items_per_page)
         c.results = query.results
