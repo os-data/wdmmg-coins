@@ -26,6 +26,17 @@
   padding:2px 0 2px 15px;
 }
 
+#sidebar { display: none; }
+#content { width: 100%;
+  border-right: none;
+}
+#content table {
+  overflow:auto;
+  font-size:60%;
+}
+.desc {
+  font-size: 80%;
+}
 
 /* ================== */
 /* = Store Specific = */

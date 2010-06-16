@@ -1,0 +1,35 @@
+<html xmlns:py="http://genshi.edgewall.org/"
+  xmlns:xi="http://www.w3.org/2001/XInclude">
+
+  <py:def function="page_title">COINS - Facet</py:def>
+  <py:def function="optional_head">
+  </py:def>
+  
+  <div py:def="content">
+    <h2>Total Spending</h2>
+    <p>
+    Total entries: ${c.count}
+    </p>
+    <ul>
+      <li py:for="k in sorted(c.values.keys())">
+        <strong>${k}</strong> ${c.values[k]}
+      </li>
+    </ul>
+    
+    <h3>Total Net Spending</h3>
+    <table style="font-size: 100%">
+      <tr>
+        <th>Year</th><th>Amount</th>
+      </tr>
+      <tr py:for="year in sorted(c.total.keys())">
+        <td>${year}</td><td>£${c.total[year]}m</td>
+      </tr>
+    </table>
+
+    <h3>Source Entries</h3>
+    ${render_coins_entries(c.results)}
+  </div>
+
+  <xi:include href="../layout.html" />
+</html>
+

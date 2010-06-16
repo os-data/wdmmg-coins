@@ -67,5 +67,8 @@ def make_map():
     map.connect('/pog/{id}', controller='pog', action='view')
     map.connect('/pog/{id}/{action}', controller='pog')
 
+    map.connect('/facet', controller='facet', action='index')
+    map.connect('/facet/view/{year}/{field}', controller='facet', action='view')
+    map.connect('/facet/total', controller='facet', action='total')
 
     return map

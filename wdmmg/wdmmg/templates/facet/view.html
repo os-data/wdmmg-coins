@@ -1,0 +1,19 @@
+<html xmlns:py="http://genshi.edgewall.org/"
+  xmlns:xi="http://www.w3.org/2001/XInclude">
+
+  <py:def function="page_title">COINS - Facet</py:def>
+  <py:def function="optional_head">
+  </py:def>
+  
+  <div py:def="content">
+    <h2>Facet: ${c.field}</h2>
+    <table>
+      <tr py:for="key in sorted(c.facet_counts[c.field].keys())">
+        <td>${key}</td><td>${c.facet_counts[c.field][key]}</td>
+      </tr>
+    </table>
+  </div>
+
+  <xi:include href="../layout.html" />
+</html>
+

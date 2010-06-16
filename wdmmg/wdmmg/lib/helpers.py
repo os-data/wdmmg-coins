@@ -37,3 +37,14 @@ def render_value(keyvalue):
     else:
         return keyvalue.value
 
+import urllib
+def total_link(entry):
+    values = [ 'data_type', 'budget_boundary', 'account_code',
+    'programme_object_code']
+    try:
+        kwargs = dict([(k,entry[k]) for k in values])
+        out = url(controller='facet', action='total', **kwargs)
+        return out
+    except KeyError:
+        return ''
+

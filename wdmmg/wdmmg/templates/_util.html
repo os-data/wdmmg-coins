@@ -24,4 +24,30 @@
     </py:if>
   </div>
 
+  <div py:def="render_coins_entries(entries)">
+    <table py:with="keylist = ['department_description', 'value', 'programme_object_group_description', 'account_description', 'budget_boundary', 'time', 'data_type']">
+      <thead>
+        <tr>
+          <th>SRCID</th>
+          <th py:for="key in keylist">
+            ${key.replace('_',' ').capitalize()}
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+      <tr py:for="row in entries">
+        <td>
+          <a href="${url(controller='coins', action='view',
+            id=row['srcid'])}">${row['srcid'].split('.')[1]}</a>
+          (<a href="${h.total_link(row)}"
+            title="Total for data_type/account_code/programme_object">total</a>)
+        </td>
+        <td py:for="key in keylist">
+          ${row.get(key, '')}
+        </td>
+      </tr>
+    </tbody>
+    </table>
+  </div>
+
 </html>

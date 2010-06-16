@@ -33,8 +33,6 @@ class CoinsController(BaseController):
         )
         return render('coins/index.html')
 
-
-
     def index_mongo(self):
         from pymongo import ASCENDING, DESCENDING
         c.items_per_page = 100
@@ -60,9 +58,10 @@ class CoinsController(BaseController):
         )
         return render('coins/index.html')
 
-
     def view(self, id):
-        c.entry= self._db.coins.find_one({'srcid': id})
+        # c.entry= self._db.coins.find_one({'srcid': id})
+        results = app_globals.solr.query('srcid:%s' % id, rows=1).results
+        c.entry = results[0] if results else None
         if not c.entry:
             abort(404)
         return render('coins/entry.html')
