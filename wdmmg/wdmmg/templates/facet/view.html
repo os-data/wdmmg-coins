@@ -8,8 +8,13 @@
   <div py:def="content">
     <h2>Facet: ${c.field}</h2>
     <table>
-      <tr py:for="key in sorted(c.facet_counts[c.field].keys())">
-        <td>${key}</td><td>${c.facet_counts[c.field][key]}</td>
+      <tr>
+        <th>${c.field}</th><th>Counts</th><th>Details</th>
+      </tr>
+      <tr py:for="key in sorted(c.facet_counts.keys())">
+        <td>${key}</td>
+        <td>${c.facet_counts[key]}</td>
+        <td>${c.descriptions.get(key, '')}</td>
       </tr>
     </table>
   </div>

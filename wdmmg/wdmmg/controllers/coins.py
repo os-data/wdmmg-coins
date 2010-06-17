@@ -59,9 +59,7 @@ class CoinsController(BaseController):
         return render('coins/index.html')
 
     def view(self, id):
-        # c.entry= self._db.coins.find_one({'srcid': id})
-        results = app_globals.solr.query('srcid:%s' % id, rows=1).results
-        c.entry = results[0] if results else None
+        c.entry = model.get_one_entry(id)
         if not c.entry:
             abort(404)
         return render('coins/entry.html')

@@ -37,3 +37,13 @@ class Repository(object):
 
 repo = Repository()
 
+## COINS
+
+from pylons import app_globals
+def get_one_entry(value, field='srcid'):
+    results = app_globals.solr.query('%s:"%s"' % (field, value), rows=1).results
+    if results:
+        return results[0]
+    else:
+        return None
+

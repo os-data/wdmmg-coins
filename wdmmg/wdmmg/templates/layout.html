@@ -14,13 +14,19 @@
   <link rel="shortcut icon" href="http://assets.okfn.org/images/logo/favicon.ico" type="image/x-icon" />
 
   <link rel="stylesheet" href="/css/wdmmg.css" type="text/css" media="screen, print" title="Master stylesheet" charset="utf-8" />
-  <!--
   <link rel="stylesheet" href="http://assets.okfn.org/kforge/css/pagination.css" type="text/css" media="screen, print" title="Master stylesheet" charset="utf-8" />
-  -->
   <link rel="stylesheet" href="/css/extra.css" type="text/css" media="screen, print" title="Master stylesheet" charset="utf-8" />
 
   <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4/jquery.min.js"></script>
+  <script src="http://assets.okfn.org/ext/jquery.tablesorter/2.0.3/jquery.tablesorter.min.js"></script>
+  <link rel="stylesheet" href="http://assets.okfn.org/ext/jquery.tablesorter/style.css" type="text/css" media="screen, print" title="Master stylesheet" charset="utf-8" />
   <script type="text/javascript" src="/css/application.js"></script>
+  <script type="text/javascript">
+    $(document).ready(function() { 
+        $('.tablesorter').tablesorter(); 
+      } 
+    ); 
+  </script>
 
   <py:if test="defined('optional_head')">
     ${optional_head()}

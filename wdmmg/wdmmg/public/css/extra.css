@@ -32,6 +32,8 @@
 }
 #content table {
   overflow:auto;
+}
+#content table.small {
   font-size:60%;
 }
 .desc {

@@ -2,6 +2,7 @@ import logging
 
 from pylons import request, response, session, tmpl_context as c, url, app_globals
 from pylons.controllers.util import abort, redirect
+from pylons.decorators.cache import beaker_cache
 
 from wdmmg.lib.base import BaseController, render
 import wdmmg.model as model
@@ -14,14 +15,25 @@ class FacetController(BaseController):
     def index(self):
         return render('facet/index.html')
 
-    def view(self, year, field='data_type'):
+    @beaker_cache(type='dbm', query_args=True,
+        invalidate_on_startup=True, # So we can still develop.
+        expire=8640000, # 10 days.
+    )
+    def view(self, year, field):
         dataset = 'fact_table_extract_%s' % year
         c.field = field
         query = app_globals.solr.query('srcid:%s*' % dataset,
                 facet='true',
                 facet_field=field
                 )
-        c.facet_counts = query.facet_counts['facet_fields']
+        c.facet_counts = query.facet_counts['facet_fields'][c.field]
+
+        c.descriptions = {}
+        if field.endswith('code'):
+            for k in c.facet_counts:
+                entry = model.get_one_entry(k, c.field)
+                if entry:
+                    c.descriptions[k] = entry.get(c.field.replace('code','description'), '')
         return render('facet/view.html')
 
     def total(self):
@@ -37,8 +49,8 @@ class FacetController(BaseController):
         query = app_globals.solr.query(q, rows=1000, q_op='AND')
         c.results = query.results
         c.count = query.numFound
-        if c.count > 1000:
-            total = 'Too many to count'
+        if c.count > 5000:
+            c.total = 'Too many to count'
         else:
             # put into years
             # exclude net parliamentary funding
