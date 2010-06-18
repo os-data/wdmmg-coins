@@ -56,12 +56,13 @@ class FacetController(BaseController):
             # exclude net parliamentary funding
             npf_account_code = '31070000'
             c.total = {}
+            c.npf = {}
             for hit in query:
                 year = hit['dataset'].split('_')[3]
                 if hit['account_code'] != npf_account_code:
                     # convert to millions
                     c.total[year] = c.total.get(year, 0) + hit['value'] / 1000.0
                 else:
-                    c.total['npf'] = c.total['npf'] + hit['value'] / 1000.0
+                    c.npf[year] = c.npf.get(year, 0) + hit['value'] / 1000.0
         return render('facet/total.html')
 

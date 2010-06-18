@@ -6,7 +6,7 @@
   </py:def>
   
   <div py:def="content">
-    <h2>Total Spending on the following:</h2>
+    <h2>Total Spending on the following (i.e. we sum across all other dimensions):</h2>
     <ul>
       <li py:for="k in sorted(c.values.keys())">
         <strong>${k}</strong> ${c.values[k]}
@@ -20,6 +20,16 @@
       </tr>
       <tr py:for="year in sorted(c.total.keys())">
         <td>${year}</td><td>£${c.total[year]}m</td>
+      </tr>
+    </table>
+
+    <h3>Net Parliamentary Funding</h3>
+    <table>
+      <tr>
+        <th>Year</th><th>Amount</th>
+      </tr>
+      <tr py:for="year in sorted(c.npf.keys())">
+        <td>${year}</td><td>£${c.npf[year]}m</td>
       </tr>
     </table>
 
