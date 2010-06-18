@@ -17,7 +17,7 @@ class FacetController(BaseController):
 
     @beaker_cache(type='dbm', query_args=True,
         invalidate_on_startup=True, # So we can still develop.
-        expire=8640000, # 10 days.
+        expire=8640000, # 100 days.
     )
     def view(self, year, field):
         dataset = 'fact_table_extract_%s' % year
@@ -36,6 +36,10 @@ class FacetController(BaseController):
                     c.descriptions[k] = entry.get(c.field.replace('code','description'), '')
         return render('facet/view.html')
 
+    @beaker_cache(type='dbm', query_args=True,
+        invalidate_on_startup=True, # So we can still develop.
+        expire=8640000, # 100 days.
+    )
     def total(self):
         values = dict(request.params)
         c.values = values
@@ -46,11 +50,11 @@ class FacetController(BaseController):
         q = ''
         for k,v in values.items():
             q += '%s:"%s" ' % (k,v)
-        query = app_globals.solr.query(q, rows=1000, q_op='AND')
+        query = app_globals.solr.query(q, rows=2000, q_op='AND')
         c.results = query.results
         c.count = query.numFound
-        if c.count > 5000:
-            c.total = 'Too many to count'
+        if c.count > 2000:
+            return 'Too many entries (%s) to sum' % c.count
         else:
             # put into years
             # exclude net parliamentary funding
