@@ -48,8 +48,16 @@ class FacetController(BaseController):
         #    po = request.params['po.replace('|', '/')
         #    q += ' programme_object_code:"%s"' % po
         q = ''
-        for k,v in values.items():
+        # id for use in e.g. disqus
+        c.pageid = ''
+        for k in sorted(values.keys()):
+            v = values[k]
             q += '%s:"%s" ' % (k,v)
+            c.pageid += '%s::%s::' % (k,v)
+        # " are not allowed in the pageid
+        c.pageid = c.pageid.replace('"', "'")
+        c.pageid = c.pageid.replace('&', "amp;")
+        c.pageid = c.pageid.replace('<', "lt;")
         query = app_globals.solr.query(q, rows=2000, q_op='AND')
         c.results = query.results
         c.count = query.numFound
